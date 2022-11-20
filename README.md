@@ -44,7 +44,7 @@ cargo build --release
 ```
 
 There are various methods of running and installing this software, so I will not describe them here, as they depend directly on your preferences and needs.
-The flea program must be run on the target system, for example:
+The flea program could be run on the target system, for example:
 
 (I assume that you are typing commands in the same directory where the server executable file is located.)
 
