@@ -21,6 +21,22 @@ The server is the main project that would be developed. The client is a test pro
 
 The capabilities of the program will be increased during the development of this software.
 
+## Command format
+
+The Flea Server requires an XML formatted command like below:
+
+```xml
+<Command name='command_name' value='optional_value'></Command>
+```
+
+Currently supported commands are:
+
+* version : returns current server version
+* bash : a host bash command. The value property has to have a command line to execute in a host.
+* pic : takes a screenshots on a host and send it to FTP server
+
+New commands will be added later.
+
 ## Installation
 
 Depending on your application, you will have to change the server's IP address and its port in the code (../flea/src/main.rs) which it will be listen on. If you intend to use FTP server, you will need to complete the connection data. You can do this directly in the code:
