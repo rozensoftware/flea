@@ -1,0 +1,12 @@
+[package]
+name = "flea"
+description = "A little server for executing remote commands."
+version = "0.1.0"
+edition = "2021"
+keywords = ["server", "spying", "surveillance"]
+authors = ["Rozen Software <rozsoft@wp.pl>"]
+
+[dependencies]
+log = "0.4.17"
+env_logger = "0.9.3"
+flealib = {path = "flealib"}
