@@ -33,7 +33,7 @@ Currently supported commands are:
 
 * version : returns current server version
 * bash : a host bash command. The value property has to have a command line to execute in a host.
-* pic : takes a screenshots on a host and send it to FTP server
+* pic : takes a screenshots of the host and send it to FTP server
 
 New commands will be added later.
 
