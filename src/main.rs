@@ -1,5 +1,4 @@
-use std::thread;
-use std::env;
+use std::{thread, env};
 use std::sync::{Arc, Mutex};
 
 #[macro_use]
