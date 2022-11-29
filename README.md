@@ -20,6 +20,7 @@ The server is the main project that would be developed. The client is a test pro
 - Bash execution on a host
 - Key logger
 - OS process list
+- Kill process
 
 The content of the key logger file is cleaned during the server startup.
 The capabilities of the program will be increased during the development of this software.
@@ -39,6 +40,7 @@ Currently supported commands are:
 * pic : takes a screenshots of the host and send it to FTP server
 * sendlog : reads current key logger file and sends its content to receiver
 * proclist : displays currently running processes in the system. This works only for Windows.
+* kill : kills a process. Value parameter must include PID
 
 New commands will be added later.
 
