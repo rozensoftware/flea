@@ -19,6 +19,7 @@ The server is the main project that would be developed. The client is a test pro
 - Sending screenshot file to FTP server
 - Bash execution on a host
 - Key logger
+- OS process list
 
 The content of the key logger file is cleaned during the server startup.
 The capabilities of the program will be increased during the development of this software.
@@ -36,7 +37,8 @@ Currently supported commands are:
 * version : returns current server version
 * bash : a host bash command. The value property has to have a command line to execute in a host.
 * pic : takes a screenshots of the host and send it to FTP server
-* sendlog : read current key logger file and send its content to receiver
+* sendlog : reads current key logger file and sends its content to receiver
+* proclist : displays currently running processes in the system. This works only for Windows.
 
 New commands will be added later.
 
