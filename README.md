@@ -6,7 +6,7 @@ This repository consists of two projects:
 - Command Server (root)
 - Simple Command Sender (flea-client)
 
-The server is the main project that would be developed. The client is a test program to validate the protocol and the core functionality of the Flea Server.
+The server is the main project that would be developed. The client is a test program to validate the protocol and the core functionality of the Flea Server. Unless otherwise stated, the Flea works in Linux and Windows.
 
 ## Purpose
 
@@ -20,7 +20,7 @@ The server is the main project that would be developed. The client is a test pro
 - Bash execution on a host
 - Key logger
 - OS process list
-- Kill process
+- Killing a process
 
 The content of the key logger file is cleaned during the server startup.
 The capabilities of the program will be increased during the development of this software.
@@ -36,10 +36,10 @@ The Flea Server requires an XML formatted command like below:
 Currently supported commands are:
 
 * version : returns current server version
-* bash : a host bash command. The value property has to have a command line to execute in a host.
+* bash : a host bash command. The value property has to have a command line to execute in a host
 * pic : takes a screenshots of the host and send it to FTP server
 * sendlog : reads current key logger file and sends its content to receiver
-* proclist : displays currently running processes in the system. This works only for Windows.
+* proclist : displays currently running processes in the system
 * kill : kills a process. Value parameter must include PID
 
 New commands will be added later.
@@ -67,7 +67,7 @@ cargo build --release
 ```
 
 There are various methods of running and installing this software, so I will not describe them here, as they depend directly on your preferences and needs.
-The flea program could be run on the target system, for example:
+The Flea program could be run on the target system, for example:
 
 (I assume that you are typing commands in the same directory where the server executable file is located.)
 
