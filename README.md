@@ -17,6 +17,7 @@ The server is the main project that would be developed. The client is a test pro
 - Remote commands execution based on XML format
 - Taking screenshots of a host
 - Sending screenshot file to FTP server
+- Uploading a file from FTP to the host
 - Bash execution on a host
 - Key logger
 - OS process list
@@ -41,8 +42,31 @@ Currently supported commands are:
 * sendlog : reads current key logger file and sends its content to receiver
 * proclist : displays currently running processes in the system
 * kill : kills a process. Value parameter must include PID
+* upload : uploads a file from FTP to the host. The file name must be specified in value parameter of the XML command
 
 New commands will be added later.
+
+## Flea Client
+
+The client programm is for testing the server side but might be used as a utility to sending commands to the Flea Server.
+
+These are the example commands:
+
+
+Get current version of the Flea Server:
+```
+./flea-client -a 127.0.0.1 -c version
+```
+
+Take screenshot and send it to the FTP server:
+```
+./flea-client -a 127.0.0.1 -c pic
+```
+
+Upload test.txt file from FTP server to the host where Flea Server is running on:
+```
+./flea-client -a 127.0.0.1 -c upload -v test.txt
+```
 
 ## Installation
 
