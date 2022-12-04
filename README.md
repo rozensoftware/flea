@@ -42,7 +42,7 @@ Currently supported commands are:
 * sendlog : reads current key logger file and sends its content to receiver
 * proclist : displays currently running processes in the system
 * kill : kills a process. Value parameter must include PID
-* upload : uploads a file from FTP to the host. The file name must be specified in value parameter of the XML command
+* upload : uploads a file to the host from FTP server. The file name must be specified in value parameter of the XML command
 
 New commands will be added later.
 
