@@ -68,6 +68,14 @@ Upload test.txt file from FTP server to the host where Flea Server is running on
 ./flea-client -a MY_SERVER_NAME -c upload -v test.txt
 ```
 
+## Building
+
+Except having installed Rust on Linux you need to install the following packages to build the software:
+
+```
+build-essential, pkg-config, libx11-dev, libxcb-randr0-dev, libxcb-shm0-dev
+```
+
 ## Installation
 
 The Flea Server reads the host name of the computer and opens a port there. The name can be changed to IP address with a small code modification. If you intend to use FTP server, you will need to complete the connection data. You can do this directly in the code:
