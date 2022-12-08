@@ -70,7 +70,7 @@ Upload test.txt file from FTP server to the host where Flea Server is running on
 
 ## Building
 
-Except having installed Rust on Linux you need to install the following packages to build the software:
+Except having installed Rust on Linux you also need to install the following packages to build the software:
 
 ```
 build-essential, pkg-config, libx11-dev, libxcb-randr0-dev, libxcb-shm0-dev
