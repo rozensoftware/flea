@@ -48,7 +48,7 @@ New commands will be added later.
 
 ## Flea Client
 
-The client programm is for testing the server side but might be used as a utility to sending commands to the Flea Server.
+TThe client is used for testing, but can also be used to send commands to the Flea Server.
 
 These are the example commands:
 
