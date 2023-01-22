@@ -1,18 +1,18 @@
 [package]
 name = "flealib"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 [dependencies]
-roxmltree = "0.15.1"
+roxmltree = "0.17.0"
 log = "0.4.17"
-env_logger = "0.9.3"
+env_logger = "0.10.0"
 execute = "0.2.11"
 ftp = "3.0.1"
 scrap = "0.5"
 repng = "0.2.2"
 chrono = "0.4.23"
-confy = "0.3.1"
+confy = "0.5.1"
 serde = { version = "1.0", features = ["derive"] }
 device_query = "1.1.1"
 process_list = "0.2.1"

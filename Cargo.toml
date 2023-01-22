@@ -1,14 +1,18 @@
 [package]
 name = "flea"
 description = "A little server for executing remote commands."
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 keywords = ["server", "spying", "surveillance"]
 authors = ["Rozen Software <rozsoft@wp.pl>"]
+repository = "https://github.com/rozensoftware/flea"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+categories = ["command-line-utilities", "web-programming::websocket"]
 
 [dependencies]
 log = "0.4.17"
-env_logger = "0.9.3"
+env_logger = "0.10.0"
 exitcode = "1.1.2"
 ctrlc = "3.2.0"
 gethostname = "0.4.1"
