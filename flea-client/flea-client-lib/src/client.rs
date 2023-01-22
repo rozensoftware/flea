@@ -4,6 +4,7 @@ use std::str::from_utf8;
 use log::{debug, error};
 
 const MAX_INPUT_BUFFER: usize = 1024;
+const SPECIAL_COMMAND_GET_SCREENSHOT: &str = "screenshot";
 
 pub struct FleaClient
 {    
@@ -11,7 +12,7 @@ pub struct FleaClient
 
 impl FleaClient
 {
-    pub fn send_command(&self, address: &str, cmd: &str) -> bool
+    pub fn send_command(&self, address: &str, xml: &str, cmd: &str) -> bool
     {
         debug!("Connecting to {} ..", address);                
 
@@ -19,9 +20,10 @@ impl FleaClient
         {
             Ok(mut stream) => 
             {
-                debug!("Connected, trying to read data..");
+                debug!("Connected, sent: {}", xml);
+                debug!("Waiting for response..");
 
-                stream.write(cmd.as_bytes()).unwrap();
+                stream.write(xml.as_bytes()).unwrap();
     
                 let mut ret_value = true;
                 let mut data = [0 as u8; MAX_INPUT_BUFFER];
@@ -62,11 +64,17 @@ impl FleaClient
                 }
                 
                 stream.shutdown(Shutdown::Both).unwrap();
-                if ret_value
+                if cmd.eq(SPECIAL_COMMAND_GET_SCREENSHOT)
+                {
+                    ret_value = self.bytes_to_file("screenshot.png", &self.digits_to_bytes(&read_string));
+                    println!("File screenshot.png was saved successfully");
+                }
+                else
                 {
                     println!("Response from the Flea Server is:");
-                    println!("{}", read_string);
-                }
+                    println!("{}", read_string);    
+                }                
+
                 ret_value
             },
             Err(e) => 
@@ -75,5 +83,55 @@ impl FleaClient
                 false
             }
         }    
+    }
+
+    /// Converts string digits into a byte array
+    /// * digits - a string of digits
+    /// Returns a byte array
+    /// Example: "123456" -> [0x12, 0x34, 0x56]
+    /// Note: the string must contain an even number of digits
+    fn digits_to_bytes(&self, digits: &str) -> Vec<u8>
+    {
+        let mut bytes = Vec::<u8>::new();
+        let mut i = 0;
+        let count = digits.len();
+
+        while i < count
+        {
+            let byte = u8::from_str_radix(&digits[i..i+2], 16).unwrap();
+            bytes.push(byte);
+            i += 2;
+        }
+
+        bytes
+    }
+
+    ///Saves byte array to the specified file
+    /// * file_name - a file name to save
+    /// * data - a byte array to save
+    /// Returns true if the file was saved successfully
+    fn bytes_to_file(&self, file_name: &str, data: &[u8]) -> bool
+    {
+        let mut file = match std::fs::File::create(file_name)
+        {
+            Ok(f) => f,
+            Err(e) =>
+            {
+                error!("Couldn't create file: {}", e);
+                return false;
+            }
+        };
+
+        match file.write_all(data)
+        {
+            Ok(_) => {},
+            Err(e) =>
+            {
+                error!("Couldn't write to file: {}", e);
+                return false;
+            }
+        }
+
+        true
     }
 }

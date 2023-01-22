@@ -16,7 +16,7 @@ The server is the main project that would be developed. The client is a test pro
 
 - Remote commands execution based on XML format
 - Taking screenshots of a host
-- Sending screenshot file to FTP server
+- Sending screenshot file to FTP server and/or to the client
 - Uploading a file from FTP to the host
 - Bash execution on a host
 - Key logger
@@ -39,6 +39,7 @@ Currently supported commands are:
 * version : returns current server version
 * bash : a host bash command. The value property has to have a command line to execute in a host
 * pic : takes a screenshots of the host and sends it to FTP server
+* screenshot : takes a screenshot and sends it to the caller. The client supports this and saves data into a file screenshot.png
 * sendlog : reads current key logger file and sends its content to receiver
 * proclist : displays currently running processes in the system
 * kill : kills a process. Value parameter must include PID
@@ -63,6 +64,11 @@ Take screenshot and send it to the FTP server:
 ./flea-client -a 127.0.0.1 -c pic
 ```
 
+Take screenshot and send it to the caller. It'll be saved as screenshot.png file:
+```
+./flea-client -a 127.0.0.1 -c screenshot
+```
+
 Upload test.txt file from FTP server to the host where Flea Server is running on:
 ```
 ./flea-client -a MY_SERVER_NAME -c upload -v test.txt
@@ -75,6 +81,8 @@ Except having installed Rust on Linux you also need to install the following pac
 ```
 build-essential, pkg-config, libx11-dev, libxcb-randr0-dev, libxcb-shm0-dev
 ```
+
+On Windows you only gonna need Rust (with C++ compiler alongside).
 
 ## Installation
 

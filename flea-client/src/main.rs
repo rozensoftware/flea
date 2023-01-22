@@ -66,7 +66,7 @@ fn main()
     let xml = format!("<Command name='{}' value='{}'></Command>", command, value);
     
     let client = FleaClient{};
-    client.send_command(&address, &xml);
+    client.send_command(&address, &xml, command.as_str());
 }
 
 #[cfg(test)]
