@@ -12,7 +12,7 @@ pub struct Keylogger
     pub quit: bool,
 }
 
-pub fn remove_log_file(path: &String) -> String
+pub fn remove_keylog_file(path: &String) -> String
 {
     match std::fs::remove_file(path)
     {

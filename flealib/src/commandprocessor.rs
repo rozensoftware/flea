@@ -52,7 +52,7 @@ pub struct CommandProcessor
     os: SystemCmd,
 }
 
-/* Default values will be saved in a Flea configuration file when the file not exists.
+/* Default values will be saved in a Flea configuration file when the file not exists yet.
     After that you should modify the file to set up your own values or enter your values
     in the constants defined above*/
 impl ::std::default::Default for FleaConfig 
@@ -215,7 +215,8 @@ impl FleaCommand for CommandProcessor
                     Ok(x) =>
                     {
                         let ret = self.bytes_to_string(&x);
-                        if let Err(y) = std::fs::remove_file(current_path) {
+                        if let Err(y) = std::fs::remove_file(current_path) 
+                        {
                             error!("Couldn't remove a file: {}", y.to_string());
                             ret
                         } 
