@@ -1,4 +1,5 @@
 # Flea
+
 A simple command server written in Rust.
 
 This repository consists of two projects:
@@ -36,14 +37,21 @@ The Flea Server requires an XML formatted command like below:
 
 Currently supported commands are:
 
-* version : returns current server version
-* bash : a host bash command. The value property has to have a command line to execute in a host
-* pic : takes a screenshots of the host and sends it to FTP server
-* screenshot : takes a screenshot and sends it to the caller. The client supports this and saves data into a file screenshot.png
-* sendlog : reads current key logger file and sends its content to receiver
-* proclist : displays currently running processes in the system
-* kill : kills a process. Value parameter must include PID
-* upload : uploads a file to the host from FTP server. The file name must be specified in value parameter of the XML command
+- version : returns current server version
+
+- bash : a host bash command. The value property has to have a command line to execute in a host
+
+- pic : takes a screenshots of the host and sends it to FTP server
+
+- screenshot : takes a screenshot and sends it to the caller. The client supports this and saves data into a file screenshot.png
+
+- sendlog : reads current key logger file and sends its content to receiver
+
+- proclist : displays currently running processes in the system
+
+- kill : kills a process. Value parameter must include PID
+
+- upload : uploads a file to the host from FTP server. The file name must be specified in value parameter of the XML command
 
 New commands will be added later.
 
@@ -53,24 +61,27 @@ The client is used for testing, but can also be used to send commands to the Fle
 
 These are the example commands:
 
-
 Get current version of the Flea Server:
-```
+
+```bash
 ./flea-client -a 127.0.0.1 -c version
 ```
 
 Take screenshot and send it to the FTP server:
-```
+
+```bash
 ./flea-client -a 127.0.0.1 -c pic
 ```
 
 Take screenshot and send it to the caller. It'll be saved as screenshot.png file:
-```
+
+```bash
 ./flea-client -a 127.0.0.1 -c screenshot
 ```
 
 Upload test.txt file from FTP server to the host where Flea Server is running on:
-```
+
+```bash
 ./flea-client -a MY_SERVER_NAME -c upload -v test.txt
 ```
 
@@ -78,7 +89,7 @@ Upload test.txt file from FTP server to the host where Flea Server is running on
 
 Except having installed Rust on Linux you also need to install the following packages to build the software:
 
-```
+```text
 build-essential, pkg-config, libx11-dev, libxcb-randr0-dev, libxcb-shm0-dev
 ```
 
@@ -99,10 +110,9 @@ const FTP_FOLDER_NAME: &'static str = "enter_ftp_folder_name";
 
 or in the created configuration file (recommended). On Linux you will find the configuration file in a directory: /home/user_name/.config/flea_conf/ .
 
-
 Build The Flea server:
 
-```
+```bash
 cargo build --release
 ```
 
@@ -111,23 +121,33 @@ The Flea program could be run on the target system, for example:
 
 (I assume that you are typing commands in the same directory where the server executable file is located.)
 
-```
+```bash
 ./flea &
 ```
 
-This run the server as a process.
+This run the server as a separate process.
+On Windows however, you can uncomment line 1 in main.rs.
 
-If you'd like to see output from the process run the command:
+If you'd like to see debug output from the process run the command:
 
-```
+```bash
 RUST_LOG=debug ./flea
 ```
+
+You can specify IP address on which the server will be listen on:
+
+```bash
+./flea -s 127.0.0.1
+```
+
+The port number is sewn into the program code. It can be changed there or a new functionality could be written to specify it as a command parameter.
+
 ## License
 
 This project is licensed under either of
 
-Apache License, Version 2.0, (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
-MIT license (LICENSE-MIT or http://opensource.org/licenses/MIT)
+Apache License, Version 2.0, (LICENSE-APACHE or <http://www.apache.org/licenses/LICENSE-2.0>)
+MIT license (LICENSE-MIT or <http://opensource.org/licenses/MIT>)
 at your option.
 
 ## Contributing / Feedback

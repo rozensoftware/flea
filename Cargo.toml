@@ -16,4 +16,5 @@ env_logger = "0.10.0"
 exitcode = "1.1.2"
 ctrlc = "3.2.0"
 gethostname = "0.4.1"
+getopts = "0.2.21"
 flealib = {path = "flealib"}
