@@ -126,8 +126,9 @@ The Flea program could be run on the target system, for example:
 ```
 
 This run the server as a separate process.
+On Windows however, you can uncomment line 1 in main.rs.
 
-If you'd like to see output from the process run the command:
+If you'd like to see debug output from the process run the command:
 
 ```bash
 RUST_LOG=debug ./flea
@@ -145,8 +146,8 @@ The port number is sewn into the program code. It can be changed there or a new 
 
 This project is licensed under either of
 
-Apache License, Version 2.0, (LICENSE-APACHE or http://www.apache.org/licenses/LICENSE-2.0)
-MIT license (LICENSE-MIT or http://opensource.org/licenses/MIT)
+Apache License, Version 2.0, (LICENSE-APACHE or <http://www.apache.org/licenses/LICENSE-2.0>)
+MIT license (LICENSE-MIT or <http://opensource.org/licenses/MIT>)
 at your option.
 
 ## Contributing / Feedback

@@ -1,3 +1,5 @@
+//#![windows_subsystem = "windows"]
+
 extern crate exitcode;
 extern crate getopts;
 
