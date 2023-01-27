@@ -23,6 +23,7 @@ The server is the main project that would be developed. The client is a test pro
 - Key logger
 - OS process list
 - Killing a process
+- Simple file server
 
 The content of the key logger file is cleaned during the server startup.
 The capabilities of the program will be increased during the development of this software.
@@ -38,20 +39,15 @@ The Flea Server requires an XML formatted command like below:
 Currently supported commands are:
 
 - version : returns current server version
-
 - bash : a host bash command. The value property has to have a command line to execute in a host
-
 - pic : takes a screenshots of the host and sends it to FTP server
-
 - screenshot : takes a screenshot and sends it to the caller. The client supports this and saves data into a file screenshot.png
-
 - sendlog : reads current key logger file and sends its content to receiver
-
 - proclist : displays currently running processes in the system
-
 - kill : kills a process. Value parameter must include PID
-
 - upload : uploads a file to the host from FTP server. The file name must be specified in value parameter of the XML command
+- getfiles : Retreives content of current directory
+- cd : Changes the current directory to the new one passed in value parameter (.. means level up)
 
 New commands will be added later.
 
@@ -83,6 +79,12 @@ Upload test.txt file from FTP server to the host where Flea Server is running on
 
 ```bash
 ./flea-client -a MY_SERVER_NAME -c upload -v test.txt
+```
+
+Change current directory to the previous one
+
+```bash
+./flea-client.exe --address MY_SERVER -c cd -v ..
 ```
 
 ## Building

