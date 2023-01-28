@@ -66,19 +66,5 @@ fn main()
     let xml = format!("<Command name='{}' value='{}'></Command>", command, value);
     
     let client = FleaClient{};
-    client.send_command(&address, &xml, command.as_str());
-}
-
-#[cfg(test)]
-mod tests 
-{
-    use super::*;
-
-    #[test]    
-    fn test_send()
-    {
-        let client = FleaClient{};
-        let ret = client.send_command("127.0.0.1:1972", "<Command name='version' value=''></Command>");
-        assert!(ret);
-    }
+    client.send_command(&address, &xml, command.as_str(), value.as_str());
 }

