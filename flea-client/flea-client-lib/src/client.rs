@@ -1,10 +1,11 @@
-use std::io::{Read, Write};
+use std::io::{Read, Write, self};
 use std::net::{Shutdown, TcpStream};
 use std::str::from_utf8;
 use log::{debug, error};
 
 const MAX_INPUT_BUFFER: usize = 1024;
 const SPECIAL_COMMAND_GET_SCREENSHOT: &str = "screenshot";
+const SPECIAL_COMMAND_GET_FILE: &str = "getfile";
 
 pub struct FleaClient
 {    
@@ -12,7 +13,7 @@ pub struct FleaClient
 
 impl FleaClient
 {
-    pub fn send_command(&self, address: &str, xml: &str, cmd: &str) -> bool
+    pub fn send_command(&self, address: &str, xml: &str, cmd: &str, value: &str) -> bool
     {
         debug!("Connecting to {} ..", address);                
 
@@ -64,16 +65,60 @@ impl FleaClient
                 }
                 
                 stream.shutdown(Shutdown::Both).unwrap();
-                if cmd.eq(SPECIAL_COMMAND_GET_SCREENSHOT)
+
+                if read_string.len() == 0
                 {
-                    ret_value = self.bytes_to_file("screenshot.png", &self.digits_to_bytes(&read_string));
-                    println!("File screenshot.png was saved successfully");
+                    error!("No data received from the Flea Server");
+                    ret_value = false;
                 }
                 else
                 {
-                    println!("Response from the Flea Server is:");
-                    println!("{}", read_string);    
-                }                
+                    if cmd.eq(SPECIAL_COMMAND_GET_SCREENSHOT)
+                    {
+                        if let Ok(bytes) = &self.digits_to_bytes(&read_string)
+                        {
+                            if let Err(e) = self.bytes_to_file("screenshot.png", &bytes)
+                            {
+                                error!("Couldn't save screenshot: {}", e);
+                                ret_value = false;
+                            }
+                            else
+                            {
+                                println!("File screenshot.png was saved successfully");
+                            }
+                        }
+                        else
+                        {
+                            error!("Couldn't convert screenshot data.");
+                            ret_value = false;
+                        }                           
+                    }
+                    else if cmd.eq(SPECIAL_COMMAND_GET_FILE)
+                    {
+                        if let Ok(bytes) = &self.digits_to_bytes(&read_string)
+                        {
+                            if let Err(e) = self.bytes_to_file(value, &bytes)
+                            {
+                                error!("Couldn't save file: {} - {}", value, e);
+                                ret_value = false;
+                            }
+                            else
+                            {
+                                println!("File {} was saved successfully", value);
+                            }
+                        }
+                        else
+                        {
+                            error!("Couldn't convert file data");
+                            ret_value = false;
+                        }                           
+                    }
+                    else
+                    {
+                        println!("Response from the Flea Server is:");
+                        println!("{}", read_string);    
+                    }                    
+                }
 
                 ret_value
             },
@@ -90,7 +135,7 @@ impl FleaClient
     /// Returns a byte array
     /// Example: "123456" -> [0x12, 0x34, 0x56]
     /// Note: the string must contain an even number of digits
-    fn digits_to_bytes(&self, digits: &str) -> Vec<u8>
+    fn digits_to_bytes(&self, digits: &str) -> Result<Vec<u8>, String>
     {
         let mut bytes = Vec::<u8>::new();
         let mut i = 0;
@@ -98,40 +143,28 @@ impl FleaClient
 
         while i < count
         {
-            let byte = u8::from_str_radix(&digits[i..i+2], 16).unwrap();
-            bytes.push(byte);
-            i += 2;
+            if let Ok(byte) = u8::from_str_radix(&digits[i..i+2], 16)
+            {
+                bytes.push(byte);
+                i += 2;    
+            }
+            else
+            {
+                return Err("Invalid digit".to_string());
+            }
         }
 
-        bytes
+        Ok(bytes)
     }
 
     ///Saves byte array to the specified file
     /// * file_name - a file name to save
     /// * data - a byte array to save
     /// Returns true if the file was saved successfully
-    fn bytes_to_file(&self, file_name: &str, data: &[u8]) -> bool
+    fn bytes_to_file(&self, file_name: &str, data: &[u8]) -> io::Result<()>
     {
-        let mut file = match std::fs::File::create(file_name)
-        {
-            Ok(f) => f,
-            Err(e) =>
-            {
-                error!("Couldn't create file: {}", e);
-                return false;
-            }
-        };
-
-        match file.write_all(data)
-        {
-            Ok(_) => {},
-            Err(e) =>
-            {
-                error!("Couldn't write to file: {}", e);
-                return false;
-            }
-        }
-
-        true
+        let mut file = std::fs::File::create(file_name)?;
+        file.write_all(data)?;
+        Ok(())
     }
 }

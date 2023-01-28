@@ -38,16 +38,17 @@ The Flea Server requires an XML formatted command like below:
 
 Currently supported commands are:
 
-- version : returns current server version
-- bash : a host bash command. The value property has to have a command line to execute in a host
-- pic : takes a screenshots of the host and sends it to FTP server
-- screenshot : takes a screenshot and sends it to the caller. The client supports this and saves data into a file screenshot.png
-- sendlog : reads current key logger file and sends its content to receiver
-- proclist : displays currently running processes in the system
-- kill : kills a process. Value parameter must include PID
-- upload : uploads a file to the host from FTP server. The file name must be specified in value parameter of the XML command
-- getfiles : Retreives content of current directory
-- cd : Changes the current directory to the new one passed in value parameter (.. means level up)
+- version : returns current server version.
+- bash : a host bash command. The value property has to have a command line to execute in a host.
+- pic : takes a screenshots of the host and sends it to FTP server.
+- screenshot : takes a screenshot and sends it to the caller. The client supports this and saves data into a file screenshot.png.
+- sendlog : reads current key logger file and sends its content to receiver.
+- proclist : displays currently running processes in the system.
+- kill : kills a process. Value parameter must include PID.
+- upload : uploads a file to the host from FTP server. The file name must be specified in value parameter of the XML command.
+- dir : Retreives content of current directory.
+- cd : Changes the current directory to the new one passed in value parameter (.. means level up).
+- getfile : Downloads a file passed in value parameter to the client. The file is read from the current path on the server.
 
 New commands will be added later.
 
@@ -99,7 +100,7 @@ On Windows you only gonna need Rust (with C++ compiler alongside).
 
 ## Installation
 
-The Flea Server reads the host name of the computer and opens a port there. The name can be changed to IP address with a small code modification. If you intend to use FTP server, you will need to complete the connection data. You can do this directly in the code:
+The Flea Server reads the host name of the computer and opens a port there. The IP address can be provided by using -s parameter. If you intend to use FTP server, you will need to complete the connection data. You can do this directly in the code:
 
 ```rust
 //Enter your data for FTP Server connection
