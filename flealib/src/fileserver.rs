@@ -107,18 +107,6 @@ impl FileServer
         }
     }
 
-    pub fn get_curr_dir_content(&self) -> Result<Vec<String>, String>
-    {
-        if let Ok(files) =self.list_content()
-        {
-            Ok(files)
-        }
-        else
-        {
-            Err("Error".to_string())
-        }
-    }
-
     /// Reads a binary file knowing its path and returns its content as a u8 vector
     /// # Arguments
     /// * `file_path` - Path to the file as PathBuf

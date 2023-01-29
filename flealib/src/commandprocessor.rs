@@ -255,7 +255,7 @@ impl FleaCommand for CommandProcessor
 
             DIR_COMMAND =>
             {
-                if let Ok(files) = file_server.lock().unwrap().get_curr_dir_content()
+                if let Ok(files) = file_server.lock().unwrap().list_content()
                 {
                     debug!("Directory content returned");
                     return self.vec_to_string(&files);
