@@ -17,4 +17,5 @@ exitcode = "1.1.2"
 ctrlc = "3.2.0"
 gethostname = "0.4.1"
 getopts = "0.2.21"
+local-ip-address = "0.5.1"
 flealib = {path = "flealib"}

