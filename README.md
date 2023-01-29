@@ -45,7 +45,7 @@ Currently supported commands are:
 - log : reads current key logger file and sends its content to receiver.
 - proclist : displays currently running processes in the system.
 - kill : kills a process. Value parameter must include PID.
-- upload : uploads a file to the host from FTP server. The file name must be specified in value parameter of the XML command.
+- upload : uploads a file to the host from FTP server. The file name must be specified in the value parameter of the XML command.
 - dir : Retreives content of current directory.
 - cd : Changes the current directory to the new one passed in value parameter (.. means level up).
 - getfile : Downloads a file passed in value parameter to the client. The file is read from the current path on the server.

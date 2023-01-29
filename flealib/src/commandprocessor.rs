@@ -24,6 +24,7 @@ const UPLOAD_COMMAND: &'static str = "upload";
 const DIR_COMMAND: &'static str = "dir";
 const GET_FILE_COMMAND: &'static str = "getfile";
 const CHANGE_DIRECTORY_COMMAND: &'static str = "cd";
+pub const STOP_COMMAND: &'static str = "stop";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
 //Enter your data for FTP Server connection
@@ -360,6 +361,11 @@ impl FleaCommand for CommandProcessor
                         x.to_string()
                     }
                 }    
+            },
+
+            STOP_COMMAND =>
+            {
+                return STOP_COMMAND.to_string();
             },
 
             &_ =>
