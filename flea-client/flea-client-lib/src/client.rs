@@ -29,6 +29,8 @@ impl FleaClient
                 let mut ret_value = true;
                 let mut data = [0 as u8; MAX_INPUT_BUFFER];
                 let mut read_string: String = "".to_string();
+                let mut bytes_read = 0;
+                const DATA_10MB: usize = 10 * 1024 * 1024;
 
                 loop 
                 {
@@ -45,6 +47,12 @@ impl FleaClient
                             {
                                 Ok(str) =>
                                 {
+                                    bytes_read += data_len;
+                                    if bytes_read >= DATA_10MB
+                                    {
+                                        print!(".");
+                                        bytes_read = 0;
+                                    }
                                     read_string.push_str(str);
                                 },
                                 Err(e) =>

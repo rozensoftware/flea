@@ -36,6 +36,12 @@ fn replay(mut stream: &TcpStream, command_name: String, value_name: String, file
     let cmd = command_processor.process(&command_name.as_str(), &value_name.as_str(), file_server);
     let mut data_idx = 0;
 
+    if stream.set_nonblocking(true).is_err()
+    {
+        error!("Couldn't set non-blocking mode");
+        return false;
+    }
+    
     loop 
     {
         match stream.write(&cmd[data_idx..].as_bytes())
@@ -48,6 +54,11 @@ fn replay(mut stream: &TcpStream, command_name: String, value_name: String, file
                     break;
                 }        
             },
+            Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => 
+            {
+                thread::sleep(std::time::Duration::from_millis(100));
+                continue;
+            }
             Err(e) =>
             {
                 error!("Couldn't send response: {}", e);
@@ -136,6 +147,11 @@ impl FleaServer
         let listener = TcpListener::bind(address).unwrap();
         listener.set_nonblocking(true).expect("Cannot set non-blocking socket!");
 
+        //Here we are creating a new instance of FileServer and wrapping it in Arc and Mutex
+        //Arc is a thread-safe reference-counting pointer. Mutex is a mutual exclusion primitive useful for protecting shared data
+        //As we have only one instance of FileServer, two or more clients can access it at the same time
+        //They can change the current directory, create a new directory, delete a file, etc.
+        //This could cause a problem but this is done by design. Normally we should have only one peer though.
         let file_server_data = Arc::new(Mutex::new(FileServer::new()));
 
         // accept connections and process them, spawning a new thread for each one

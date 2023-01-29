@@ -18,10 +18,10 @@ impl FileServer
         }
     }
 
-    /// Lists all folders in current directory
+    /// Lists all folders and files in current directory
     /// # Returns
-    /// * `Vec<String>` - Vector of folder names    
-    pub fn list_folders(&self) -> Result<Vec<String>, String>
+    /// * `Vec<String>` - Vector of names    
+    pub fn list_content(&self) -> Result<Vec<String>, String>
     {
         let mut folders: Vec<String> = Vec::new();
 
@@ -46,39 +46,13 @@ impl FileServer
             {
                 folders.push(format!("/{}", file_name));
             }
+            else if file_path.is_file()
+            {
+                folders.push(file_name);
+            }
         }
 
         Ok(folders)
-    }
-
-    /// Lists all files and folders in a specified directory
-    /// # Arguments
-    /// * `path` - Path to the directory
-    /// # Returns
-    /// * `Vec<String>` - Vector of file names
-    fn list_files(&self, path: &str) -> Result<Vec<String>, String>
-    {
-        let mut files: Vec<String> = Vec::new();
-
-        let paths = match fs::read_dir(path)
-        {
-            Ok(x) =>
-            {
-                x
-            },
-            Err(e) =>
-            {
-                return Err(e.to_string())
-            }
-        };
-
-        for path in paths
-        {
-            let file_name = path.unwrap().file_name().into_string().unwrap();
-            files.push(file_name);
-        }
-
-        Ok(files)
     }
 
     /// Change a directory to one level up
@@ -135,11 +109,9 @@ impl FileServer
 
     pub fn get_curr_dir_content(&self) -> Result<Vec<String>, String>
     {
-        if let Ok(files) =self.list_files(&self.current_directory)
+        if let Ok(files) =self.list_content()
         {
-            let mut folders = self.list_folders()?;
-            folders.append(&mut files.clone());
-            Ok(folders)
+            Ok(files)
         }
         else
         {
