@@ -24,6 +24,7 @@ const UPLOAD_COMMAND: &'static str = "upload";
 const DIR_COMMAND: &'static str = "dir";
 const GET_FILE_COMMAND: &'static str = "getfile";
 const CHANGE_DIRECTORY_COMMAND: &'static str = "cd";
+pub const STOP_COMMAND: &'static str = "quit";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
 //Enter your data for FTP Server connection
@@ -255,7 +256,7 @@ impl FleaCommand for CommandProcessor
 
             DIR_COMMAND =>
             {
-                if let Ok(files) = file_server.lock().unwrap().get_curr_dir_content()
+                if let Ok(files) = file_server.lock().unwrap().list_content()
                 {
                     debug!("Directory content returned");
                     return self.vec_to_string(&files);
@@ -360,6 +361,11 @@ impl FleaCommand for CommandProcessor
                         x.to_string()
                     }
                 }    
+            },
+
+            STOP_COMMAND =>
+            {
+                return STOP_COMMAND.to_string();
             },
 
             &_ =>
