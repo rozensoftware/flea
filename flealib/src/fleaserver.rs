@@ -79,17 +79,6 @@ fn replay(mut stream: &TcpStream, command_name: String, value_name: String, file
     (b, false)
 }
 
-/// Starts a new process of itself
-fn start_new_process()
-{
-    let mut args = std::env::args();
-    let exe_path = args.next().unwrap();
-    let mut child = std::process::Command::new(exe_path)
-        .spawn()
-        .expect("Failed to start a new process");
-    let _ = child.wait();
-}
-
 /// Handles connection with client
 /// * stream - a TCP stream to the client
 /// * file_server - a file server

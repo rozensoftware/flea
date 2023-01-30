@@ -24,9 +24,11 @@ The server is the main project that would be developed. The client is a test pro
 - OS process list
 - Killing a process
 - Simple file server
+- Auto update
 
 The content of the key logger file is cleaned during the server startup.
 The capabilities of the program will be increased during the development of this software.
+To update the server a new version must be uploaded to the installation location. The new file name must be flea.upd. The server will be updated on the next run automatically.
 
 ## Command format
 
@@ -49,6 +51,7 @@ Currently supported commands are:
 - dir : Retreives content of current directory.
 - cd : Changes the current directory to the new one passed in value parameter (.. means level up).
 - getfile : Downloads a file passed in value parameter to the client. The file is read from the current path on the server.
+- quit : Quits the program. Must be run again.
 
 New commands will be added later.
 

