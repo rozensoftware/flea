@@ -147,6 +147,7 @@ You can specify IP address on which the server will be listen on:
 ```
 
 The port number is sewn into the program code. It can be changed there or a new functionality could be written to specify it as a command parameter.
+If you ran the server in the console you can stop it by CTRL-C.
 
 ## License
 
