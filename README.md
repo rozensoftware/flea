@@ -2,12 +2,15 @@
 
 A simple command server written in Rust.
 
-This repository consists of two projects:
+This repository consists of three projects:
 
 - Command Server (root)
 - Simple Command Sender (flea-client)
+- Flea Monitor (C#, WPF)
 
-The server is the main project that would be developed. The client is a test program to validate the protocol and the core functionality of the Flea Server. Unless otherwise stated, the Flea works in Linux and Windows.
+The server is the main project that would be developed. The client is a test program to validate the protocol and the core functionality of the Flea Server. Flea Monitor is GUI application for a convinient managing of the server. Unless otherwise stated, the Flea works in Linux and Windows.
+
+![Flea Monitor](https://github.com/rozensoftware/flea/blob/master/FleaMonitor.png)
 
 ## Purpose
 
