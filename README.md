@@ -8,9 +8,11 @@ This repository consists of three projects:
 - Simple Command Sender (flea-client)
 - Flea Monitor (C#, WPF, Windows only)
 
-The server is the main project that would be developed. The client is a test program to validate the protocol and the core functionality of the Flea Server. Flea Monitor is GUI application for a convinient managing of the server. Unless otherwise stated, the Flea works in Linux and Windows.
+The server is the main project that would be developed. The client is a test program to validate the protocol and the core functionality of the Flea Server. Flea Monitor is GUI application for a convenient managing of the server. Unless otherwise stated, the Flea works in Linux and Windows.
 
 ![Flea Monitor](https://github.com/rozensoftware/flea/blob/master/FleaMonitor.png)
+
+The Flea Monitor would be developed simultaneously with the Flea Server. It doesn't use the client for communication with the server. It is a standalone application for Windows only.
 
 ## Purpose
 
