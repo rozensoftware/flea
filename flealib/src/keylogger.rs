@@ -14,17 +14,13 @@ pub struct Keylogger
 
 pub fn remove_keylog_file(path: &String) -> String
 {
-    match std::fs::remove_file(path)
+    if let Err(x) = std::fs::remove_file(path) 
     {
-        Ok(_) =>
-        {
-            "Ok".to_string()
-        },
-
-        Err(x) =>
-        {
-            x.to_string()
-        }
+        x.to_string()
+    } 
+    else 
+    {
+        "Ok".to_string()
     }
 }
 

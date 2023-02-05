@@ -47,11 +47,7 @@ fn main()
     if std::path::Path::new(BACKUP_FILENAME).exists()
     {
         //Delete the backup file
-        match std::fs::remove_file(BACKUP_FILENAME)
-        {
-            Ok(_) => {},
-            Err(_) => {}
-        }
+        if let Ok(_) = std::fs::remove_file(BACKUP_FILENAME) {}
     }
 
     //Finds if there is update available
@@ -74,7 +70,7 @@ fn main()
     
     let mut opts = Options::new();
 
-    opts.optopt("s", "server", "Server ip/name to listen on", "Leave empty to listen on the host ip address");
+    opts.optopt("s", "server", "Server IP to listen on", "Leave empty to listen on the host ip address");
 
     let matches = match opts.parse(&args[1..]) 
     {

@@ -1,0 +1,49 @@
+﻿<Window x:Class="FleaMonitor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FleaMonitor" xmlns:model="clr-namespace:FleaMonitor.Model" d:DataContext="{d:DesignInstance Type=model:FleaInfo}"
+        mc:Ignorable="d"
+        Title="Flea Monitor" Height="450" Width="800" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Column="0">
+                <Menu Width="Auto" Height="20" DockPanel.Dock="Top">
+                    <MenuItem Header="File">
+                        <MenuItem Header="Exit" Click="MenuItem_Click"/>
+                    </MenuItem>
+                </Menu>
+            </DockPanel>
+
+            <ComboBox Name="commandComboBox" Grid.Row="1" Margin="0,5,0,5">
+            </ComboBox>
+
+            <Button Content="Send" Name="SendButton" Grid.Row="2" Width="100" HorizontalAlignment="Right" Click="SendButton_Click"></Button>
+            <Label Content="Directory:" Grid.Row="3" HorizontalAlignment="Left"></Label>
+            <ListView Name="dirListView" Grid.Row="4" Width="400" Margin="5,5,5,5" ScrollViewer.CanContentScroll="True" MouseDoubleClick="dirListView_MouseDoubleClick">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Txt}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+
+        <ScrollViewer Grid.Column="1">
+            <TextBlock Grid.Column="1" Name="infoTextBlock" TextWrapping="Wrap" Text="{Binding Txt, Mode=OneWay}" HorizontalAlignment="Left" Margin="10,10,10,10" FontSize="14"/>
+        </ScrollViewer>
+    </Grid>
+</Window>

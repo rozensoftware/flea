@@ -133,15 +133,25 @@ fn handle_client(mut stream: TcpStream, file_server: &Arc<Mutex<FileServer>>, ru
                             b = false;
                         }
                     },
-                    Err(x) => error!("{}", x)
+                    Err(x) => 
+                    {
+                        stream.shutdown(Shutdown::Both).unwrap();
+                        error!("{}", x);
+                        b = false;
+                    }
                 }     
             }
             
             b
         },
-        Err(_) => 
+        Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => 
         {
-            error!("An error occurred, terminating connection with {}", stream.peer_addr().unwrap());
+            thread::sleep(std::time::Duration::from_millis(100));
+            true
+        },
+        Err(e) => 
+        {
+            error!("An error occurred, terminating connection with {}\nError:{}", stream.peer_addr().unwrap(), e.to_string());
             stream.shutdown(Shutdown::Both).unwrap();
             false
         }
@@ -184,7 +194,7 @@ impl FleaServer
                     thread::spawn(move || {
                         handle_client(stream, &file_server, &r);
                     });
-                }
+                },
                 Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => 
                 {
                     if !running.load(Ordering::SeqCst)
@@ -193,7 +203,7 @@ impl FleaServer
                     }
                     thread::sleep(std::time::Duration::from_millis(100));
                     continue;
-                }
+                },
                 Err(e) =>
                 {
                     error!("Error: {}", e);
