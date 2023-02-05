@@ -16,15 +16,24 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <ComboBox Name="commandComboBox" Grid.Row="0">
+            <DockPanel Grid.Column="0">
+                <Menu Width="Auto" Height="20" DockPanel.Dock="Top">
+                    <MenuItem Header="File">
+                        <MenuItem Header="Exit" Click="MenuItem_Click"/>
+                    </MenuItem>
+                </Menu>
+            </DockPanel>
+
+            <ComboBox Name="commandComboBox" Grid.Row="1" Margin="0,5,0,5">
             </ComboBox>
 
-            <Button Content="Send" Name="SendButton" Grid.Row="1" Width="100" HorizontalAlignment="Right" Click="SendButton_Click"></Button>
-            <Label Content="Directory:" Grid.Row="2" HorizontalAlignment="Left"></Label>
-            <ListView Name="dirListView" Grid.Row="3" Width="400" Margin="5,5,5,5" ScrollViewer.CanContentScroll="True">
+            <Button Content="Send" Name="SendButton" Grid.Row="2" Width="100" HorizontalAlignment="Right" Click="SendButton_Click"></Button>
+            <Label Content="Directory:" Grid.Row="3" HorizontalAlignment="Left"></Label>
+            <ListView Name="dirListView" Grid.Row="4" Width="400" Margin="5,5,5,5" ScrollViewer.CanContentScroll="True" MouseDoubleClick="dirListView_MouseDoubleClick">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Txt}"/>
