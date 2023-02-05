@@ -6,7 +6,7 @@ This repository consists of three projects:
 
 - Command Server (root)
 - Simple Command Sender (flea-client)
-- Flea Monitor (C#, WPF)
+- Flea Monitor (C#, WPF, Windows only)
 
 The server is the main project that would be developed. The client is a test program to validate the protocol and the core functionality of the Flea Server. Flea Monitor is GUI application for a convinient managing of the server. Unless otherwise stated, the Flea works in Linux and Windows.
 
