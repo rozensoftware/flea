@@ -39,6 +39,7 @@ namespace FleaMonitor
             { CommandProcessor.DIR_COMMAND, false },
             { CommandProcessor.CD_COMMAND, true },
             { CommandProcessor.GETFILE_COMMAND, true },
+            { CommandProcessor.SET_FTP_COMMAND, true },
             { CommandProcessor.QUIT_COMMAND, false }
         };
 
@@ -55,6 +56,7 @@ namespace FleaMonitor
             { CommandProcessor.DIR_COMMAND, true },
             { CommandProcessor.CD_COMMAND, true },
             { CommandProcessor.GETFILE_COMMAND, false },
+            { CommandProcessor.SET_FTP_COMMAND, true },
             { CommandProcessor.QUIT_COMMAND, true }
         };
 
@@ -77,6 +79,7 @@ namespace FleaMonitor
                 CommandProcessor.VERSION_COMMAND,
                 CommandProcessor.BASH_COMMAND,
                 CommandProcessor.FTPSCREENSHOT_COMMAND,
+                CommandProcessor.SET_FTP_COMMAND,
                 CommandProcessor.SCREENSHOT_COMMAND,
                 CommandProcessor.LOG_COMMAND,
                 CommandProcessor.PROCLIST_COMMAND,
@@ -114,6 +117,10 @@ namespace FleaMonitor
             finally
             {
                 _commandInExecution = false;
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    textScroll.ScrollToEnd();
+                });
             }
 
             return Array.Empty<byte>();
@@ -121,24 +128,32 @@ namespace FleaMonitor
 
         private async Task ReadDirectory()
         {
-            var result = await SendCommand(CommandProcessor.DIR_COMMAND, string.Empty, null);
-            var str = Encoding.UTF8.GetString(result, 0, result.Length);
-            var lines = str.Split(new char[] { '\n' });
-            var lst = new List<FleaDirectory>();
+            try
+            {
+                var result = await SendCommand(CommandProcessor.DIR_COMMAND, string.Empty, null);
+                var str = Encoding.UTF8.GetString(result, 0, result.Length);
+                var lines = str.Split(new char[] { '\n' });
+                var lst = new List<FleaDirectory>
+                {
+                    new FleaDirectory
+                    {
+                        Txt = ".."
+                    }
+                };
+                lst.AddRange(lines.Select(s => new FleaDirectory
+                {
+                    Txt = s.Replace("\r", "")
+                }));
 
-            lst.Add(new FleaDirectory
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    dirListView.ItemsSource = lst;
+                });
+            }
+            catch (Exception ex)
             {
-                Txt = ".."
-            });
-            lst.AddRange(lines.Select(s => new FleaDirectory
-            {
-                Txt = s.Replace("\r", "")
-            }));
-
-            await Application.Current.Dispatcher.InvokeAsync(() =>
-            {
-                dirListView.ItemsSource = lst;
-            });
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private async void SendButton_Click(object sender, RoutedEventArgs e)
@@ -159,6 +174,18 @@ namespace FleaMonitor
 
             var cmd = commandComboBox.SelectedItem.ToString();
             var value = _commandWithParameterHash[cmd!] ? ReadParameter() : string.Empty;
+
+            if (value == string.Empty && _commandWithParameterHash[cmd!])
+            {
+                return;
+            }
+
+            var waitWindow = new WaitWindow
+            {
+                Owner = this
+            };
+            waitWindow.Show();
+
             var result = await SendCommand(cmd!, value, _fleaInfo);
 
             try
@@ -169,19 +196,24 @@ namespace FleaMonitor
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+
+            waitWindow.Close();
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e) => await Task.Run(ReadDirectory);
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {            
-            Application.Current.Shutdown();
+        {
+            Close();
         }
 
         private static string ReadParameter()
         {
             //Open ValueWindow
-            var valueWindow = new ValueWindow();
+            var valueWindow = new ValueWindow
+            {
+                Owner = Application.Current.MainWindow
+            };
             var result = valueWindow.ShowDialog();
             if (result.HasValue && result.Value)
             {
@@ -193,6 +225,18 @@ namespace FleaMonitor
 
         private async void dirListView_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            if (_commandInExecution)
+            {
+                MessageBox.Show("Command is executing now..");
+                return;
+            }
+
+            var waitWindow = new WaitWindow
+            {
+                Owner = this
+            };
+            waitWindow.Show();
+
             //Select item from listview
             var item = dirListView.SelectedItem as FleaDirectory;
             if (item is not null)
@@ -227,6 +271,8 @@ namespace FleaMonitor
                     await ReadDirectory();
                 }
             }
+
+            waitWindow.Close();
         }
     }
 }

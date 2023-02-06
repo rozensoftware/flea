@@ -42,8 +42,8 @@
             </ListView>
         </Grid>
 
-        <ScrollViewer Grid.Column="1">
-            <TextBlock Grid.Column="1" Name="infoTextBlock" TextWrapping="Wrap" Text="{Binding Txt, Mode=OneWay}" HorizontalAlignment="Left" Margin="10,10,10,10" FontSize="14"/>
+        <ScrollViewer Grid.Column="1" Name="textScroll">
+            <TextBox Grid.Column="1" Name="infoTextBlock" Background="Transparent" BorderThickness="0" Text="{Binding Txt, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="10,10,10,10" FontSize="14" />
         </ScrollViewer>
     </Grid>
 </Window>
