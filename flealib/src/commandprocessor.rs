@@ -24,6 +24,7 @@ const UPLOAD_COMMAND: &'static str = "upload";
 const DIR_COMMAND: &'static str = "dir";
 const GET_FILE_COMMAND: &'static str = "getfile";
 const CHANGE_DIRECTORY_COMMAND: &'static str = "cd";
+const FTP_PARAM_COMMAND: &'static str = "setftp";
 pub const STOP_COMMAND: &'static str = "quit";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
@@ -31,7 +32,7 @@ const UNKNOWN_COMMAND: &'static str = "Unknown command";
 const FTP_USER_NAME: &'static str = "enter_ftp_user_name";
 const FTP_PASS_NAME: &'static str = "enter_ftp_user_password";
 const FTP_ADDRESS_NAME: &'static str = "enter_ftp_server_ip_address";
-const FTP_FOLDER_NAME: &'static str = "enter_ftp_folder_name";
+const FTP_FOLDER_NAME: &'static str = "files";
 
 pub trait FleaCommand
 {
@@ -361,6 +362,31 @@ impl FleaCommand for CommandProcessor
                         x.to_string()
                     }
                 }    
+            },
+
+            FTP_PARAM_COMMAND =>
+            {
+                let ftp_params: Vec<&str> = value.split(";").collect();
+                if ftp_params.len() != 3
+                {
+                    return "Wrong number of parameters".to_string();
+                }
+
+                self.conf.ftp_address = ftp_params[0].to_string();
+                self.conf.ftp_user = ftp_params[1].to_string();
+                self.conf.ftp_pass = ftp_params[2].to_string();
+
+                match confy::store("flea_conf", None, &self.conf)
+                {
+                    Ok(_) =>
+                    {
+                        return "Ok".to_string();
+                    },
+                    Err(x) =>
+                    {
+                        return x.to_string();
+                    }
+                }
             },
 
             STOP_COMMAND =>

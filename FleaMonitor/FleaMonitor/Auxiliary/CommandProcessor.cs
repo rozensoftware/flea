@@ -1,8 +1,10 @@
-﻿using FleaMonitor.Model;
+﻿using FleaMonitor.Dialog;
+using FleaMonitor.Model;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Windows.Media.Imaging;
 
 namespace FleaMonitor.Auxiliary
 {
@@ -20,6 +22,7 @@ namespace FleaMonitor.Auxiliary
         public const string GETFILE_COMMAND = "getfile";
         public const string CD_COMMAND = "cd";
         public const string QUIT_COMMAND = "quit";
+        public const string SET_FTP_COMMAND = "setftp";
 
         private static readonly string SCREENSHOT_FILENAME = "screenshot.png";
 
@@ -61,6 +64,19 @@ namespace FleaMonitor.Auxiliary
             using FileStream fs = new(absolutePath, FileMode.Create);
             fs.Write(buffer, 0, buffer.Length);
         }
+
+        private static void ShowScreenshot(string fileName)
+        {
+            if (WorkingPath is null)
+            {
+                throw new FileNotFoundException("Couldn't get assembly path!");
+            }
+
+            var absolutePath = Path.Combine(WorkingPath, fileName);
+            var imageWindow = new ImageWindow();
+            imageWindow.imageViewer.Source = new BitmapImage(new Uri(absolutePath));
+            imageWindow.Show();
+        }
         
         /// <summary>
         /// Process returned data
@@ -81,6 +97,7 @@ namespace FleaMonitor.Auxiliary
                 case SCREENSHOT_COMMAND:
                     SaveByteArrayToFile(Convert.FromHexString(Encoding.UTF8.GetString(buffer)), SCREENSHOT_FILENAME);
                     fleaInfo.Txt = "Screenshot saved.\n";
+                    ShowScreenshot(SCREENSHOT_FILENAME);
                     break;
 
                 case GETFILE_COMMAND:
