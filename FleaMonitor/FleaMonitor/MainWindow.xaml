@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FleaMonitor" xmlns:model="clr-namespace:FleaMonitor.Model" d:DataContext="{d:DesignInstance Type=model:FleaInfo}"
         mc:Ignorable="d"
-        Title="Flea Monitor" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="Flea Monitor" Height="450" Width="800" Loaded="Window_Loaded" Closed="Window_Closed" Icon="/Resource/fleamonitor.ico">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -23,6 +23,8 @@
             <DockPanel Grid.Column="0">
                 <Menu Width="Auto" Height="20" DockPanel.Dock="Top">
                     <MenuItem Header="File">
+                        <MenuItem Header="Start FTP Server" Click="MenuItem_StartFTPServer" />
+                        <MenuItem Header="Stop FTP Server" Click="MenuItem_StopFTPServer" />
                         <MenuItem Header="Exit" Click="MenuItem_Click"/>
                     </MenuItem>
                 </Menu>

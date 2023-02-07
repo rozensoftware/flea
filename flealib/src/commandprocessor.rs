@@ -32,7 +32,7 @@ const UNKNOWN_COMMAND: &'static str = "Unknown command";
 const FTP_USER_NAME: &'static str = "enter_ftp_user_name";
 const FTP_PASS_NAME: &'static str = "enter_ftp_user_password";
 const FTP_ADDRESS_NAME: &'static str = "enter_ftp_server_ip_address";
-const FTP_FOLDER_NAME: &'static str = "files";
+const FTP_FOLDER_NAME: &'static str = "Files";
 
 pub trait FleaCommand
 {

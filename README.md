@@ -24,7 +24,7 @@ The Flea Monitor would be developed simultaneously with the Flea Server. It does
 - Taking screenshots of a host
 - Sending screenshot file to FTP server and/or to the client
 - Uploading a file from FTP to the host
-- Bash execution on a host
+- Bash execution on a host (doesn't work perfectly on Windows)
 - Key logger
 - OS process list
 - Killing a process
@@ -34,6 +34,12 @@ The Flea Monitor would be developed simultaneously with the Flea Server. It does
 The content of the key logger file is cleaned during the server startup.
 The capabilities of the program will be increased during the development of this software.
 To update the server a new version must be uploaded to the installation location. The new file name must be flea.upd. The server will be updated on the next run automatically.
+
+## FTP Server
+
+One of the Flea's features is the ability to send and receive files from an FTP server. The Flea Monitor provides its own FTP server, with which The Flea Server can cooperate.
+You can connect to it using user name: anonymous and any password. This is an anonymous authentication. The sharing folder is created in your TEMP folder with the name 'FleaFTP'. This folder will be probably deleted on cleaning temporary folders so have it in mind.
+You can start the FTP server by selecting option from File menu. There is an option for stopping it also. It works only when the Flea Monitor is running and it is shutting down on application close.
 
 ## Command format
 
