@@ -1,5 +1,6 @@
 ﻿using FleaMonitor.Auxiliary;
 using FleaMonitor.Dialog;
+using FleaMonitor.FTP;
 using FleaMonitor.Model;
 using FleaMonitor.Server;
 using System;
@@ -24,6 +25,7 @@ namespace FleaMonitor
         private static readonly string FLEA_MONITOR_VERSION = "Flea Monitor v0.1 ready.\n";
 
         private readonly FleaInfo _fleaInfo = new();
+        private readonly FleaFTPServer _fleaFTPServer = new();
         private bool _commandInExecution = false;
 
         private readonly Dictionary<string, bool> _commandWithParameterHash = new()
@@ -235,6 +237,7 @@ namespace FleaMonitor
             {
                 Owner = this
             };
+            
             waitWindow.Show();
 
             //Select item from listview
@@ -273,6 +276,36 @@ namespace FleaMonitor
             }
 
             waitWindow.Close();
+        }
+
+        private async void MenuItem_StartFTPServer(object sender, RoutedEventArgs e)
+        {
+            if (!_fleaFTPServer.IsStarted)
+            {
+                await _fleaFTPServer.Init();
+                MessageBox.Show("FTP Server started.");
+            }
+            else
+            {
+                MessageBox.Show("FTP Server is already started.");
+            }
+        }
+
+        private async void MenuItem_StopFTPServer(object sender, RoutedEventArgs e)
+        {
+            if (_fleaFTPServer.IsStarted)
+            {
+                await _fleaFTPServer.Stop();
+                MessageBox.Show("FTP Server stopped.");
+            }
+        }
+
+        private async void Window_Closed(object sender, EventArgs e)
+        {
+            if (_fleaFTPServer.IsStarted)
+            {
+                await _fleaFTPServer.Stop();
+            }
         }
     }
 }
