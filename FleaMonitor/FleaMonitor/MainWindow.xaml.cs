@@ -2,9 +2,12 @@
 using FleaMonitor.Dialog;
 using FleaMonitor.FTP;
 using FleaMonitor.Model;
+using FleaMonitor.Properties;
 using FleaMonitor.Server;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,12 +20,7 @@ namespace FleaMonitor
     /// </summary>
     public partial class MainWindow : Window
     {
-        /// <summary>
-        /// Enter Flea Server IP that is valid for you
-        /// </summary>
-        private static readonly string FLEA_SERVER_IP = "192.168.0.22";
-        private static readonly int FLEA_SERVER_PORT = 1972;
-        private static readonly string FLEA_MONITOR_VERSION = "Flea Monitor v0.1 ready.\n";
+        private static readonly string FLEA_MONITOR_VERSION = "Flea Monitor v0.1";
 
         private readonly FleaInfo _fleaInfo = new();
         private readonly FleaFTPServer _fleaFTPServer = new();
@@ -67,7 +65,7 @@ namespace FleaMonitor
             InitializeComponent();
             InitData();
 
-            _fleaInfo.Txt = FLEA_MONITOR_VERSION;
+            _fleaInfo.Txt = FLEA_MONITOR_VERSION + "\n";
             _fleaInfo.Txt = $"Saving path: {CommandProcessor.WorkingPath}\n\n";
         }
 
@@ -100,8 +98,8 @@ namespace FleaMonitor
 
             try
             {
-                return await FleaServer.SendCommand(CommandProcessor.CreateXML(cmd, param), 
-                    FLEA_SERVER_IP, FLEA_SERVER_PORT, 
+                return await FleaServer.SendCommand(CommandProcessor.CreateXML(cmd, param),
+                    Settings.Default.FleaIP, Convert.ToInt32(Settings.Default.FleaPort),
                     fleaInfo, _commandsWithAllOutputHash[cmd]);
             }
             catch (ArgumentNullException ane)
@@ -305,6 +303,51 @@ namespace FleaMonitor
             if (_fleaFTPServer.IsStarted)
             {
                 await _fleaFTPServer.Stop();
+            }
+        }
+
+        private void MenuItem_ShowInfo(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show($"{FLEA_MONITOR_VERSION}\n\nDeveloped by: Rozen Software\n\nhttps://github.com/rozensoftware/flea", "About", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void MenuItem_Settings(object sender, RoutedEventArgs e)
+        {
+            var settings = new SettingsWindow
+            {
+                Owner = this
+            };
+
+            settings.fleaIPTextBlox.Text = Settings.Default.FleaIP;
+            
+            var result = settings.ShowDialog();
+            if (result.HasValue && result.Value)
+            {                
+                //Save settings
+                Settings.Default.FleaIP = settings.fleaIPTextBlox.Text;
+                Settings.Default.Save();
+            }
+        }
+
+        private void MenuItem_ClearLog(object sender, RoutedEventArgs e)
+        {
+            _fleaInfo.ClearTxt();
+        }
+
+        private void MenuItem_SaveLog(object sender, RoutedEventArgs e)
+        {
+            //Save _fleaInfo.Txt to file
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
+                FilterIndex = 1,
+                RestoreDirectory = true
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.WriteAllText(saveFileDialog.FileName, _fleaInfo.Txt);
+                MessageBox.Show("Log saved.");
             }
         }
     }

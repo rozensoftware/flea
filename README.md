@@ -16,7 +16,7 @@ The Flea Monitor would be developed simultaneously with the Flea Server. It does
 
 ## Purpose
 
-- The Flea Server could be used as a spying, hacking program and/or as a remote peer for executing your special commands. The purpose can be changed according to your needs.
+The Flea Server could be used as a spying, hacking program and/or as a remote peer for executing your special commands. The purpose can be changed according to your needs.
 
 ## Features
 
@@ -41,6 +41,8 @@ One of the Flea's features is the ability to send and receive files from an FTP 
 You can connect to it using user name: anonymous and any password. This is an anonymous authentication. The sharing folder is created in your TEMP folder with the name 'FleaFTP'. This folder will be probably deleted on cleaning temporary folders so have it in mind.
 You can start the FTP server by selecting option from File menu. There is an option for stopping it also. It works only when the Flea Monitor is running and it is shutting down on application close.
 
+[FubarDev FTP Server](https://github.com/FubarDevelopment/FtpServer) project has been used here.
+
 ## Command format
 
 The Flea Server requires an XML formatted command like below:
@@ -51,19 +53,19 @@ The Flea Server requires an XML formatted command like below:
 
 Currently supported commands are:
 
-- version : returns current server version.
-- bash : a host bash command. The value property has to have a command line to execute in a host.
-- ftpscreenshot : takes a screenshots of the host and sends it to FTP server.
-- screenshot : takes a screenshot and sends it to the caller. The client supports this and saves data into screenshot.png file name.
-- log : reads current key logger file and sends its content to receiver.
-- proclist : displays currently running processes in the system.
-- kill : kills a process. 'value' parameter must include PID.
-- upload : uploads a file to the host from FTP server. The file name must be specified in the 'value' parameter of the XML command.
-- dir : Retreives content of current directory.
-- cd : Changes the current directory to the new one passed in the 'value' parameter (.. means level up).
-- getfile : Downloads a file passed in the 'value' parameter to the client. The file is read from the current path on the server.
-- setftp : Sets new FTP parameters: address, user name, password. Parameters must be provided in the 'value' in the following format, e.g. 127.0.0.1;user;my_pass .
-- quit : Quits the program. Must be run again.
+- **version** : returns current server version.
+- **bash** : a host bash command. The value property has to have a command line to execute in a host.
+- **ftpscreenshot** : takes a screenshots of the host and sends it to FTP server.
+- **screenshot** : takes a screenshot and sends it to the caller. The client supports this and saves data into screenshot.png file name.
+- **log** : reads current key logger file and sends its content to receiver.
+- **proclist** : displays currently running processes in the system.
+- **kill** : kills a process. 'value' parameter must include PID.
+- **upload** : uploads a file to the host from FTP server. The file name must be specified in the 'value' parameter of the XML command.
+- **dir** : Retreives content of current directory.
+- **cd** : Changes the current directory to the new one passed in the 'value' parameter (.. means level up).
+- **getfile** : Downloads a file passed in the 'value' parameter to the client. The file is read from the current path on the server.
+- **setftp** : Sets new FTP parameters: address, user name, password. Parameters must be provided in the 'value' in the following format, e.g. 127.0.0.1;user;my_pass .
+- **quit** : Quits the program. Must be run again.
 
 New commands will be added later.
 

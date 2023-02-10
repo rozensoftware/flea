@@ -15,7 +15,12 @@ namespace FleaMonitor.Model
                 OnPropertyChanged(nameof(Txt));
             }
         }
-
+        public void ClearTxt()
+        {
+            _txt = string.Empty;
+            OnPropertyChanged(nameof(Txt));
+        }
+        
         public event PropertyChangedEventHandler? PropertyChanged;
         
         private void OnPropertyChanged(string propertyName)

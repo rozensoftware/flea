@@ -23,9 +23,17 @@
             <DockPanel Grid.Column="0">
                 <Menu Width="Auto" Height="20" DockPanel.Dock="Top">
                     <MenuItem Header="File">
+                        <MenuItem Header="Settings" Click="MenuItem_Settings" />
                         <MenuItem Header="Start FTP Server" Click="MenuItem_StartFTPServer" />
                         <MenuItem Header="Stop FTP Server" Click="MenuItem_StopFTPServer" />
                         <MenuItem Header="Exit" Click="MenuItem_Click"/>
+                    </MenuItem>
+                    <MenuItem Header="Edit">
+                        <MenuItem Header="Clear log" Click="MenuItem_ClearLog"/>
+                        <MenuItem Header="Save log" Click="MenuItem_SaveLog"/>
+                    </MenuItem>
+                    <MenuItem Header="Help">
+                        <MenuItem Header="About" Click="MenuItem_ShowInfo"/>
                     </MenuItem>
                 </Menu>
             </DockPanel>

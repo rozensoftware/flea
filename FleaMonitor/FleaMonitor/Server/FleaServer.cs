@@ -24,7 +24,7 @@ namespace FleaMonitor.Server
         /// <param name="port">Flea Server port</param>
         /// <param name="fleaInfo">FleaInfo object that will be updated with the response from the server</param>
         /// <returns>Response from the server as byte array</returns>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception"></exception>    
         /// <exception cref="System.Net.Sockets.SocketException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
         public async static Task<byte[]> SendCommand(string cmd, string ip, int port, FleaInfo? fleaInfo, bool showAllResult = false)
@@ -39,6 +39,11 @@ namespace FleaMonitor.Server
             IPEndPoint remoteEP = new(ipAddress, port);
 
             System.Net.Sockets.Socket? sender = null;
+
+            if (fleaInfo is not null)
+            {
+                fleaInfo.Txt = $"Connecting to {remoteEP.ToString()} ..\n";
+            }
             
             try
             {
