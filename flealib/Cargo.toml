@@ -4,7 +4,7 @@ version = "0.1.1"
 edition = "2021"
 
 [dependencies]
-roxmltree = "0.17.0"
+roxmltree = "0.18.0"
 log = "0.4.17"
 env_logger = "0.10.0"
 execute = "0.2.11"
@@ -17,3 +17,4 @@ serde = { version = "1.0", features = ["derive"] }
 device_query = "1.1.1"
 process_list = "0.2.1"
 winapi = {version = "0.3.9", features = ["psapi", "shellapi"]}
+rusqlite = { version = "0.28.0", features = ["bundled"] }

