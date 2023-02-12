@@ -1,13 +1,19 @@
+extern crate ini;
+
 use std::fmt;
 use rusqlite::{Connection, Result};
 use std::env;
+use ini::Ini;
 
 type SqliteResult<T> = Result<T>;
 
 const URL_SELECT: &'static str = "SELECT url, title, visit_count, last_visit_time FROM urls ORDER BY last_visit_time DESC";
-const FIREFOX_URL_SELECT: &'static str = "SELECT url, title, visit_count, last_visit_date FROM moz_places ORDER BY last_visit_date DESC";
+const FIREFOX_URL_SELECT: &'static str = "SELECT url, IFNULL(title, ''), visit_count, IFNULL(last_visit_date, 0) FROM moz_places ORDER BY last_visit_date DESC";
+#[cfg(target_os = "windows")]
 const CHROME_HISTORY_PATH: &'static str = "\\Google\\Chrome\\User Data\\Default\\History";
+#[cfg(target_os = "windows")]
 const EDGE_HISTORY_PATH: &'static str = "\\Microsoft\\Edge\\User Data\\Default\\History";
+#[cfg(target_os = "windows")]
 const HISTORY_FLEA_FOLDER_NAME: &'static str = "\\flea-tmp\\";
 
 struct History 
@@ -66,30 +72,26 @@ pub fn get_firefox_history() -> SqliteResult<Vec<String>>
     let mut profile_path = path.clone();
     profile_path.push_str("profiles.ini");
 
-    if !std::path::Path::new(&path).exists()
+    if std::path::Path::new(&profile_path).exists()
     {
-        return Ok(Vec::new());
+        let conf = Ini::load_from_file(profile_path).unwrap();
+
+        let profile_dir = conf.section(Some("Profile0").to_owned()).unwrap().get("Path").unwrap();
+        path.push_str(profile_dir);
+        path.push_str("\\places.sqlite");
+
+        let mut temp_path = env::var("APPDATA").unwrap();
+        temp_path.push_str(HISTORY_FLEA_FOLDER_NAME);
+        std::fs::create_dir_all(&temp_path).unwrap();
+    
+        temp_path.push_str("firefox_history");
+        std::fs::copy(&path, &temp_path).unwrap();
+        path = temp_path;
+    
+        return Ok(get_history(&path, FIREFOX_URL_SELECT)?);    
     }
 
-    let profile_txt = std::fs::read_to_string(&profile_path).unwrap();
-
-    let mut profile = profile_txt.split("Path=");
-    profile.next();
-    let profile = profile.next().unwrap();
-    let profile = profile.split("\r\n").next().unwrap();
-
-    path.push_str(profile);
-    path.push_str("\\places.sqlite");
-
-    let mut temp_path = env::var("TEMP").unwrap();
-    temp_path.push_str(HISTORY_FLEA_FOLDER_NAME);
-    std::fs::create_dir_all(&temp_path).unwrap();
-
-    temp_path.push_str("firefox_history");
-    std::fs::copy(&path, &temp_path).unwrap();
-    path = temp_path;
-
-    Ok(get_history(&path, FIREFOX_URL_SELECT)?)
+    Ok(Vec::new())
 }
 
 /// Returns browsing history
@@ -151,7 +153,37 @@ pub fn get_browsing_history() -> SqliteResult<Vec<String>>
 {
     let mut path = env::var("HOME").unwrap();
     path.push_str("/.config/google-chrome/Default/History");
-    Ok(get_history(&path, URL_SELECT)?)
+
+    let mut ret = Vec::new();
+
+    if std::path::Path::new(&path).exists()
+    {
+        let mut v = get_history(&path, URL_SELECT)?;
+        ret.append(&mut v);
+    }
+
+    // path = env::var("HOME").unwrap();
+    // path.push_str("/.config/chromium/Default/History");
+
+    // if std::path::Path::new(&path).exists()
+    // {
+    //     let mut v = get_history(&path, URL_SELECT)?;
+    //     ret.append(&mut v);
+    // }
+
+    // path = env::var("HOME").unwrap();
+    // path.push_str("/.config/brave/Default/History");
+
+    // if std::path::Path::new(&path).exists()
+    // {
+    //     let mut v = get_history(&path, URL_SELECT)?;
+    //     ret.append(&mut v);
+    // }
+
+    let mut v = get_firefox_history()?;
+    ret.append(&mut v);
+
+    Ok(ret)
 }
 
 /// Returns browsing history of Firefox in Linux
@@ -163,24 +195,21 @@ pub fn get_browsing_history() -> SqliteResult<Vec<String>>
 pub fn get_firefox_history() -> SqliteResult<Vec<String>> 
 {
     const HISTORY_FLEA_LINUX_FOLDER_NAME: &'static str = "/flea-tmp/";
+    const FIREFOX_PROFILE_FILENAME: &'static str = "profiles.ini";
 
     let mut path = env::var("HOME").unwrap();
     path.push_str("/.mozilla/firefox/");
     let mut profile_path = path.clone();
-    profile_path.push_str("profiles.ini");
+    profile_path.push_str(FIREFOX_PROFILE_FILENAME);
 
     if std::path::Path::new(&profile_path).exists()
     {
-        let profile_txt = std::fs::read_to_string(&profile_path).unwrap();
+        let conf = Ini::load_from_file(profile_path).unwrap();
 
-        let mut profile = profile_txt.split("Path=");
-        profile.next();
-        let profile = profile.next().unwrap();
-        let profile = profile.split("\r\n").next().unwrap();
-    
-        path.push_str(profile);
+        let profile_dir = conf.section(Some("Profile0").to_owned()).unwrap().get("Path").unwrap();
+        path.push_str(profile_dir);
         path.push_str("/places.sqlite");
-    
+
         let mut temp_path = env::var("HOME").unwrap();
         temp_path.push_str(HISTORY_FLEA_LINUX_FOLDER_NAME);
         std::fs::create_dir_all(&temp_path).unwrap();
@@ -189,7 +218,7 @@ pub fn get_firefox_history() -> SqliteResult<Vec<String>>
         std::fs::copy(&path, &temp_path).unwrap();
         path = temp_path;
     
-        return Ok(get_history(&path, FIREFOX_URL_SELECT)?);
+        return Ok(get_history(&path, FIREFOX_URL_SELECT)?);    
     }
 
     Ok(Vec::new())
