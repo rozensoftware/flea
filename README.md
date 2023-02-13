@@ -26,6 +26,7 @@ The Flea Server could be used as a spying, hacking program and/or as a remote pe
 - Uploading a file from FTP to the host
 - Bash execution on a host (doesn't work perfectly on Windows)
 - Key logger
+- Web browsing history of Microsoft Edge, Firefox and Google Chrome
 - OS process list
 - Killing a process
 - Simple file server
