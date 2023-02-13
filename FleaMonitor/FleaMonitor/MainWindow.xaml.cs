@@ -40,6 +40,7 @@ namespace FleaMonitor
             { CommandProcessor.CD_COMMAND, true },
             { CommandProcessor.GETFILE_COMMAND, true },
             { CommandProcessor.SET_FTP_COMMAND, true },
+            { CommandProcessor.BROWSING_HISTORY_COMMAND, false },
             { CommandProcessor.QUIT_COMMAND, false }
         };
 
@@ -57,6 +58,7 @@ namespace FleaMonitor
             { CommandProcessor.CD_COMMAND, true },
             { CommandProcessor.GETFILE_COMMAND, false },
             { CommandProcessor.SET_FTP_COMMAND, true },
+            { CommandProcessor.BROWSING_HISTORY_COMMAND, false },
             { CommandProcessor.QUIT_COMMAND, true }
         };
 
@@ -88,6 +90,7 @@ namespace FleaMonitor
                 CommandProcessor.DIR_COMMAND,
                 CommandProcessor.CD_COMMAND,
                 CommandProcessor.GETFILE_COMMAND,
+                CommandProcessor.BROWSING_HISTORY_COMMAND,
                 CommandProcessor.QUIT_COMMAND
             };
         }

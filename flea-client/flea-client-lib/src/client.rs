@@ -1,3 +1,4 @@
+use std::thread;
 use std::io::{Read, Write, self};
 use std::net::{Shutdown, TcpStream};
 use std::str::from_utf8;
@@ -21,6 +22,8 @@ impl FleaClient
         {
             Ok(mut stream) => 
             {
+                stream.set_nonblocking(true).expect("Failed to initiate non-blocking");
+                
                 debug!("Connected, sent: {}", xml);
                 debug!("Waiting for response..");
 
@@ -28,6 +31,7 @@ impl FleaClient
     
                 let mut ret_value = true;
                 let mut data = [0 as u8; MAX_INPUT_BUFFER];
+                let mut data_buffer = Vec::<u8>::new();
                 let mut read_string: String = "".to_string();
                 let mut bytes_read = 0;
                 const DATA_10MB: usize = 10 * 1024 * 1024;
@@ -43,26 +47,19 @@ impl FleaClient
                                 break;
                             }
 
-                            match from_utf8(&data[..data_len])
+                            data_buffer.extend_from_slice(&data[..data_len]);
+                            bytes_read += data_len;
+                            if bytes_read >= DATA_10MB
                             {
-                                Ok(str) =>
-                                {
-                                    bytes_read += data_len;
-                                    if bytes_read >= DATA_10MB
-                                    {
-                                        print!(".");
-                                        bytes_read = 0;
-                                    }
-                                    read_string.push_str(str);
-                                },
-                                Err(e) =>
-                                {
-                                    error!("Couldn't read data (bad data, not a string): {:?}", e);
-                                    ret_value = false;
-                                    break;
-                                }
+                                print!(".");
+                                bytes_read = 0;
                             }
                         },
+                        Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => 
+                        {
+                            thread::sleep(std::time::Duration::from_millis(100));
+                            continue;
+                        }
                         Err(e) => 
                         {
                             error!("Couldn't read data: {:?}", e);
@@ -73,6 +70,19 @@ impl FleaClient
                 }
                 
                 stream.shutdown(Shutdown::Both).unwrap();
+
+                match from_utf8(&data_buffer)
+                {
+                    Ok(str) =>
+                    {
+                        read_string.push_str(str);
+                    },
+                    Err(e) =>
+                    {
+                        error!("Couldn't read data (bad data, not a string): {:?}", e);
+                        ret_value = false;
+                    }
+                }
 
                 if read_string.len() == 0
                 {
