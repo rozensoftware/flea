@@ -198,7 +198,20 @@ pub fn get_firefox_history() -> SqliteResult<Vec<String>>
     const FIREFOX_PROFILE_FILENAME: &'static str = "profiles.ini";
 
     let mut path = env::var("HOME").unwrap();
+    let mut buf_path = path.clone();
+    
     path.push_str("/.mozilla/firefox/");
+
+    path = if std::path::Path::new(&path).exists()
+    {
+        path
+    }
+    else
+    {
+        buf_path.push_str("/snap/firefox/common/.mozilla/firefox/");
+        buf_path
+    };
+
     let mut profile_path = path.clone();
     profile_path.push_str(FIREFOX_PROFILE_FILENAME);
 
