@@ -86,7 +86,7 @@ Get current version of the Flea Server:
 Take screenshot and send it to the FTP server:
 
 ```bash
-./flea-client -a 127.0.0.1 -c pic
+./flea-client -a 127.0.0.1 -c ftpscreenshot
 ```
 
 Take screenshot and send it to the caller. It'll be saved as screenshot.png file:
