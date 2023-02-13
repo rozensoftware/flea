@@ -37,6 +37,12 @@ fn replay(mut stream: &TcpStream, command_name: String, value_name: String, file
     let mut command_processor: CommandProcessor = FleaCommand::new();
     let mut b = true;
     let cmd = command_processor.process(&command_name.as_str(), &value_name.as_str(), file_server);
+    
+    if cmd.len() == 0
+    {
+        return (true, false);
+    }
+
     if cmd == STOP_COMMAND
     {
         return (true, true);

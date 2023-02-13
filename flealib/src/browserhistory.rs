@@ -52,48 +52,6 @@ fn get_history(history_path: &str, sql_query: &str) -> SqliteResult<Vec<String>>
     Ok(history)
 }
 
-/// Returns browsing history of Firefox
-/// # Examples
-/// ```
-/// let history = get_firefox_history();
-/// ```
-/// # Platform-specific behavior
-/// This function is only available on Windows and Linux
-/// # Errors
-/// This function returns an empty vector if the history file is not found
-/// # Safety
-/// This function is unsafe because it uses unsafe code
-/// This function is only available on Windows and Linux
-#[cfg(target_os = "windows")]
-pub fn get_firefox_history() -> SqliteResult<Vec<String>> 
-{
-    let mut path = env::var("APPDATA").unwrap();
-    path.push_str("\\Mozilla\\Firefox\\Profiles\\");
-    let mut profile_path = path.clone();
-    profile_path.push_str("profiles.ini");
-
-    if std::path::Path::new(&profile_path).exists()
-    {
-        let conf = Ini::load_from_file(profile_path).unwrap();
-
-        let profile_dir = conf.section(Some("Profile0").to_owned()).unwrap().get("Path").unwrap();
-        path.push_str(profile_dir);
-        path.push_str("\\places.sqlite");
-
-        let mut temp_path = env::var("APPDATA").unwrap();
-        temp_path.push_str(HISTORY_FLEA_FOLDER_NAME);
-        std::fs::create_dir_all(&temp_path).unwrap();
-    
-        temp_path.push_str("firefox_history");
-        std::fs::copy(&path, &temp_path).unwrap();
-        path = temp_path;
-    
-        return Ok(get_history(&path, FIREFOX_URL_SELECT)?);    
-    }
-
-    Ok(Vec::new())
-}
-
 /// Returns browsing history
 /// # Examples
 /// ```
@@ -184,6 +142,48 @@ pub fn get_browsing_history() -> SqliteResult<Vec<String>>
     ret.append(&mut v);
 
     Ok(ret)
+}
+
+/// Returns browsing history of Firefox
+/// # Examples
+/// ```
+/// let history = get_firefox_history();
+/// ```
+/// # Platform-specific behavior
+/// This function is only available on Windows and Linux
+/// # Errors
+/// This function returns an empty vector if the history file is not found
+/// # Safety
+/// This function is unsafe because it uses unsafe code
+/// This function is only available on Windows and Linux
+#[cfg(target_os = "windows")]
+pub fn get_firefox_history() -> SqliteResult<Vec<String>> 
+{
+    let mut path = env::var("APPDATA").unwrap();
+    path.push_str("\\Mozilla\\Firefox\\Profiles\\");
+    let mut profile_path = path.clone();
+    profile_path.push_str("profiles.ini");
+
+    if std::path::Path::new(&profile_path).exists()
+    {
+        let conf = Ini::load_from_file(profile_path).unwrap();
+
+        let profile_dir = conf.section(Some("Profile0").to_owned()).unwrap().get("Path").unwrap();
+        path.push_str(profile_dir);
+        path.push_str("\\places.sqlite");
+
+        let mut temp_path = env::var("APPDATA").unwrap();
+        temp_path.push_str(HISTORY_FLEA_FOLDER_NAME);
+        std::fs::create_dir_all(&temp_path).unwrap();
+    
+        temp_path.push_str("firefox_history");
+        std::fs::copy(&path, &temp_path).unwrap();
+        path = temp_path;
+    
+        return Ok(get_history(&path, FIREFOX_URL_SELECT)?);    
+    }
+
+    Ok(Vec::new())
 }
 
 /// Returns browsing history of Firefox in Linux
