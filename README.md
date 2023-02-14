@@ -1,5 +1,7 @@
 # Flea
 
+Version: 0.1.1
+
 A simple command server written in Rust.
 
 This repository consists of three projects:
