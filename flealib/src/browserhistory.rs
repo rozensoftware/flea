@@ -29,7 +29,7 @@ impl fmt::Display for History
 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result 
     {
-        write!(f, "URL:{};TITLE:{};VISIT COUNT:{}\r\n", &self.url, &self.title, &self.visit_count)
+        write!(f, "URL:{};TITLE:{};VISIT COUNT:{};", &self.url, &self.title, &self.visit_count)
     }
 }
 
