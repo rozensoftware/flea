@@ -2,6 +2,7 @@ use std::io::Write;
 use std::{sync::mpsc, fs};
 use std::thread;
 
+#[cfg(target_os = "linux")]
 use rscam::{Camera, Config};
 
 pub const FRAME_FILE_NAME: &str = "frame-";
