@@ -1,6 +1,6 @@
 # Flea
 
-Version: 0.1.1
+Version: 0.2.0
 
 A simple command server written in Rust.
 
@@ -33,6 +33,7 @@ The Flea Server could be used as a spying, hacking program and/or as a remote pe
 - Killing a process
 - Simple file server
 - Auto update
+- Camera capture
 
 The content of the key logger file is cleaned during the server startup.
 The capabilities of the program will be increased during the development of this software.
@@ -56,7 +57,7 @@ The Flea Server requires an XML formatted command like below:
 
 Currently supported commands are:
 
-- **version** : returns current server version.
+- **version** : returns current protocol version.
 - **bash** : a host bash command. The value property has to have a command line to execute in a host.
 - **ftpscreenshot** : takes a screenshots of the host and sends it to FTP server.
 - **screenshot** : takes a screenshot and sends it to the caller. The client supports this and saves data into screenshot.png file name.
@@ -69,7 +70,7 @@ Currently supported commands are:
 - **getfile** : Downloads a file passed in the 'value' parameter to the client. The file is read from the current path on the server.
 - **setftp** : Sets new FTP parameters: address, user name, password. Parameters must be provided in the 'value' in the following format, e.g. 127.0.0.1;user;my_pass .
 - **history** : Reads web browsers history of a user which flea process is running for: Edge (Windows only), Firefox and Google Chrome. Data returned is: URL, Title and Visits Number.
-- **camera** : Captures one frame from camera. The 'value' parameter must have a filename e.g.: frame.jpg. The server with Flea must have a camera installed.
+- **camera** : Captures one frame (or two seconds long movie on Windows) from camera. The 'value' parameter must have a filename e.g.: frame.jpg (or movie.wmv on Windows). The server with Flea must have a camera installed.
 - **quit** : Quits the program. Must be run again.
 
 New commands will be added later.
@@ -126,6 +127,21 @@ build-essential, pkg-config, libx11-dev, libxcb-randr0-dev, libxcb-shm0-dev, lib
 
 On Windows you only gonna need Rust (with C++ compiler alongside).
 
+If for some reason a camera capture is not needed you can exclude it from build by removing *features = ["camera"]* from cargo.toml:
+
+```toml
+flealib = {path = "flealib", features = ["camera"], version = "0.2.0"}
+```
+
+So, without camera the line should look like:
+
+```toml
+flealib = {path = "flealib", version = "0.2.0"}
+```
+
+On Windows CameraLib.dll file must be copied to the directory in which flea.exe is installed (if standard build with camera is enabled).
+CameraLib.dll can be found in lib directory. This is a 64bit application tested in Windows 11 only. Should work on Widnows 10 too. It uses Microsoft Media Foundation to access the camera.
+
 ## Installation
 
 The Flea Server reads the host name of the computer and opens a port there. The IP address can be provided by using -s parameter. If you intend to use FTP server, you will need to complete the connection data. You can do this directly in the code:
@@ -140,6 +156,7 @@ const FTP_FOLDER_NAME: &'static str = "enter_ftp_folder_name";
 ```
 
 or in the created configuration file (recommended). On Linux you will find the configuration file in a directory: /home/user_name/.config/flea_conf/ .
+Those parameters can be also changed remotely by sending *setftp* command.
 
 Build The Flea server:
 
@@ -173,6 +190,11 @@ You can specify IP address on which the server will be listen on:
 
 The port number is sewn into the program code. It can be changed there or a new functionality could be written to specify it as a command parameter.
 If you ran the server in the console you can stop it by CTRL-C.
+
+## Camera capture
+
+The Flea Server has the ability to record a short vidoes. On Linux a single frame is taken but on Windows two seconds long video is recorded.
+Currently the user can see a glowing light next to the camera when it is on. This is something to work on because we won't a user to know he was being watched.
 
 ## License
 

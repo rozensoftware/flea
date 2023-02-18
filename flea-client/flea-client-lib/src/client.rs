@@ -114,7 +114,14 @@ impl FleaClient
                     }
                     else if cmd.eq(SPECIAL_COMMAND_GET_FILE) || cmd.eq(SPECIAL_COMMAND_GET_CAMERA_FRAME)
                     {
-                        if let Ok(bytes) = &self.digits_to_bytes(&read_string)
+                        const MIN_DATA_LEN: usize = 255;
+
+                        if read_string.len() < MIN_DATA_LEN
+                        {
+                            error!("Invalid data received from the Flea Server, Probably an error message: {}", read_string);
+                            ret_value = false;
+                        }
+                        else if let Ok(bytes) = &self.digits_to_bytes(&read_string)
                         {
                             if let Err(e) = self.bytes_to_file(value, &bytes)
                             {

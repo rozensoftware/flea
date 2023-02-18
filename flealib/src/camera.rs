@@ -1,9 +1,16 @@
+#[cfg(target_os = "linux")]
 use std::io::Write;
+#[cfg(target_os = "linux")]
 use std::{sync::mpsc, fs};
+#[cfg(target_os = "linux")]
 use std::thread;
-
 #[cfg(target_os = "linux")]
 use rscam::{Camera, Config};
+
+#[cfg(target_os = "windows")]
+use std::os::raw::c_char;
+#[cfg(target_os = "windows")]
+use std::ffi::CStr;
 
 pub const FRAME_FILE_NAME: &str = "frame-";
 
@@ -50,7 +57,27 @@ pub fn save_camera_frames(number_of_frames: u32, path: &str) -> Result<(), Strin
 }
 
 #[cfg(target_os = "windows")]
-pub fn save_camera_frames(number_of_frames: u32, path: &str) -> Result<(), String>
+#[link(name = "CameraLib")]
+extern "C" 
 {
+    fn getWMV(captureTime: u32, filePath: *const c_char) -> bool;
+}
+
+#[cfg(target_os = "windows")]
+pub fn save_camera_frames(_number_of_frames: u32, path: &str) -> Result<(), String>
+{
+    const CAPTURE_TIME: u32 = 2000;
+
+    let mut p = format!("{}\\{}0.wmv", path, FRAME_FILE_NAME);
+    unsafe {
+        let arr = p.as_mut_vec();
+        arr.push(0);    
+        let file_path = CStr::from_bytes_with_nul_unchecked(arr).as_ptr();
+        if getWMV(CAPTURE_TIME, file_path) == false
+        {
+            return Err("Couldn't get WMV file".to_string());
+        }
+    }
+
     Ok(())
 }

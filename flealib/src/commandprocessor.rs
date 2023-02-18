@@ -200,7 +200,11 @@ impl CommandProcessor
             Ok(_) =>
             {
                 debug!("Frame captured");
+                #[cfg(target_os = "linux")]
                 let frame_file = tmp_path.join(format!("{}0.jpg", camera::FRAME_FILE_NAME));
+
+                #[cfg(target_os = "windows")]
+                let frame_file = tmp_path.join(format!("{}0.wmv", camera::FRAME_FILE_NAME));
                 return match file_server.lock().unwrap().read_binary_file_by_path(&frame_file)
                 {
                     Ok(x) =>
