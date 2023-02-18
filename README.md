@@ -156,7 +156,7 @@ const FTP_FOLDER_NAME: &'static str = "enter_ftp_folder_name";
 ```
 
 or in the created configuration file (recommended). On Linux you will find the configuration file in a directory: /home/user_name/.config/flea_conf/ .
-Those parameters can be also changed remotely by sending *setftp* command.
+These parameters can be also changed remotely by sending *setftp* command.
 
 Build The Flea server:
 
