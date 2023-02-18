@@ -1,6 +1,6 @@
 [package]
 name = "flealib"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
@@ -19,3 +19,8 @@ process_list = "0.2.1"
 winapi = {version = "0.3.9", features = ["psapi", "shellapi"]}
 rusqlite = { version = "0.28.0", features = ["bundled"] }
 rust-ini = "0.18"
+[target.'cfg(unix)'.dependencies]
+rscam = "0.5.5"
+
+[features]
+camera = []
