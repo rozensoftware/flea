@@ -28,10 +28,13 @@ const GET_FILE_COMMAND: &'static str = "getfile";
 const CHANGE_DIRECTORY_COMMAND: &'static str = "cd";
 const FTP_PARAM_COMMAND: &'static str = "setftp";
 const BROWSING_HISTORY_COMMAND: &'static str = "history";
-#[cfg(feature = "camera")]
-const GET_CAMERA_FRAME_COMMAND: &'static str = "camera";
+const GET_SYSTEM_INFO_COMMAND: &'static str = "sysinfo";
 pub const STOP_COMMAND: &'static str = "quit";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
+
+#[cfg(feature = "camera")]
+const GET_CAMERA_FRAME_COMMAND: &'static str = "camera";
+
 
 //Enter your data for FTP Server connection
 const FTP_USER_NAME: &'static str = "enter_ftp_user_name";
@@ -480,6 +483,11 @@ impl FleaCommand for CommandProcessor
                 return self.get_camera_frame(file_server);
             },
 
+            GET_SYSTEM_INFO_COMMAND =>
+            {
+                return self.os.get_system_info();
+            },
+            
             STOP_COMMAND =>
             {
                 return STOP_COMMAND.to_string();
