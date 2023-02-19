@@ -1,6 +1,6 @@
 # Flea
 
-Version: 0.2.0
+Version: 0.2.1
 
 A simple command server written in Rust.
 
@@ -34,6 +34,7 @@ The Flea Server could be used as a spying, hacking program and/or as a remote pe
 - Simple file server
 - Auto update
 - Camera capture
+- OS info
 
 The content of the key logger file is cleaned during the server startup.
 The capabilities of the program will be increased during the development of this software.
@@ -71,6 +72,7 @@ Currently supported commands are:
 - **setftp** : Sets new FTP parameters: address, user name, password. Parameters must be provided in the 'value' in the following format, e.g. 127.0.0.1;user;my_pass .
 - **history** : Reads web browsers history of a user which flea process is running for: Edge (Windows only), Firefox and Google Chrome. Data returned is: URL, Title and Visits Number.
 - **camera** : Captures one frame (or two seconds long movie on Windows) from camera. The 'value' parameter must have a filename e.g.: frame.jpg (or movie.wmv on Windows). The server with Flea must have a camera installed.
+- **sysinfo** : Gets system info
 - **quit** : Quits the program. Must be run again.
 
 New commands will be added later.
@@ -99,7 +101,7 @@ Take screenshot and send it to the caller. It'll be saved as screenshot.png file
 ./flea-client -a 127.0.0.1 -c screenshot
 ```
 
-Upload test.txt file from FTP server to the host where Flea Server is running on:
+Upload test.txt file from FTP server to the host where Flea Server is running on (test.txt file must exist on FTP server already):
 
 ```bash
 ./flea-client -a MY_SERVER_NAME -c upload -v test.txt
@@ -130,13 +132,13 @@ On Windows you only gonna need Rust (with C++ compiler alongside).
 If for some reason a camera capture is not needed you can exclude it from build by removing *features = ["camera"]* from cargo.toml:
 
 ```toml
-flealib = {path = "flealib", features = ["camera"], version = "0.2.0"}
+flealib = {path = "flealib", features = ["camera"], version = "0.2"}
 ```
 
 So, without camera the line should look like:
 
 ```toml
-flealib = {path = "flealib", version = "0.2.0"}
+flealib = {path = "flealib", version = "0.2"}
 ```
 
 On Windows CameraLib.dll file must be copied to the directory in which flea.exe is installed (if standard build with camera is enabled).
@@ -190,6 +192,11 @@ You can specify IP address on which the server will be listen on:
 
 The port number is sewn into the program code. It can be changed there or a new functionality could be written to specify it as a command parameter.
 If you ran the server in the console you can stop it by CTRL-C.
+
+If you need a fast installation on a computer try using *installflea.ps1* script located in install folder. All you wanna do is to copy flea.exe, CameraLib.dll and installflea.ps1 into USB pendrive, connect it to computer you want to install the software on and run as administrator the script. The Flea will be installed automatically. New autorun task and new firewall rule will be created for you.
+You can modify the script further to achive the functonality you want.
+This script will work only on Windows and in PowerShell environment.
+Unfortunately you probably will see a message from Windows firewall to agree for allowing a network access to Flea. You should confirm.
 
 ## Camera capture
 

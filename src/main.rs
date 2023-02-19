@@ -40,8 +40,15 @@ fn main()
 
     info!("Start");
 
-    //Gets program current directory
-    let dir = env::current_dir().expect("Couldn't get current directory!");
+    let args: Vec<String> = env::args().collect();
+    let program_dir = args[0].clone();
+
+    //get current system directory separator
+    let separator = std::path::MAIN_SEPARATOR.to_string();
+
+    //remove the file name from the path
+    let program_dir = program_dir.replace(&args[0].split(&separator).last().unwrap(), "");    
+    env::set_current_dir(&program_dir).unwrap();
 
     //Check if backup file exists
     if std::path::Path::new(BACKUP_FILENAME).exists()
@@ -51,7 +58,7 @@ fn main()
     }
 
     //Finds if there is update available
-    updater::find_update(dir.to_str().unwrap(), UPDATE_FILENAME).map(|x| 
+    updater::find_update(&program_dir, UPDATE_FILENAME).map(|x| 
     {
         info!("Found update: {}", x);
          //Rename current file to the backup name
@@ -65,7 +72,6 @@ fn main()
     });
 
     let my_local_ip = local_ip().unwrap();
-    let args: Vec<String> = env::args().collect();
     let program = args[0].clone();
     
     let mut opts = Options::new();
