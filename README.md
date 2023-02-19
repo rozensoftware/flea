@@ -196,7 +196,7 @@ If you ran the server in the console you can stop it by CTRL-C.
 If you need a fast installation on a computer try using *installflea.ps1* script located in install folder. All you wanna do is to copy flea.exe, CameraLib.dll and installflea.ps1 into USB pendrive, connect it to computer you want to install the software on and run as administrator the script. The Flea will be installed automatically. New autorun task and new firewall rule will be created for you.
 You can modify the script further to achive the functonality you want.
 This script will work only on Windows and in PowerShell environment.
-Unfortunately you probably will see a message from Windows firewall to agree for allowing a network access to Flea. You should confirm.
+Unfortunately you will probably see a message from Windows firewall about permission to access the network . You should confirm.
 
 ## Camera capture
 
