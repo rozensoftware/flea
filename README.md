@@ -10,7 +10,7 @@ This repository consists of three projects:
 - Simple Command Sender (flea-client)
 - Flea Monitor (C#, WPF, Windows only)
 
-The server is the main project that would be developed. The client is a test program to validate the protocol and the core functionality of the Flea Server. Flea Monitor is GUI application for a convenient managing of the server. Unless otherwise stated, the Flea works in Linux and Windows.
+The server is the main project that would be developed. The client is a test program to validate the protocol and the core functionality of the Flea Server. Flea Monitor is a GUI application for a convenient managing of the server. Unless otherwise stated, the Flea works in Linux and Windows.
 
 ![Flea Monitor](https://github.com/rozensoftware/flea/blob/master/FleaMonitor.png)
 
@@ -127,7 +127,7 @@ Except having installed Rust on Linux you also need to install the following pac
 build-essential, pkg-config, libx11-dev, libxcb-randr0-dev, libxcb-shm0-dev, libv4l-dev
 ```
 
-On Windows you only gonna need Rust (with C++ compiler alongside).
+On Windows you only gonna need is Rust (with C++ compiler alongside).
 
 If for some reason a camera capture is not needed you can exclude it from build by removing *features = ["camera"]* from cargo.toml:
 
@@ -196,7 +196,7 @@ If you ran the server in the console you can stop it by CTRL-C.
 If you need a fast installation on a computer try using *installflea.ps1* script located in install folder. All you wanna do is to copy flea.exe, CameraLib.dll and installflea.ps1 into USB pendrive, connect it to computer you want to install the software on and run as administrator the script. The Flea will be installed automatically. New autorun task and new firewall rule will be created for you.
 You can modify the script further to achive the functonality you want.
 This script will work only on Windows and in PowerShell environment.
-Unfortunately you will probably see a message from Windows firewall about permission to access the network . You should confirm.
+Unfortunately you will probably see a message about permission to access the network. You should confirm.
 
 ## Camera capture
 
