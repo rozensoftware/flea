@@ -179,6 +179,7 @@ impl CommandProcessor
         self.conf.ftp_address = ftp_params[0].to_string();
         self.conf.ftp_user = ftp_params[1].to_string();
         self.conf.ftp_pass = ftp_params[2].to_string();
+        self.conf.ftp_folder = FTP_FOLDER_NAME.to_string();
 
         match confy::store("flea_conf", None, &self.conf)
         {
