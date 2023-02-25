@@ -18,16 +18,25 @@ function CopyFiles
 
 function RegisterFleaAutoRun
 {
-    $Trigger= New-ScheduledTaskTrigger -AtLogon # Specify the trigger settings
-    $User= $env:USERNAME # Specify the account to run the script
-    $Action= New-ScheduledTaskAction -Execute $Flea # Specify what program to run and with its parameters
-    Register-ScheduledTask -TaskName "FleaRule" -Trigger $Trigger -User $User -Action $Action -RunLevel Highest -Force # Specify the name of the task
+    # Name of the task
+    $TaskName = "FleaRule"
+
+    $UserName= $env:USERNAME
+
+    # Set task action
+    $TaskAction = New-ScheduledTaskAction -Execute $Flea
+
+    # Create a trigger that will fire the task at log on
+    $TaskTrigger = New-ScheduledTaskTrigger -AtLogOn -User $UserName
+
+    # Register the task
+    Register-ScheduledTask -Action $TaskAction -Trigger $TaskTrigger -User $UserName -RunLevel Highest -TaskName $TaskName -Force
     "`nThe FleaRule autorun task registered."
 
-#Unregister-ScheduledTask -TaskName "TheEyeRule" -Confirm:$false
+    #Unregister-ScheduledTask -TaskName "TheEyeRule" -Confirm:$false
 }
 
-function InstallFlea
+function RunFlea
 {
     & $Flea
     "`nThe Flea Server installed."
@@ -55,6 +64,6 @@ If ((New-Object Security.Principal.WindowsPrincipal $IsAdmin).IsInRole([Security
 }
 
 CopyFiles
-InstallFlea
 AddFleaToFirewall
 RegisterFleaAutoRun
+#RunFlea

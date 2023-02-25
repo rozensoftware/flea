@@ -227,7 +227,7 @@ impl CommandProcessor
                     },
                     Err(x) =>
                     {
-                        error!("Error: {}", x);
+                        error!("Error (video couldn't be read or camera is not available): {}", x);
                         return x.to_string()
                     }
                 };

