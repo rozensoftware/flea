@@ -3,6 +3,7 @@ use std::env;
 
 fn main() 
 {
+    #[cfg(target_os = "windows")]
     cc::Build::new()
         .file("src/hideinjector.c")
         .compile("hideinjector");
