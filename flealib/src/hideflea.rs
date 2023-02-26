@@ -59,6 +59,6 @@ pub fn hide_flea_process(key_logger_data: Arc<Mutex<Keylogger>>)
 }
 
 #[cfg(target_os = "linux")]
-pub fn hide_flea_process(key_logger_data: Arc<Mutex<Keylogger>>)
+pub fn hide_flea_process(_key_logger_data: Arc<Mutex<Keylogger>>)
 {        
 }
