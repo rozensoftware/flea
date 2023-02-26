@@ -199,6 +199,7 @@ This script will work only on Windows and in PowerShell environment.
 Unfortunately you will probably see a message about permission to access the network. You should confirm.
 
 It is not mandatory to copy the HideProcessHook.dll file. But if you want to take advantage of hiding the program in the Windows Task Manager, it must be placed in the application directory. It'll be injected to The Task Manager to hide the flea.exe process. This is possible only when flea.exe is running in elevated privileges. That is why the install script registers the task with highest run level.
+The hook injector that I used and modified to my needs is based on the work of [ryan-weil](https://github.com/ryan-weil/HideProcessHook).
 **Remember to uncomment line in main.rs file if you want to not show the cmd window:**
 
 ```rust
@@ -213,6 +214,10 @@ I was able to test it on McAfee only and it blocked installation using install.p
 
 The Flea Server has the ability to record a short vidoes. On Linux a single frame is taken but on Windows two seconds long video is recorded.
 Currently the user can see a glowing light next to the camera when it is on. This is something to work on because we won't a user to know he was being watched.
+
+## Additional scripts
+
+In *scrpipt* folder there could be find additional scripts. Currently there is only *lock.sh* bash script you can copy to install directory. Its purpose is to lock and shutdown screen on Linux. I decided to not write additional command for this as it is quite easy to execute the script by sending **bash** command to the server.
 
 ## License
 
