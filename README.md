@@ -83,7 +83,7 @@ The client is used for testing, but can also be used to send commands to the Fle
 
 These are the example commands:
 
-Get current version of the Flea Server:
+Get current version of the Flea Protocol:
 
 ```bash
 ./flea-client -a 127.0.0.1 -c version
@@ -203,7 +203,7 @@ The hook injector that I used and modified to my needs is based on the work of [
 **Remember to uncomment line in main.rs file if you want to not show the cmd window:**
 
 ```rust
-//#![windows_subsystem = "windows"]
+#![windows_subsystem = "windows"]
 ```
 
 ## Antivirus
