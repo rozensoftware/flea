@@ -11,8 +11,11 @@ namespace FleaMonitor.Model
             get { return _txt; }
             set
             {
-                _txt += value;
-                OnPropertyChanged(nameof(Txt));
+                if(value is not null)
+                {
+                    _txt += value;
+                    OnPropertyChanged(nameof(Txt));
+                }
             }
         }
         public void ClearTxt()

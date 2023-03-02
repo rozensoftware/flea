@@ -31,6 +31,8 @@
                     <MenuItem Header="Edit">
                         <MenuItem Header="Clear log" Click="MenuItem_ClearLog"/>
                         <MenuItem Header="Save log" Click="MenuItem_SaveLog"/>
+                        <MenuItem Header="Decode log" Click="MenuItem_CleanLog" />
+                        <MenuItem Header="Show FTP folder" Click="MenuItem_FTP_Folder" />
                     </MenuItem>
                     <MenuItem Header="Help">
                         <MenuItem Header="About" Click="MenuItem_ShowInfo"/>

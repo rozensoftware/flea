@@ -68,5 +68,12 @@ namespace FleaMonitor.FTP
 
             IsStarted = false;
         }
+
+        public static void OpenFTPFolder()
+        {
+            //Show Temp folder in explorer
+            var ftpPath = Path.Combine(Path.GetTempPath(), FLEA_FTP_FOLDER);
+            System.Diagnostics.Process.Start("explorer.exe", ftpPath);
+        }
     }
 }
