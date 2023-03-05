@@ -31,11 +31,15 @@ impl SystemCmd
     {
         debug!("Executing bash command:{}", &value);
 
-        match command(value).arg("").output()
+        match command(value).output()
         {
             Ok(x) =>
             {
-                return String::from_utf8_lossy(&x.stdout).to_string();
+                let str1 = format!("status: {}\n", x.status);
+                let str2 = format!("stderr: {}\n", String::from_utf8_lossy(&x.stderr).to_string());
+                let str3 = format!("stdout:\n{}", String::from_utf8_lossy(&x.stdout).to_string());
+                
+                return format!("{}{}{}", str1, str2, str3);
             },
             Err(y) =>
             {
