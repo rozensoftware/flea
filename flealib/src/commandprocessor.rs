@@ -29,6 +29,7 @@ const CHANGE_DIRECTORY_COMMAND: &'static str = "cd";
 const FTP_PARAM_COMMAND: &'static str = "setftp";
 const BROWSING_HISTORY_COMMAND: &'static str = "history";
 const GET_SYSTEM_INFO_COMMAND: &'static str = "sysinfo";
+const GET_WORKING_DIR_COMMAND: &'static str = "pwd";
 pub const STOP_COMMAND: &'static str = "quit";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
@@ -462,7 +463,7 @@ impl FleaCommand for CommandProcessor
             {
                 return self.set_ftp_params(value);
             },
-
+            
             BROWSING_HISTORY_COMMAND =>
             {
                 match browserhistory::get_browsing_history()
@@ -489,6 +490,11 @@ impl FleaCommand for CommandProcessor
                 return self.os.get_system_info();
             },
             
+            GET_WORKING_DIR_COMMAND =>
+            {
+                return file_server.lock().unwrap().get_dir();
+            },
+
             STOP_COMMAND =>
             {
                 return STOP_COMMAND.to_string();

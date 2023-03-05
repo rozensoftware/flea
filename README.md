@@ -68,6 +68,7 @@ Currently supported commands are:
 - **upload** : uploads a file to the host from FTP server. The file name must be specified in the 'value' parameter of the XML command.
 - **dir** : Retreives content of current directory.
 - **cd** : Changes the current directory to the new one passed in the 'value' parameter (.. means level up).
+- **pwd** : Gets server's working directory.
 - **getfile** : Downloads a file passed in the 'value' parameter to the client. The file is read from the current path on the server.
 - **setftp** : Sets new FTP parameters: address, user name, password. Parameters must be provided in the 'value' in the following format, e.g. 127.0.0.1;user;my_pass .
 - **history** : Reads web browsers history of a user which flea process is running for: Edge (Windows only), Firefox and Google Chrome. Data returned is: URL, Title and Visits Number.
