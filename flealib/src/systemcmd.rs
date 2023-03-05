@@ -1,5 +1,4 @@
-use std::process::Stdio;
-use execute::{Execute, command};
+use execute::command;
 use log::debug;
 use sysinfo::{NetworkExt, System, SystemExt, UserExt};
 
@@ -32,23 +31,17 @@ impl SystemCmd
     {
         debug!("Executing bash command:{}", &value);
 
-        let mut command = command(value);
-
-        command.stdout(Stdio::piped());
-        
-        let output = match command.execute_output()
+        match command(value).arg("").output()
         {
             Ok(x) =>
             {
-                x
+                return String::from_utf8_lossy(&x.stdout).to_string();
             },
             Err(y) =>
             {
-                return y.to_string()
+                return y.to_string();
             }
-        };
-        
-        String::from_utf8(output.stdout).unwrap()
+        }        
     }
 
     /// Gets processes list

@@ -12,6 +12,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace FleaMonitor
 {
@@ -20,7 +22,7 @@ namespace FleaMonitor
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly string FLEA_MONITOR_VERSION = "Flea Monitor v0.2.1";
+        private static readonly string FLEA_MONITOR_VERSION = "Flea Monitor v0.2.2";
 
         private readonly FleaInfo _fleaInfo = new();
         private readonly FleaFTPServer _fleaFTPServer = new();
@@ -36,6 +38,7 @@ namespace FleaMonitor
             { CommandProcessor.PROCLIST_COMMAND, false },
             { CommandProcessor.KILL_COMMAND, true },
             { CommandProcessor.UPLOAD_COMMAND, true },
+            { CommandProcessor.GET_WORKING_DIR_COMMAND, false },
             { CommandProcessor.DIR_COMMAND, false },
             { CommandProcessor.CD_COMMAND, true },
             { CommandProcessor.GETFILE_COMMAND, true },
@@ -56,6 +59,7 @@ namespace FleaMonitor
             { CommandProcessor.PROCLIST_COMMAND, true },
             { CommandProcessor.KILL_COMMAND, true },
             { CommandProcessor.UPLOAD_COMMAND, true },
+            { CommandProcessor.GET_WORKING_DIR_COMMAND, true },
             { CommandProcessor.DIR_COMMAND, true },
             { CommandProcessor.CD_COMMAND, true },
             { CommandProcessor.GETFILE_COMMAND, false },
@@ -91,6 +95,7 @@ namespace FleaMonitor
                 CommandProcessor.PROCLIST_COMMAND,
                 CommandProcessor.KILL_COMMAND,
                 CommandProcessor.UPLOAD_COMMAND,
+                CommandProcessor.GET_WORKING_DIR_COMMAND,
                 CommandProcessor.DIR_COMMAND,
                 CommandProcessor.CD_COMMAND,
                 CommandProcessor.GETFILE_COMMAND,
@@ -238,7 +243,7 @@ namespace FleaMonitor
             return string.Empty;
         }
 
-        private async void dirListView_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private async void DirListView_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs? e)
         {
             if (_commandInExecution)
             {
@@ -246,19 +251,19 @@ namespace FleaMonitor
                 return;
             }
 
-            var waitWindow = new WaitWindow
-            {
-                Owner = this
-            };
-            
-            waitWindow.Show();
-
             //Select item from listview
             var item = dirListView.SelectedItem as FleaDirectory;
             if (item is not null)
             {
+                var waitWindow = new WaitWindow
+                {
+                    Owner = this
+                };
+
+                waitWindow.Show();
+
                 var value = item.Txt;
-                if (value?.IndexOf("/") != -1)
+                if (value?.IndexOf("/") != -1 || value?.IndexOf("\\") != -1)
                 {
                     //Directory
                     await SendCommand(CommandProcessor.CD_COMMAND, value!, _fleaInfo);
@@ -286,9 +291,9 @@ namespace FleaMonitor
                     
                     await ReadDirectory();
                 }
-            }
 
-            waitWindow.Close();
+                waitWindow.Close();
+            }
         }
 
         private async void MenuItem_StartFTPServer(object sender, RoutedEventArgs e)
@@ -375,6 +380,60 @@ namespace FleaMonitor
         {
             _fleaInfo.Txt = "Cleaned log:";
             _fleaInfo.Txt = CommandProcessor.LastCleanedLog;
+        }
+
+        private void DirListView_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (FindResource("listSubMenu") is ContextMenu cm)
+            {
+                cm.Placement = PlacementMode.MousePoint;
+                cm.IsOpen = true;
+            }
+        }
+
+        private void MenuItem_SubMenu_Download(object sender, RoutedEventArgs e) => DirListView_MouseDoubleClick(sender, null);
+
+        private async void MenuItem_SubMenu_Execute(object sender, RoutedEventArgs e)
+        {
+            if (_commandInExecution)
+            {
+                MessageBox.Show("Command is executing now..");
+                return;
+            }
+
+            //Select item from listview
+            var item = dirListView.SelectedItem as FleaDirectory;
+            if (item is not null)
+            {
+                var value = item.Txt;
+                if (value?.IndexOf("/") != -1 || value?.IndexOf("\\") != -1 || value == "..")
+                {
+                    MessageBox.Show($"{value} is a directory.");
+                }
+                else
+                {
+                    var waitWindow = new WaitWindow
+                    {
+                        Owner = this
+                    };
+
+                    waitWindow.Show();
+
+                    var working_dir = await SendCommand(CommandProcessor.GET_WORKING_DIR_COMMAND, value, _fleaInfo);
+                    var result = await SendCommand(CommandProcessor.BASH_COMMAND, Path.Join(Encoding.UTF8.GetString(working_dir), value), _fleaInfo);
+
+                    try
+                    {
+                        CommandProcessor.ProcessReply(CommandProcessor.BASH_COMMAND, value, result, _fleaInfo);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+                    waitWindow.Close();
+                }
+            }
         }
     }
 }

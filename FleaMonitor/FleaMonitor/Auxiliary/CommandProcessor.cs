@@ -22,6 +22,7 @@ namespace FleaMonitor.Auxiliary
         public const string DIR_COMMAND = "dir";
         public const string GETFILE_COMMAND = "getfile";
         public const string CD_COMMAND = "cd";
+        public const string GET_WORKING_DIR_COMMAND = "pwd";
         public const string QUIT_COMMAND = "quit";
         public const string SET_FTP_COMMAND = "setftp";
         public const string BROWSING_HISTORY_COMMAND = "history";

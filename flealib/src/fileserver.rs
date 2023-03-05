@@ -42,14 +42,16 @@ impl FileServer
             }
         };
 
+        let separator = std::path::MAIN_SEPARATOR.to_string();
+
         for path in paths
         {
             let file_name = path.unwrap().file_name().into_string().unwrap();
-            let file_path = format!("{}/{}", &self.current_directory, file_name);
+            let file_path = format!("{}{}{}", &self.current_directory, separator, file_name);
             let file_path = Path::new(&file_path);
             if file_path.is_dir()
             {
-                folders.push(format!("/{}", file_name));
+                folders.push(format!("{}{}", separator, file_name));
             }
             else if file_path.is_file()
             {
@@ -89,8 +91,22 @@ impl FileServer
     /// * `Result<(), String>` - Result of the operation
     pub fn change_directory(&mut self, folder: &str) -> Result<(), String>
     {
-        let new_current_dir = format!("{}/{}", self.current_directory, folder);
+        let mut tmp_folder = folder.to_string();
+
+        //Check if the folder is a path
+        if !tmp_folder.contains(std::path::MAIN_SEPARATOR.to_string().as_str())
+        {
+            tmp_folder = format!("{}{}", std::path::MAIN_SEPARATOR.to_string(), tmp_folder);
+        }    
+
+        if self.current_directory.ends_with(std::path::MAIN_SEPARATOR.to_string().as_str())
+        {
+            tmp_folder = tmp_folder.replace(std::path::MAIN_SEPARATOR.to_string().as_str(), "");
+        }
+
+        let new_current_dir = format!("{}{}", &self.current_directory, tmp_folder);
         let new_dir = Path::new(&new_current_dir);
+        
         match fs::metadata(new_dir)
         {
             Ok(x) =>
@@ -136,8 +152,14 @@ impl FileServer
     /// * returns a vector of u8 bytes or an error
     pub fn read_binary_file(&self, file_name: &str) -> Result<Vec<u8>, std::io::Error>
     {
+        let mut separator = std::path::MAIN_SEPARATOR.to_string();
+        if self.current_directory.ends_with(separator.as_str())
+        {
+            separator = "".to_string();
+        }
+
         //get path to the file
-        let file_path = format!("{}/{}", self.current_directory, file_name);
+        let file_path = format!("{}{}{}", self.current_directory, separator, file_name);
 
         //Get size of the file
         let file_size = fs::metadata(file_path.clone())?.len() as usize;

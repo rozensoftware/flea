@@ -6,6 +6,12 @@
         xmlns:local="clr-namespace:FleaMonitor" xmlns:model="clr-namespace:FleaMonitor.Model" d:DataContext="{d:DesignInstance Type=model:FleaInfo}"
         mc:Ignorable="d"
         Title="Flea Monitor" Height="450" Width="800" Loaded="Window_Loaded" Closed="Window_Closed" Icon="/Resource/fleamonitor.ico">
+    <Window.Resources>
+        <ContextMenu x:Key="listSubMenu">
+            <MenuItem Header="Download" Click="MenuItem_SubMenu_Download" />
+            <MenuItem Header="Execute" Click="MenuItem_SubMenu_Execute" />
+        </ContextMenu>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -24,13 +30,16 @@
                 <Menu Width="Auto" Height="20" DockPanel.Dock="Top">
                     <MenuItem Header="File">
                         <MenuItem Header="Settings" Click="MenuItem_Settings" />
+                        <Separator />
                         <MenuItem Header="Start FTP Server" Click="MenuItem_StartFTPServer" />
                         <MenuItem Header="Stop FTP Server" Click="MenuItem_StopFTPServer" />
+                        <Separator />
                         <MenuItem Header="Exit" Click="MenuItem_Click"/>
                     </MenuItem>
                     <MenuItem Header="Edit">
                         <MenuItem Header="Clear log" Click="MenuItem_ClearLog"/>
                         <MenuItem Header="Save log" Click="MenuItem_SaveLog"/>
+                        <Separator />
                         <MenuItem Header="Decode log" Click="MenuItem_CleanLog" />
                         <MenuItem Header="Show FTP folder" Click="MenuItem_FTP_Folder" />
                     </MenuItem>
@@ -45,7 +54,7 @@
 
             <Button Content="Send" Name="SendButton" Grid.Row="2" Width="100" HorizontalAlignment="Right" Click="SendButton_Click"></Button>
             <Label Content="Directory:" Grid.Row="3" HorizontalAlignment="Left"></Label>
-            <ListView Name="dirListView" Grid.Row="4" Width="400" Margin="5,5,5,5" ScrollViewer.CanContentScroll="True" MouseDoubleClick="dirListView_MouseDoubleClick">
+            <ListView Name="dirListView" Grid.Row="4" Width="400" Margin="5,5,5,5" ScrollViewer.CanContentScroll="True" MouseDoubleClick="DirListView_MouseDoubleClick" MouseRightButtonUp="DirListView_MouseRightButtonUp">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Txt}"/>
