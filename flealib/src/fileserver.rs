@@ -18,6 +18,11 @@ impl FileServer
         }
     }
 
+    pub fn get_dir(&self, ) -> String
+    {
+        self.current_directory.clone()
+    }
+
     /// Lists all folders and files in current directory
     /// # Returns
     /// * `Vec<String>` - Vector of names    
