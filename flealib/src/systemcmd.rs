@@ -1,4 +1,4 @@
-use execute::command;
+use std::process::Command;
 use log::debug;
 use sysinfo::{NetworkExt, System, SystemExt, UserExt};
 
@@ -26,12 +26,11 @@ impl SystemCmd
     /// Executes a command line in the current OS
     /// and returns output to the caller as a string
     /// * value - a command line to execute
-    /// TODO: On Windows it doesn't work correctly
     pub fn execute_bash_command(&self, value: &str) -> String
     {
         debug!("Executing bash command:{}", &value);
 
-        match command(value).output()
+        match Command::new(value).output()
         {
             Ok(x) =>
             {
