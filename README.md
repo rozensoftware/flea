@@ -43,7 +43,7 @@ To update the server a new version must be uploaded to the installation location
 ## FTP Server
 
 One of the Flea's features is the ability to send and receive files from an FTP server. The Flea Monitor provides its own FTP server, with which The Flea Server can cooperate.
-You can connect to it using user name: anonymous and any password. This is an anonymous authentication. The sharing folder is created in your TEMP folder with the name 'FleaFTP'. This folder will be probably deleted on cleaning temporary folders so have it in mind.
+You can connect to it using user name: anonymous and any password. This is an anonymous authentication. The sharing folder is created in your TEMP folder with the name 'FleaFTP'. This folder will be probably deleted on cleaning temporary files so have it in mind.
 You can start the FTP server by selecting option from File menu. There is an option for stopping it also. It works only when the Flea Monitor is running and it is shutting down on application close.
 
 [FubarDev FTP Server](https://github.com/FubarDevelopment/FtpServer) project has been used here.
@@ -58,14 +58,14 @@ The Flea Server requires an XML formatted command like below:
 
 Currently supported commands are:
 
-- **version** : returns current protocol version.
-- **bash** : a host bash command. The value property has to have a command line to execute in a host.
-- **ftpscreenshot** : takes a screenshots of the host and sends it to FTP server.
-- **screenshot** : takes a screenshot and sends it to the caller. The client supports this and saves data into screenshot.png file name.
-- **log** : reads current key logger file and sends its content to receiver.
-- **proclist** : displays currently running processes in the system.
-- **kill** : kills a process. 'value' parameter must include PID.
-- **upload** : uploads a file to the host from FTP server. The file name must be specified in the 'value' parameter of the XML command.
+- **version** : Returns current protocol version.
+- **bash** : A host bash command. The value property has to have a command line to execute in a host.
+- **ftpscreenshot** : Takes a screenshots of the host and sends it to FTP server.
+- **screenshot** : Takes a screenshot and sends it to the caller. The client supports this and saves data into screenshot.png file name.
+- **log** : Reads current key logger file and sends its content to receiver.
+- **proclist** : Displays currently running processes in the system.
+- **kill** : Kills a process. 'value' parameter must include PID.
+- **upload** : Uploads a file to the host from FTP server. The file name must be specified in the 'value' parameter of the XML command.
 - **dir** : Retreives content of current directory.
 - **cd** : Changes the current directory to the new one passed in the 'value' parameter (.. means level up).
 - **pwd** : Gets server's working directory.
