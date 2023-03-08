@@ -74,6 +74,7 @@ Currently supported commands are:
 - **history** : Reads web browsers history of a user which flea process is running for: Edge (Windows only), Firefox and Google Chrome. Data returned is: URL, Title and Visits Number.
 - **camera** : Captures one frame (or two seconds long movie on Windows) from camera. The 'value' parameter must have a filename e.g.: frame.jpg (or movie.wmv on Windows). The server with Flea must have a camera installed.
 - **sysinfo** : Gets system info
+- **restart** : Restarts the Flea Server. Good for patching.
 - **quit** : Quits the program. Must be run again.
 
 New commands will be added later.
