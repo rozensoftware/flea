@@ -30,8 +30,11 @@ const FTP_PARAM_COMMAND: &'static str = "setftp";
 const BROWSING_HISTORY_COMMAND: &'static str = "history";
 const GET_SYSTEM_INFO_COMMAND: &'static str = "sysinfo";
 const GET_WORKING_DIR_COMMAND: &'static str = "pwd";
+const RESTART_COMMAND: &'static str = "restart";
 pub const STOP_COMMAND: &'static str = "quit";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
+
+pub const RESTART_FILENAME: &'static str = "flea.rst";
 
 #[cfg(feature = "camera")]
 const GET_CAMERA_FRAME_COMMAND: &'static str = "camera";
@@ -191,6 +194,30 @@ impl CommandProcessor
             Err(x) =>
             {
                 return x.to_string();
+            }
+        }
+    }
+
+    /// Create a restart file
+    /// # Arguments
+    /// * 'file_name' - A file name to create
+    /// # Returns
+    /// * `Result<(), String>` - Result of the operation
+    pub(crate) fn create_restart_file(&self, file_name: &str) -> Result<(), String>
+    {
+        let mut path = self.current_directory.clone();
+        debug!("Current directory: {:?}", path);
+
+        path.push(file_name);
+        match std::fs::File::create(path)
+        {
+            Ok(_) =>
+            {
+                Ok(())
+            },
+            Err(e) =>
+            {
+                Err(e.to_string())
             }
         }
     }
@@ -493,6 +520,23 @@ impl FleaCommand for CommandProcessor
             GET_WORKING_DIR_COMMAND =>
             {
                 return file_server.lock().unwrap().get_dir();
+            },
+
+            RESTART_COMMAND =>
+            {
+                match self.create_restart_file(RESTART_FILENAME)
+                {
+                    Ok(_) =>
+                    {
+                        debug!("Restart file created");
+                        return STOP_COMMAND.to_string();
+                    },
+                    Err(x) =>
+                    {
+                        error!("Error: {}", x);
+                        return x.to_string();
+                    }
+                }
             },
 
             STOP_COMMAND =>

@@ -1,4 +1,4 @@
-﻿using FleaMonitor.Auxiliary;
+﻿ using FleaMonitor.Auxiliary;
 using FleaMonitor.Dialog;
 using FleaMonitor.FTP;
 using FleaMonitor.Model;
@@ -46,6 +46,7 @@ namespace FleaMonitor
             { CommandProcessor.BROWSING_HISTORY_COMMAND, false },
             { CommandProcessor.GET_CAMERA_CAPTURE_COMMAND, true },
             { CommandProcessor.GET_SYSTEM_INFO_COMMAND, false },
+            { CommandProcessor.RESTART_COMMAND, false },
             { CommandProcessor.QUIT_COMMAND, false }
         };
 
@@ -67,6 +68,7 @@ namespace FleaMonitor
             { CommandProcessor.BROWSING_HISTORY_COMMAND, false },
             { CommandProcessor.GET_CAMERA_CAPTURE_COMMAND, false },
             { CommandProcessor.GET_SYSTEM_INFO_COMMAND, true },
+            { CommandProcessor.RESTART_COMMAND, true },
             { CommandProcessor.QUIT_COMMAND, true }
         };
 
@@ -102,6 +104,7 @@ namespace FleaMonitor
                 CommandProcessor.BROWSING_HISTORY_COMMAND,
                 CommandProcessor.GET_CAMERA_CAPTURE_COMMAND,
                 CommandProcessor.GET_SYSTEM_INFO_COMMAND,
+                CommandProcessor.RESTART_COMMAND,
                 CommandProcessor.QUIT_COMMAND
             };
         }

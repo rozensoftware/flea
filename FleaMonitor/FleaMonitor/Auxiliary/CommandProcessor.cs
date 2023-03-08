@@ -28,6 +28,7 @@ namespace FleaMonitor.Auxiliary
         public const string BROWSING_HISTORY_COMMAND = "history";
         public const string GET_SYSTEM_INFO_COMMAND = "sysinfo";
         public const string GET_CAMERA_CAPTURE_COMMAND = "camera";
+        public const string RESTART_COMMAND = "restart";
 
         private static readonly string SCREENSHOT_FILENAME = "screenshot.png";
         private static readonly string BROWSING_HISTORY_FILENAME = "browsing_history.txt";

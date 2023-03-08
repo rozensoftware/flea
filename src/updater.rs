@@ -19,11 +19,11 @@ pub(crate) fn find_update(dir: &str, file_name: &str) -> Option<String>
 }
 
 /// Starts a new process of itself
-pub(crate) fn start_new_process()
+pub(crate) fn start_new_process(dir: &String, exe: String)
 {
-    let mut args = std::env::args();
-    let exe_path = args.next().unwrap();
-    std::process::Command::new(exe_path)
+    let mut path = PathBuf::from(dir);
+    path.push(exe);
+    std::process::Command::new(path)
         .spawn()
         .expect("Failed to start a new process");
 }

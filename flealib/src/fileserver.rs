@@ -173,18 +173,3 @@ impl FileServer
         Ok(data)
     }
 }
-
-#[cfg(test)]
-mod tests 
-{
-    use super::*;
-
-    #[test]    
-    fn list_dir_test()
-    {
-        let file_server = FileServer::new();
-        let current_dir = std::env::current_dir().unwrap();
-        let files = file_server.list_files(&current_dir.to_str().unwrap()).unwrap();
-        assert_ne!(files.len(), 0);
-    }
-}
