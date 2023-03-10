@@ -47,14 +47,14 @@ fn main()
 
     #[cfg(target_os = "linux")]
     let pdir = env::current_exe().unwrap().to_str().unwrap().to_string();
-
-    info!("Program directory: {}", &pdir);
+    
+    info!("Program path: {}", &pdir);
 
     //get current system directory separator
     let separator = std::path::MAIN_SEPARATOR.to_string();
 
     let v: Vec<&str> = pdir.split(&separator).collect();    
-    let mut s: String = String::new();
+    let mut program_dir: String = String::new();
 
     for i in 0..v.len() - 1
     {
@@ -64,16 +64,14 @@ fn main()
         }
 
         #[cfg(target_os = "windows")]
-        if s.is_empty()
+        if program_dir.is_empty()
         {
-            s.push_str(&v[i]);
+            program_dir.push_str(&v[i]);
             continue;
         }
 
-        s.push_str(&format!("{}{}", separator, &v[i]));
+        program_dir.push_str(&format!("{}{}", separator, &v[i]));
     }
-
-    let mut program_dir = s;
 
     if program_dir.is_empty()
     {
@@ -93,7 +91,7 @@ fn main()
         //Delete the backup file
         if let Ok(_) = std::fs::remove_file(BACKUP_FILENAME) {}
     }
-
+ 
     //Check if restart file exists
     if std::path::Path::new(RESTART_FILENAME).exists()
     {
