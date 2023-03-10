@@ -168,6 +168,23 @@ impl SystemCmd
         ret
     }
 
+    #[cfg(target_os = "windows")]
+    pub fn lock_screen(&self)
+    {
+        extern {
+            fn lockScreen();
+        }
+    
+        unsafe {
+            lockScreen();
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    pub fn lock_screen(&self)
+    {
+    }
+
     /// Gets processes list (Linux version)
     /// * returns String with id and name of the processes list or empty on error
     #[cfg(target_os = "linux")]

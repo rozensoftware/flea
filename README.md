@@ -1,6 +1,6 @@
 # Flea
 
-Version: 0.2.1
+Version: 0.2.2
 
 A simple command server written in Rust.
 
@@ -75,6 +75,7 @@ Currently supported commands are:
 - **camera** : Captures one frame (or two seconds long movie on Windows) from camera. The 'value' parameter must have a filename e.g.: frame.jpg (or movie.wmv on Windows). The server with Flea must have a camera installed.
 - **sysinfo** : Gets system info
 - **restart** : Restarts the Flea Server. Good for patching.
+- **lockscreen** : Locks the screen. It can be unlocked in normal way by typing a password.
 - **quit** : Quits the program. Must be run again.
 
 New commands will be added later.
@@ -219,7 +220,8 @@ Currently the user can see a glowing light next to the camera when it is on. Thi
 
 ## Additional scripts
 
-In *scrpipt* folder there could be find additional scripts. Currently there is only *lock.sh* bash script you can copy to install directory. Its purpose is to lock and shutdown screen on Linux. I decided to not write additional command for this as it is quite easy to execute the script by sending **bash** command to the server.
+In *scrpipt* folder there could be find additional scripts. Currently there is only *lock.sh* bash script you can copy to install directory. Its purpose is to lock and shutdown screen on Linux. I decided to not write additional command for this on Linux as it is quite easy to execute the script by sending **bash** command to the server.
+Windows version is implemented by using *lockscreen* command.
 
 ## License
 
