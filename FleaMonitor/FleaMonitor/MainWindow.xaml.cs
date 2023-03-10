@@ -47,6 +47,7 @@ namespace FleaMonitor
             { CommandProcessor.GET_CAMERA_CAPTURE_COMMAND, true },
             { CommandProcessor.GET_SYSTEM_INFO_COMMAND, false },
             { CommandProcessor.RESTART_COMMAND, false },
+            { CommandProcessor.LOCK_SCREEN_COMMAND, false },
             { CommandProcessor.QUIT_COMMAND, false }
         };
 
@@ -69,6 +70,7 @@ namespace FleaMonitor
             { CommandProcessor.GET_CAMERA_CAPTURE_COMMAND, false },
             { CommandProcessor.GET_SYSTEM_INFO_COMMAND, true },
             { CommandProcessor.RESTART_COMMAND, true },
+            { CommandProcessor.LOCK_SCREEN_COMMAND, true },
             { CommandProcessor.QUIT_COMMAND, true }
         };
 
@@ -105,6 +107,7 @@ namespace FleaMonitor
                 CommandProcessor.GET_CAMERA_CAPTURE_COMMAND,
                 CommandProcessor.GET_SYSTEM_INFO_COMMAND,
                 CommandProcessor.RESTART_COMMAND,
+                CommandProcessor.LOCK_SCREEN_COMMAND,
                 CommandProcessor.QUIT_COMMAND
             };
         }

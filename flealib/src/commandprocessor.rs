@@ -31,6 +31,7 @@ const BROWSING_HISTORY_COMMAND: &'static str = "history";
 const GET_SYSTEM_INFO_COMMAND: &'static str = "sysinfo";
 const GET_WORKING_DIR_COMMAND: &'static str = "pwd";
 const RESTART_COMMAND: &'static str = "restart";
+const LOCK_SCREEN_COMMAND: &'static str = "lockscreen";
 pub const STOP_COMMAND: &'static str = "quit";
 const UNKNOWN_COMMAND: &'static str = "Unknown command";
 
@@ -520,6 +521,12 @@ impl FleaCommand for CommandProcessor
             GET_WORKING_DIR_COMMAND =>
             {
                 return file_server.lock().unwrap().get_dir();
+            },
+
+            LOCK_SCREEN_COMMAND =>
+            {
+                self.os.lock_screen();
+                return "Ok".to_string();
             },
 
             RESTART_COMMAND =>
