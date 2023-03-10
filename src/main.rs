@@ -41,13 +41,12 @@ fn main()
     info!("Start");
 
     let args: Vec<String> = env::args().collect();
+    let mut pdir = env::current_exe().unwrap().to_str().unwrap().to_string();
 
-    #[cfg(target_os = "windows")]
-    let pdir = args[0].clone();
+    //Remove DOS device path prefix
+    pdir = pdir.replace("\\\\?\\", "");
+    pdir = pdir.replace("\\\\.\\", "");
 
-    #[cfg(target_os = "linux")]
-    let pdir = env::current_exe().unwrap().to_str().unwrap().to_string();
-    
     info!("Program path: {}", &pdir);
 
     //get current system directory separator
