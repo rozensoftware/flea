@@ -23,7 +23,8 @@ pub(crate) fn start_new_process(dir: &String, exe: String)
 {
     let mut path = PathBuf::from(dir);
     path.push(exe);
+    let info = format!("Starting a new process (path={})", &path.to_str().unwrap());
     std::process::Command::new(path)
         .spawn()
-        .expect("Failed to start a new process");
+        .expect(&info);
 }

@@ -41,13 +41,38 @@ fn main()
     info!("Start");
 
     let args: Vec<String> = env::args().collect();
-    let program_dir = args[0].clone();
+
+    #[cfg(target_os = "windows")]
+    let pdir = args[0].clone();
+
+    #[cfg(target_os = "linux")]
+    let pdir = env::current_exe().unwrap().to_str().unwrap().to_string();
+    
+    info!("Program path: {}", &pdir);
 
     //get current system directory separator
     let separator = std::path::MAIN_SEPARATOR.to_string();
 
-    //remove the file name from the path
-    let mut program_dir = program_dir.replace(&args[0].split(&separator).last().unwrap(), "");    
+    let v: Vec<&str> = pdir.split(&separator).collect();    
+    let mut program_dir: String = String::new();
+
+    for i in 0..v.len() - 1
+    {
+        if v[i].is_empty()
+        {
+            continue;
+        }
+
+        #[cfg(target_os = "windows")]
+        if program_dir.is_empty()
+        {
+            program_dir.push_str(&v[i]);
+            continue;
+        }
+
+        program_dir.push_str(&format!("{}{}", separator, &v[i]));
+    }
+
     if program_dir.is_empty()
     {
         //if the path is empty, get the current directory
@@ -56,7 +81,8 @@ fn main()
     else
     {
         //set the current directory to the program directory
-        env::set_current_dir(&program_dir).unwrap();
+        let info = format!("Couldn't set the current directory! (path={})", &program_dir);
+        env::set_current_dir(&program_dir).expect(&info);
     }
 
     //Check if backup file exists
@@ -65,7 +91,7 @@ fn main()
         //Delete the backup file
         if let Ok(_) = std::fs::remove_file(BACKUP_FILENAME) {}
     }
-
+ 
     //Check if restart file exists
     if std::path::Path::new(RESTART_FILENAME).exists()
     {
