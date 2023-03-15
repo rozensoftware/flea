@@ -1,3 +1,4 @@
+#[cfg(target_os = "linux")]
 use std::process::Command;
 use log::debug;
 use sysinfo::{NetworkExt, System, SystemExt, UserExt};
@@ -23,9 +24,34 @@ impl SystemCmd
         }
     }
 
+    #[cfg(target_os = "windows")]
+    pub fn execute_bash_command(&self, value: &str) -> String
+    {
+        use std::ffi::{c_char, CStr, CString};
+
+        extern {
+            fn executeCommand(cmd: *const c_char) -> *const c_char;
+        }
+
+        let cmd = String::from(value);
+        let cs = CString::new(cmd).unwrap();
+        let ptr = cs.into_raw();
+        let str_slice: String;
+
+        unsafe { 
+            let slice = CStr::from_ptr(executeCommand(ptr)); 
+            str_slice = String::from_utf8_lossy(slice.to_bytes()).to_string();
+        };
+
+        let _cs = unsafe { CString::from_raw(ptr) };
+        
+        str_slice
+    }
+
     /// Executes a command line in the current OS
     /// and returns output to the caller as a string
     /// * value - a command line to execute
+    #[cfg(target_os = "linux")]
     pub fn execute_bash_command(&self, value: &str) -> String
     {
         debug!("Executing bash command:{}", &value);
