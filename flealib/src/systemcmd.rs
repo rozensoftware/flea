@@ -29,6 +29,17 @@ impl SystemCmd
     {
         use std::ffi::{c_char, CStr, CString};
 
+        debug!("Executing bash command:{}", &value);
+
+        //check if in value there is a sub string of cd "path"
+        //if yes, then change current directory to "path"
+        let v: Vec<&str> = value.split("cd ").collect();
+
+        if v.len() > 1
+        {
+            return "Use 'cd' command to change a directory".to_string();
+        }
+
         extern {
             fn executeCommand(cmd: *const c_char) -> *const c_char;
         }
@@ -55,6 +66,13 @@ impl SystemCmd
     pub fn execute_bash_command(&self, value: &str) -> String
     {
         debug!("Executing bash command:{}", &value);
+
+        let v: Vec<&str> = value.split("cd ").collect();
+
+        if v.len() > 1
+        {
+            return "Use 'cd' command to change a directory".to_string();
+        }
 
         match Command::new(value).output()
         {
