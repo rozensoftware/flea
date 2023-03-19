@@ -31,13 +31,12 @@ impl SystemCmd
 
         debug!("Executing bash command:{}", &value);
 
-        //check if in value there is a sub string of cd "path"
-        //if yes, then change current directory to "path"
+        //check if this is a cd command
         let v: Vec<&str> = value.split("cd ").collect();
 
         if v.len() > 1
         {
-            return "Use 'cd' command to change a directory".to_string();
+            return "Use 'cd' Flea command to change a directory".to_string();
         }
 
         extern {
