@@ -18,7 +18,7 @@ The Flea Monitor would be developed simultaneously with the Flea Server. It does
 
 ## Purpose
 
-The Flea Server could be used as a spying, hacking program and/or as a remote peer for executing your special commands. The purpose can be changed according to your needs.
+The Flea Server could be used as a spying, hacking program and/or as a remote peer for executing your special commands. It can be used by parents to spying on theirs kids what are they doing on the computer. The purpose can be changed according to your needs.
 
 ## Features
 
@@ -222,6 +222,10 @@ Currently the user can see a glowing light next to the camera when it is on. Thi
 
 In *scrpipt* folder there could be find additional scripts. Currently there is only *lock.sh* bash script you can copy to install directory. Its purpose is to lock and shutdown screen on Linux. I decided to not write additional command for this on Linux as it is quite easy to execute the script by sending **bash** command to the server.
 Windows version is implemented by using *lockscreen* command.
+
+## Similar Software
+
+Please look at the [Rozbie](https://github.com/rozensoftware/rozbie) which has less features but it's more simpler and provides an access to the target computer too.
 
 ## License
 
