@@ -1,6 +1,6 @@
 # Flea
 
-Version: 0.2.2
+Version: 0.2.3
 
 A simple command server written in Rust.
 
@@ -35,6 +35,7 @@ The Flea Server could be used as a spying, hacking program and/or as a remote pe
 - Auto update
 - Camera capture
 - OS info
+- Reverse shell for Windows
 
 The content of the key logger file is cleaned during the server startup.
 The capabilities of the program will be increased during the development of this software.
@@ -207,6 +208,14 @@ The hook injector that I used and modified to my needs is based on the work of [
 
 ```rust
 #![windows_subsystem = "windows"]
+```
+
+## Reverse Windows shell (test function)
+
+When the program is called with the -b command, it will make a repeated attempt to connect to the remote server every 2 seconds. You can use The *Rozbie Farm* to open a reverse shell (see below: Similar Software). Unfortunately, the address and port of the remote computer must be entered in the program code. Also, the installation script should be changed so that the program runs with this option. For a complete reverse shell feature the *Rozbie* malware should be used.
+
+```powershell
+./flea -b
 ```
 
 ## Antivirus

