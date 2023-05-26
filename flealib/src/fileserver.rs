@@ -8,6 +8,14 @@ pub struct FileServer
     current_directory: String,
 }
 
+impl Default for FileServer
+{
+    fn default() -> Self
+    {
+        Self::new()
+    }
+}
+
 impl FileServer
 {
     pub fn new() -> Self
@@ -96,7 +104,7 @@ impl FileServer
         //Check if the folder is a path
         if !tmp_folder.contains(std::path::MAIN_SEPARATOR.to_string().as_str())
         {
-            tmp_folder = format!("{}{}", std::path::MAIN_SEPARATOR.to_string(), tmp_folder);
+            tmp_folder = format!("{}{}", std::path::MAIN_SEPARATOR, tmp_folder);
         }    
 
         if self.current_directory.ends_with(std::path::MAIN_SEPARATOR.to_string().as_str())

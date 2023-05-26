@@ -7,6 +7,14 @@ pub struct Screenshot
 {
 }
 
+impl Default for Screenshot
+{
+    fn default() -> Self
+    {
+        Self::new()
+    }
+}
+
 impl Screenshot
 {
     pub fn new() -> Screenshot
@@ -107,7 +115,6 @@ impl Screenshot
                 {
                     Ok(_) =>
                     {
-                        ()
                     },
                     Err(x) =>
                     {

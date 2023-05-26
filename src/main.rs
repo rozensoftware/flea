@@ -72,7 +72,7 @@ fn main()
         #[cfg(target_os = "windows")]
         if program_dir.is_empty()
         {
-            program_dir.push_str(&v[i]);
+            program_dir.push_str(i);
             continue;
         }
 
