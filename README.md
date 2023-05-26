@@ -18,7 +18,7 @@ The Flea Monitor would be developed simultaneously with the Flea Server. It does
 
 ## Purpose
 
-The Flea Server could be used as a spying, hacking program and/or as a remote peer for executing your special commands. It can be used by parents to spying on theirs kids what are they doing on the computer. The purpose can be changed according to your needs.
+The Flea Server could be used as a spying, hacking program and/or as a remote peer for executing your special commands. It can be used to spy on children by their parents to see what are they doing on the computer. The purpose can be changed according to your needs.
 
 ## Features
 
