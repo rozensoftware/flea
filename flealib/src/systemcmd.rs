@@ -14,6 +14,14 @@ pub struct SystemCmd
     sys_info: System,
 }
 
+impl Default for SystemCmd
+{
+    fn default() -> Self
+    {
+        SystemCmd::new()
+    }
+}
+
 impl SystemCmd
 {
     pub fn new() -> SystemCmd
@@ -97,17 +105,14 @@ impl SystemCmd
     {
         let mut ret = "".to_string();
 
-        match for_each_process(|id, name| {
-            ret += format!("{} - {}\n", id, name.to_str().unwrap().to_string()).as_str();
-        })
+        let res = for_each_process(|id, name| {
+            ret += format!("{} - {}\n", id, name.to_str().unwrap()).as_str();
+        }); 
+
+        if res.is_err()
         {
-            Ok(_) =>
-            {
-            },
-            Err(_) =>
-            {
-            }
-        };
+            "".to_string();
+        }
 
         ret
     }
@@ -129,7 +134,7 @@ impl SystemCmd
                 {
                     Ok(x) =>
                     {
-                        if let Ok(_) = x.kill()
+                        if x.kill().is_ok()
                         {
                             debug!("Process killed");
                             return "Ok".to_string();

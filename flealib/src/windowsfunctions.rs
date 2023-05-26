@@ -1,4 +1,3 @@
-use std::ptr::null_mut;
 use winapi::shared::minwindef::DWORD;
 use winapi::shared::ntdef::HANDLE;
 use winapi::um::processthreadsapi::{OpenProcess, TerminateProcess};
@@ -11,7 +10,7 @@ impl WindowsProcess
     pub fn open(pid: DWORD) -> Result<WindowsProcess, String> 
     {
         let pc = unsafe { OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_TERMINATE, 0, pid) };
-        if pc == null_mut() 
+        if pc.is_null()
         {
             return Err("!OpenProcess".to_string());
         }

@@ -1,4 +1,4 @@
-use std::{path::PathBuf, fs::File, io::{Read, Cursor, Write}};
+use std::{path::{PathBuf, Path}, fs::File, io::{Read, Cursor, Write}};
 
 use ftp::{FtpStream, FtpError};
 use log::{debug, error};
@@ -24,12 +24,12 @@ impl FTP
     /// * file_path - a file with the absolute path to read from
     fn read_file_to_vec(&self, file_path: &str) -> std::io::Result<Vec<u8>> 
     {
-        let mut file = File::open(&file_path)?;
+        let mut file = File::open(file_path)?;
     
         let mut data = Vec::new();
         file.read_to_end(&mut data)?;
     
-        return Ok(data);
+        Ok(data)
     }
 
     /// Writes data to a file on disk
@@ -96,7 +96,7 @@ impl FTP
     /// * pass - password
     /// * file_path - a path to the file to be sent
     /// * ftp_folder - a folder on FTP server to store the file
-    pub fn send_file_to_ftp(&self, addr: &str, user: &str, pass: &str, file_path: &PathBuf, ftp_folder: &str) -> Result<(), FtpError>
+    pub fn send_file_to_ftp(&self, addr: &str, user: &str, pass: &str, file_path: &Path, ftp_folder: &str) -> Result<(), FtpError>
     {
         let mut ftp_stream = FtpStream::connect((addr, FTP_STD_PORT))?;
 

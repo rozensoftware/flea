@@ -1,8 +1,8 @@
 extern crate roxmltree;
 
-const COMMAND_TAG_NAME: &'static str = "Command";
-const COMMAND_ATTRIBUTE_NAME: &'static str = "name";
-const COMMAND_VALUE_NAME: &'static str = "value";
+const COMMAND_TAG_NAME: &str = "Command";
+const COMMAND_ATTRIBUTE_NAME: &str = "name";
+const COMMAND_VALUE_NAME: &str = "value";
 
 pub struct CommandParser
 {
@@ -13,7 +13,7 @@ impl CommandParser
 {
     pub fn get_command(&self, xml: &str) -> Result<(String, String), &'static str>
     {        
-        if let Ok(doc) = roxmltree::Document::parse(&xml)
+        if let Ok(doc) = roxmltree::Document::parse(xml)
         {
             if let Some(elem) = doc.descendants().find(|n| n.tag_name().name() == COMMAND_TAG_NAME)
             {

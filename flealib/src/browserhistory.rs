@@ -7,14 +7,14 @@ use ini::Ini;
 
 type SqliteResult<T> = Result<T>;
 
-const URL_SELECT: &'static str = "SELECT url, title, visit_count, last_visit_time FROM urls ORDER BY last_visit_time DESC";
-const FIREFOX_URL_SELECT: &'static str = "SELECT url, IFNULL(title, ''), visit_count, IFNULL(last_visit_date, 0) FROM moz_places ORDER BY last_visit_date DESC";
+const URL_SELECT: &str = "SELECT url, title, visit_count, last_visit_time FROM urls ORDER BY last_visit_time DESC";
+const FIREFOX_URL_SELECT: &str = "SELECT url, IFNULL(title, ''), visit_count, IFNULL(last_visit_date, 0) FROM moz_places ORDER BY last_visit_date DESC";
 #[cfg(target_os = "windows")]
-const CHROME_HISTORY_PATH: &'static str = "\\Google\\Chrome\\User Data\\Default\\History";
+const CHROME_HISTORY_PATH: &str = "\\Google\\Chrome\\User Data\\Default\\History";
 #[cfg(target_os = "windows")]
-const EDGE_HISTORY_PATH: &'static str = "\\Microsoft\\Edge\\User Data\\Default\\History";
+const EDGE_HISTORY_PATH: &str = "\\Microsoft\\Edge\\User Data\\Default\\History";
 #[cfg(target_os = "windows")]
-const HISTORY_FLEA_FOLDER_NAME: &'static str = "\\flea-tmp\\";
+const HISTORY_FLEA_FOLDER_NAME: &str = "\\flea-tmp\\";
 
 struct History 
 {
@@ -180,7 +180,7 @@ pub fn get_firefox_history() -> SqliteResult<Vec<String>>
         std::fs::copy(&path, &temp_path).unwrap();
         path = temp_path;
     
-        return Ok(get_history(&path, FIREFOX_URL_SELECT)?);    
+        return get_history(&path, FIREFOX_URL_SELECT);
     }
 
     Ok(Vec::new())

@@ -16,8 +16,8 @@ const MAX_READ_BUFFER_SIZE: usize = 1024;
 /// * str - An input string having end line special characters 0x0d, 0x0a
 fn remove_newline_characters(str: &str) -> Vec<u8>
 {
-    let s1 = str.to_string().replace("\n", "");
-    let s2 = s1.replace("\r", "");
+    let s1 = str.to_string().replace('\n', "");
+    let s2 = s1.replace('\r', "");
     let temp_str = s2.as_bytes();
     let end_str_idx = temp_str.iter().position(|&x| x == 0).unwrap();
     temp_str[..end_str_idx].to_vec()
@@ -36,9 +36,9 @@ fn replay(mut stream: &TcpStream, command_name: String, value_name: String, file
 
     let mut command_processor: CommandProcessor = FleaCommand::new();
     let mut b = true;
-    let cmd = command_processor.process(&command_name.as_str(), &value_name.as_str(), file_server);
+    let cmd = command_processor.process(command_name.as_str(), value_name.as_str(), file_server);
     
-    if cmd.len() == 0
+    if cmd.is_empty()
     {
         return (true, false);
     }
@@ -58,7 +58,7 @@ fn replay(mut stream: &TcpStream, command_name: String, value_name: String, file
     
     loop 
     {
-        match stream.write(&cmd[data_idx..].as_bytes())
+        match stream.write(cmd[data_idx..].as_bytes())
         {
             Ok(sent_bytes) =>
             {
@@ -90,7 +90,7 @@ fn replay(mut stream: &TcpStream, command_name: String, value_name: String, file
 /// * file_server - a file server
 fn handle_client(mut stream: TcpStream, file_server: &Arc<Mutex<FileServer>>, running: &Arc<AtomicBool>)
 {
-    let mut data = [0 as u8; MAX_READ_BUFFER_SIZE];
+    let mut data = [0_u8; MAX_READ_BUFFER_SIZE];
     let command = CommandParser{};
 
     while match stream.read(&mut data) 
@@ -111,7 +111,7 @@ fn handle_client(mut stream: TcpStream, file_server: &Arc<Mutex<FileServer>>, ru
                 if let Ok(rets) = str::from_utf8(&data) 
                 {
                     debug!("Received command:{}", rets);                    
-                    let data_vec = remove_newline_characters(rets).iter().cloned().collect();
+                    let data_vec = remove_newline_characters(rets).to_vec();
                     data_str = String::from_utf8(data_vec).unwrap();
                 }
                 else
@@ -128,7 +128,7 @@ fn handle_client(mut stream: TcpStream, file_server: &Arc<Mutex<FileServer>>, ru
                 {
                     Ok(x) => 
                     {
-                        if x.0.len() > 0
+                        if !x.0.is_empty()
                         {
                             let status = replay(&stream, x.0, x.1, file_server);
                             stream.shutdown(Shutdown::Both).unwrap();
@@ -170,7 +170,7 @@ pub struct FleaServer
 
 impl FleaServer
 {        
-    pub fn start(self: &Self, address: &str, running: &Arc<AtomicBool>)
+    pub fn start(&self, address: &str, running: &Arc<AtomicBool>)
     {
         let listener = TcpListener::bind(address).unwrap();
         listener.set_nonblocking(true).expect("Cannot set non-blocking socket!");
@@ -195,7 +195,7 @@ impl FleaServer
 
                     // connection succeeded
                     let file_server = Arc::clone(&file_server_data);
-                    let r = Arc::clone(&running);
+                    let r = Arc::clone(running);
 
                     thread::spawn(move || {
                         handle_client(stream, &file_server, &r);
