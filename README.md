@@ -132,7 +132,7 @@ Change current directory to the previous one:
 Get camera frame:
 
 ```bash
-./flea-client --a 192.168.0.1 -c camera -v frame.jpg
+./flea-client -a 192.168.0.1 -c camera -v frame.jpg
 ```
 
 ## Building
