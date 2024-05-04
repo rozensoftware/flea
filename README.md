@@ -1,6 +1,6 @@
 # Flea
 
-Version: 0.2.3
+Version: 0.2.4
 
 A simple command server written in Rust.
 
@@ -111,7 +111,7 @@ Upload test.txt file from FTP server to the host where Flea Server is running on
 ./flea-client -a MY_SERVER_NAME -c upload -v test.txt
 ```
 
-Get network profiles:
+Get wlan network profiles:
 
 ```bash
 ./flea-client -a MY_SERVER_IP -c bash -v "netsh wlan show profiles"
