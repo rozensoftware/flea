@@ -158,7 +158,7 @@ fn main()
     
     let mut address = my_local_ip.to_string();
 
-    if let Some(..) = host_address
+    if host_address.is_some()
     {
         address = host_address.unwrap();
     }
@@ -204,9 +204,9 @@ fn main()
     handle.join().unwrap();
     handle2.join().unwrap();
 
-    if let Some(..) = backdoor_handle
+    if let Some(handle) = backdoor_handle
     {
-        backdoor_handle.unwrap().join().unwrap();
+        handle.join().unwrap();
     }
 
     info!("Stop");
@@ -215,7 +215,7 @@ fn main()
     if std::path::Path::new(RESTART_FILENAME).exists()
     {
         //Delete the restart file
-        if std::fs::remove_file(RESTART_FILENAME).is_ok() {}
+        let _ = std::fs::remove_file(RESTART_FILENAME);
         //Starts a new process of itself
         updater::start_new_process(&program_dir, FLEA_FILE_NAME.to_string());
 
