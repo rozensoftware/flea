@@ -1,7 +1,7 @@
 #[cfg(target_os = "linux")]
 use std::process::Command;
 use log::debug;
-use sysinfo::{NetworkExt, System, SystemExt, UserExt};
+use sysinfo::{Disks, Networks, System, Users};
 
 #[cfg(target_os = "windows")]
 use process_list::for_each_process;
@@ -163,10 +163,10 @@ impl SystemCmd
         self.sys_info.refresh_all();
 
         let mut ret = format!("System name: {:?}\r\nSystem kernel version: {:?}\r\nSystem OS version: {:?}\r\nSystem OS (long) version: {:?}\r\nCPUs: {}\r\n", 
-            self.sys_info.name().unwrap_or_else(|| "<unknown>".to_owned()),
-            self.sys_info.kernel_version().unwrap_or_else(|| "<unknown>".to_owned()),
-            self.sys_info.os_version().unwrap_or_else(|| "<unknown>".to_owned()),
-            self.sys_info.long_os_version().unwrap_or_else(|| "<unknown>".to_owned()),
+            System::name().unwrap_or_else(|| "<unknown>".to_owned()),
+            System::kernel_version().unwrap_or_else(|| "<unknown>".to_owned()),
+            System::os_version().unwrap_or_else(|| "<unknown>".to_owned()),
+            System::long_os_version().unwrap_or_else(|| "<unknown>".to_owned()),
             self.sys_info.cpus().len());
 
         const MB: u64 = 1024 * 1024;
@@ -180,7 +180,9 @@ impl SystemCmd
         ret.push_str(&str);
         ret.push_str("Users:\r\n");
 
-        for user in self.sys_info.users() 
+        let users = Users::new_with_refreshed_list();
+
+        for user in &users 
         {
             let str = format!("{:?}\r\n", user.name());
             ret.push_str(&str);
@@ -188,7 +190,9 @@ impl SystemCmd
 
         ret.push_str("Disks:\r\n");
 
-        for disk in self.sys_info.disks() 
+        let disks = Disks::new_with_refreshed_list();
+
+        for disk in &disks 
         {
             let str = format!("{:?}\r\n", disk);
             ret.push_str(&str);
@@ -196,7 +200,9 @@ impl SystemCmd
         
         ret.push_str("Networks:\r\n");
 
-        for (interface_name, data) in self.sys_info.networks() 
+        let networks = Networks::new_with_refreshed_list();
+
+        for (interface_name, data) in &networks 
         {
             let str = format!("{}: {}/{} B\r\n", interface_name, data.received(), data.transmitted());
             ret.push_str(&str);
@@ -204,7 +210,7 @@ impl SystemCmd
 
         ret.push_str("Uptime:\r\n");
 
-        let up = self.sys_info.uptime();
+        let up = System::uptime();
         let days = up / 86400;
         let hours = (up % 86400) / 3600;
         let minutes = (up % 3600) / 60;

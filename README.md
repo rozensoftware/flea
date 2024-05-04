@@ -111,6 +111,18 @@ Upload test.txt file from FTP server to the host where Flea Server is running on
 ./flea-client -a MY_SERVER_NAME -c upload -v test.txt
 ```
 
+Get network profiles:
+
+```bash
+./flea-client -a MY_SERVER_IP -c bash -v "netsh wlan show profiles"
+```
+
+and information with password:
+
+```bash
+.\flea-client.exe -a 192.168.0.18 -c bash -v "netsh wlan show profile name=network_profile_name key=clear"
+```
+
 Change current directory to the previous one:
 
 ```bash
