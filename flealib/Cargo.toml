@@ -1,10 +1,10 @@
 [package]
 name = "flealib"
-version = "0.2.4"
+version = "0.2.5"
 edition = "2021"
 
 [dependencies]
-roxmltree = "0.19.0"
+roxmltree = "0.20.0"
 log = "0.4.17"
 env_logger = "0.11.3"
 execute = "0.2.12"
@@ -20,6 +20,7 @@ winapi = {version = "0.3.9", features = ["psapi", "shellapi"]}
 rusqlite = { version = "0.31.0", features = ["bundled"] }
 rust-ini = "0.21.0"
 sysinfo = "0.30.11"
+lettre = "0.11"
 
 [target.'cfg(unix)'.dependencies]
 rscam = "0.5.5"

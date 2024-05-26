@@ -1,6 +1,6 @@
 # Flea
 
-Version: 0.2.4
+Version: 0.2.5
 
 A simple command server written in Rust.
 
@@ -28,6 +28,7 @@ The Flea Server could be used as a spying, hacking program and/or as a remote pe
 - Uploading a file from FTP to the host
 - Bash execution on a host (doesn't work perfectly on Windows)
 - Key logger
+- Key logger can be sent to an email
 - Web browsing history of Microsoft Edge, Firefox and Google Chrome
 - OS process list
 - Killing a process
@@ -71,7 +72,9 @@ Currently supported commands are:
 - **cd** : Changes the current directory to the new one passed in the 'value' parameter (.. means level up).
 - **pwd** : Gets server's working directory.
 - **getfile** : Downloads a file passed in the 'value' parameter to the client. The file is read from the current path on the server.
-- **setftp** : Sets new FTP parameters: address, user name, password. Parameters must be provided in the 'value' in the following format, e.g. 127.0.0.1;user;my_pass .
+- **setftp** : Sets new FTP parameters: address, user name, password. Parameters must be provided in the 'value' in the following format, e.g. 127.0.0.1;user;my_pass.
+- **setemail** : Sets email parameters where key logger file will be sent to in a format: address to, address from, email account user name, password, host address.
+- **sendkeylog** : Sends key logger file on email
 - **history** : Reads web browsers history of a user which flea process is running for: Edge (Windows only), Firefox and Google Chrome. Data returned is: URL, Title and Visits Number.
 - **camera** : Captures one frame (or two seconds long movie on Windows) from camera. The 'value' parameter must have a filename e.g.: frame.jpg (or movie.wmv on Windows). The server with Flea must have a camera installed.
 - **sysinfo** : Gets system info
@@ -170,11 +173,20 @@ const FTP_USER_NAME: &'static str = "enter_ftp_user_name";
 const FTP_PASS_NAME: &'static str = "enter_ftp_user_password";
 const FTP_ADDRESS_NAME: &'static str = "enter_ftp_server_ip_address";
 const FTP_FOLDER_NAME: &'static str = "enter_ftp_folder_name";
+const SMTP_USER_NAME: &str = "enter_smtp_user_name";
+const EMAIL_ADDRESS_TO: &str = "enter_email_address";
+const EMAIL_ADDRESS_FROM: &str = "enter_email_address";
+const SMTP_PASS_NAME: &str = "enter_smtp_password";
+const SMTP_HOST_NAME: &str = "enter_smtp_host";
 
 ```
 
 or in the created configuration file (recommended). On Linux you will find the configuration file in a directory: /home/user_name/.config/flea_conf/ .
 These parameters can be also changed remotely by sending *setftp* command.
+
+You should do the same when defining a connection to a mailbox. You need to specify the email address to which the file will be sent, the sender's address, the user name of the email account, the password and the address of the email server.
+
+*Update your default-config-file.tom file if you have previous version or flea won't process commands due to missing configuration.*
 
 Build The Flea server:
 
