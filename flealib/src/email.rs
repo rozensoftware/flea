@@ -46,7 +46,7 @@ impl EMail
     
         let creds = Credentials::new(smtp_user_name.to_owned(), smtp_pass.to_owned());
     
-        // Open a remote connection to gmail
+        // Open a remote connection to an email server
         let mailer = SmtpTransport::relay(smtp_host)
             .unwrap()
             .credentials(creds)
@@ -58,7 +58,7 @@ impl EMail
     }
 }
 
-//Add a unit test
+
 #[cfg(test)]
 mod tests
 {

@@ -186,6 +186,8 @@ These parameters can be also changed remotely by sending *setftp* command.
 
 You should do the same when defining a connection to a mailbox. You need to specify the email address to which the file will be sent, the sender's address, the user name of the email account, the password and the address of the email server.
 
+The best way to send messages is to use your own email server, which does not require fancy authorizations. Currently, GMail is not suitable for this. Perhaps in your case you will be able to properly authorize the application and GMail.
+
 *Update your default-config-file.tom file if you have previous version or flea won't process commands due to missing configuration.*
 
 Build The Flea server:
