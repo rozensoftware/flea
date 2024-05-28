@@ -143,7 +143,7 @@ Get camera frame:
 Except having installed Rust on Linux you also need to install the following packages to build the software:
 
 ```text
-build-essential, pkg-config, libx11-dev, libxcb-randr0-dev, libxcb-shm0-dev, libv4l-dev
+build-essential, pkg-config, libx11-dev, libxcb-randr0-dev, libxcb-shm0-dev, libv4l-dev, libssl-dev
 ```
 
 On Windows you only gonna need is Rust (with C++ compiler alongside).
@@ -169,10 +169,10 @@ The Flea Server reads the host name of the computer and opens a port there. The 
 
 ```rust
 //Enter your data for FTP Server connection
-const FTP_USER_NAME: &'static str = "enter_ftp_user_name";
-const FTP_PASS_NAME: &'static str = "enter_ftp_user_password";
-const FTP_ADDRESS_NAME: &'static str = "enter_ftp_server_ip_address";
-const FTP_FOLDER_NAME: &'static str = "enter_ftp_folder_name";
+const FTP_USER_NAME: &str = "enter_ftp_user_name";
+const FTP_PASS_NAME: & str = "enter_ftp_user_password";
+const FTP_ADDRESS_NAME: & str = "enter_ftp_server_ip_address";
+const FTP_FOLDER_NAME: & str = "enter_ftp_folder_name";
 const SMTP_USER_NAME: &str = "enter_smtp_user_name";
 const EMAIL_ADDRESS_TO: &str = "enter_email_address";
 const EMAIL_ADDRESS_FROM: &str = "enter_email_address";
