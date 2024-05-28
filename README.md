@@ -188,7 +188,9 @@ You should do the same when defining a connection to a mailbox. You need to spec
 
 The best way to send messages is to use your own email server, which does not require fancy authorizations. Currently, GMail is not suitable for this. Perhaps in your case you will be able to properly authorize the application and GMail.
 
-*Update your default-config-file.tom file if you have previous version or flea won't process commands due to missing configuration.*
+The email address should look like this: "test <test@domain.ext>" - name, space and full address surrounded with <> characters.
+
+*Update your default-config-file.tom file if you have previous version (0.2.4 or earlier) or flea won't process commands due to missing configuration.*
 
 Build The Flea server:
 
