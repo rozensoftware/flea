@@ -1,6 +1,6 @@
 # Flea
 
-Version: 0.2.5
+Version: 0.2.6
 
 A simple command server written in Rust.
 
@@ -37,6 +37,7 @@ The Flea Server could be used as a spying, hacking program and/or as a remote pe
 - Camera capture
 - OS info
 - Reverse shell for Windows
+- File encryption
 
 The content of the key logger file is cleaned during the server startup.
 The capabilities of the program will be increased during the development of this software.
@@ -80,6 +81,8 @@ Currently supported commands are:
 - **sysinfo** : Gets system info
 - **restart** : Restarts the Flea Server. Good for patching.
 - **lockscreen** : Locks the screen. It can be unlocked in normal way by typing a password.
+- **encrypt** : Encrypts a file with a key
+- **decrypt** : Decrypts a file with a key
 - **quit** : Quits the program. Must be run again.
 
 New commands will be added later.
@@ -242,6 +245,24 @@ When the program is called with the -b command, it will make a repeated attempt 
 
 ```powershell
 ./flea -b
+```
+
+## File encryption
+
+This option allows you to remotely encrypt the specified file with the key passed in the command. Subsequent decryption using the same key is possible. The key must be 256 bits (32 bytes) long.
+
+Example:
+
+```powershell
+.\flea-client -a 192.168.0.18 -c encrypt -v "a very simple secret key to use!;test.txt"
+```
+
+The key is separated from the file name by a semicolon character.
+
+Decryption:
+
+```powershell
+.\flea-client -a 192.168.0.18 -c decrypt -v "a very simple secret key to use!;test.txt"
 ```
 
 ## Antivirus

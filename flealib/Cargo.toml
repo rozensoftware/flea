@@ -1,6 +1,6 @@
 [package]
 name = "flealib"
-version = "0.2.5"
+version = "0.2.6"
 edition = "2021"
 
 [dependencies]
@@ -21,9 +21,15 @@ rusqlite = { version = "0.31.0", features = ["bundled"] }
 rust-ini = "0.21.0"
 sysinfo = "0.30.11"
 lettre = "0.11"
+aes-gcm = "0.10.3"
+anyhow = "1.0.86"
 
 [target.'cfg(unix)'.dependencies]
 rscam = "0.5.5"
 
 [features]
 camera = []
+
+[profile.release]
+strip = true
+panic = "abort"

@@ -1,7 +1,7 @@
 [package]
 name = "flea"
 description = "A little server for executing remote commands."
-version = "0.2.4"
+version = "0.2.6"
 edition = "2021"
 keywords = ["server", "spying", "surveillance"]
 authors = ["Rozen Software <rozsoft@wp.pl>"]
@@ -21,3 +21,7 @@ flealib = {path = "flealib", features = ["camera"], version = "0.2"}
 
 [build-dependencies]
 cc = "1.0"
+
+[profile.release]
+strip = true
+panic = "abort"

