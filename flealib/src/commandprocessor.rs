@@ -2,7 +2,7 @@ extern crate ftp;
 extern crate repng;
 extern crate serde;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
 use std::{str, env, path::PathBuf};
 use log::{debug, error};
@@ -46,6 +46,7 @@ pub const RESTART_FILENAME: &str = "flea.rst";
 #[cfg(feature = "camera")]
 const GET_CAMERA_FRAME_COMMAND: &str = "camera";
 
+const MAX_KEY_LENGTH: usize = 32;
 
 //Enter your data for FTP Server connection
 const FTP_USER_NAME: &str = "enter_ftp_user_name";
@@ -629,6 +630,13 @@ impl FleaCommand for CommandProcessor
                 let mut parts = value.split(';');
                 if let (Some(key), Some(file_name), None) = (parts.next(), parts.next(), parts.next()) 
                 {
+                    if key.len() != MAX_KEY_LENGTH 
+                    {
+                        debug!("Invalid key length");
+                        return "Invalid key length".to_string();
+                    }
+
+                    debug!("Encrypting file: {}", file_name);
                     let encrypter = FileEncrypter::new(key.to_string());
                     match encrypter.encrypt_file(file_name) 
                     {
@@ -638,6 +646,7 @@ impl FleaCommand for CommandProcessor
                 } 
                 else 
                 {
+                    debug!("Invalid input");
                     "Invalid input".to_string()
                 }
             },
@@ -650,7 +659,14 @@ impl FleaCommand for CommandProcessor
                 let mut parts = value.split(';');
                 if let (Some(key), Some(file_name), None) = (parts.next(), parts.next(), parts.next()) 
                 {
+                    if key.len() != MAX_KEY_LENGTH 
+                    {
+                        debug!("Invalid key length");
+                        return "Invalid key length".to_string();
+                    }
+
                     let encrypter = FileEncrypter::new(key.to_string());
+                    debug!("Decrypting file: {}", file_name);
                     match encrypter.decrypt_file(file_name) 
                     {
                         Ok(_) => "Ok".to_string(),
@@ -659,6 +675,7 @@ impl FleaCommand for CommandProcessor
                 } 
                 else 
                 {
+                    debug!("Invalid input");
                     "Invalid input".to_string()
                 }
 
