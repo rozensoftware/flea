@@ -149,7 +149,7 @@ Except having installed Rust on Linux you also need to install the following pac
 build-essential, pkg-config, libx11-dev, libxcb-randr0-dev, libxcb-shm0-dev, libv4l-dev, libssl-dev
 ```
 
-On Windows you only gonna need is Rust (with C++ compiler alongside).
+On Windows, all you need is Rust (alongside a C++ compiler).
 
 If for some reason a camera capture is not needed you can exclude it from build by removing *features = ["camera"]* from cargo.toml:
 
@@ -287,11 +287,7 @@ Please look at the [Rozbie](https://github.com/rozensoftware/rozbie) which has l
 
 ## License
 
-This project is licensed under either of
-
-Apache License, Version 2.0, (LICENSE-APACHE or <http://www.apache.org/licenses/LICENSE-2.0>)
-MIT license (LICENSE-MIT or <http://opensource.org/licenses/MIT>)
-at your option.
+This project is licensed under MIT license (LICENSE-MIT or <http://opensource.org/licenses/MIT>).
 
 ## Contributing / Feedback
 
