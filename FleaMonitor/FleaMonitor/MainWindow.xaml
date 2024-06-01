@@ -10,6 +10,8 @@
         <ContextMenu x:Key="listSubMenu">
             <MenuItem Header="Download" Click="MenuItem_SubMenu_Download" />
             <MenuItem Header="Execute" Click="MenuItem_SubMenu_Execute" />
+            <MenuItem Header="Encrypt" Click="MenuItem_Click_Encrypt" />
+            <MenuItem Header="Decrypt" Click="MenuItem_Click_Decrypt" />
         </ContextMenu>
     </Window.Resources>
     <Grid>

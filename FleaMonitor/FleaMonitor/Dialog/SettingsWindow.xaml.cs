@@ -20,6 +20,12 @@ namespace FleaMonitor.Dialog
                 return;
             }
 
+            if (encryptionKeyTextBlox.Text.Length is > 0 and not MainWindow.ENCYPTION_KEY_LENGTH)
+            {
+                MessageBox.Show("Ecryption key must be 32 bytes long", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             DialogResult = true;
         }
     }
