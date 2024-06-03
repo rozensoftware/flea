@@ -286,6 +286,7 @@ Please look at the [Rozbie](https://github.com/rozensoftware/rozbie) which has l
 ## FAQ
 
 Q: Why does the Flea Monitor show a connection error even when the flea is running?
+
 A: Everything is fine, except that the Flea Monitor requires configuration on the first start. Go to Settings and enter a valid IP address that the flea is listening to. Restart the application.
 
 ## License
