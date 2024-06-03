@@ -2,7 +2,7 @@
 
 Version: 0.2.6
 
-A simple command server written in Rust.
+A simple command server written in Rust, which can be used as either a command server or a malware, depending on how the software is intended to be used.
 
 This repository consists of three projects:
 
@@ -10,7 +10,7 @@ This repository consists of three projects:
 - Simple Command Sender (flea-client)
 - Flea Monitor (C#, WPF, Windows only)
 
-The server is the main project that would be developed. The client is a test program to validate the protocol and the core functionality of the Flea Server. Flea Monitor is a GUI application for a convenient managing of the server. Unless otherwise stated, the Flea works in Linux and Windows.
+The server is the main project that will be developed. The client is a test program used to validate the protocol and core functionality of the Flea Server. Flea Monitor is a GUI application for conveniently managing the server. Unless otherwise stated, Flea works on both Linux and Windows operating systems.
 
 ![Flea Monitor](https://github.com/rozensoftware/flea/blob/master/FleaMonitor.png)
 
@@ -18,7 +18,7 @@ The Flea Monitor would be developed simultaneously with the Flea Server. It does
 
 ## Purpose
 
-The Flea Server could be used as a spying, hacking program and/or as a remote peer for executing your special commands. It can be used to spy on children by their parents to see what are they doing on the computer. The purpose can be changed according to your needs.
+The Flea Server can be utilized as a remote command execution tool or as a program for monitoring and surveillance. It has the capability to spy on computer activities, making it suitable for parental monitoring of children. The purpose of the Flea Server can be customized to meet specific requirements.
 
 ## Features
 
@@ -39,15 +39,13 @@ The Flea Server could be used as a spying, hacking program and/or as a remote pe
 - Reverse shell for Windows
 - File encryption
 
-The content of the key logger file is cleaned during the server startup.
-The capabilities of the program will be increased during the development of this software.
-To update the server a new version must be uploaded to the installation location. The new file name must be flea.upd. The server will be updated on the next run automatically.
+The key logger file is cleared during server startup.
+The program's capabilities will be enhanced as the software is developed.
+To update the server, a new version must be uploaded to the installation location. The new file should be named flea.upd. The server will automatically update on the next run.
 
 ## FTP Server
 
-One of the Flea's features is the ability to send and receive files from an FTP server. The Flea Monitor provides its own FTP server, with which The Flea Server can cooperate.
-You can connect to it using user name: anonymous and any password. This is an anonymous authentication. The sharing folder is created in your TEMP folder with the name 'FleaFTP'. This folder will be probably deleted on cleaning temporary files so have it in mind.
-You can start the FTP server by selecting option from File menu. There is an option for stopping it also. It works only when the Flea Monitor is running and it is shutting down on application close.
+One of Flea's features is the ability to send and receive files from an FTP server. Flea Monitor provides its own FTP server, which can be accessed using the username "anonymous" and any password. This allows for anonymous authentication. The shared folder is created in your TEMP folder with the name "FleaFTP". Please note that this folder may be deleted when cleaning temporary files. You can start the FTP server by selecting the option from the File menu. There is also an option to stop it. The FTP server only works when Flea Monitor is running and will shut down when the application is closed.
 
 [FubarDev FTP Server](https://github.com/FubarDevelopment/FtpServer) project has been used here.
 
@@ -225,15 +223,15 @@ You can specify IP address on which the server will be listen on:
 ./flea -s 127.0.0.1
 ```
 
-The port number is sewn into the program code. It can be changed there or a new functionality could be written to specify it as a command parameter.
-If you ran the server in the console you can stop it by CTRL-C.
+The port number is hardcoded into the program code. It can be changed there or new functionality can be implemented to specify it as a command parameter.
+If you are running the server in the console, you can stop it by pressing CTRL-C.
 
-If you need a fast installation on a computer try using *installflea.ps1* script located in install folder. All you wanna do is to copy flea.exe, CameraLib.dll, HideProcessHook.dll and installflea.ps1 into USB pendrive, connect it to computer you want to install the software on and run the script as administrator. The Flea will be installed automatically. New autorun task and new firewall rule will be created for you.
-You can modify the script further to achive the functonality you want.
-This script will work only on Windows and in PowerShell environment.
-Unfortunately you will probably see a message about permission to access the network. You should confirm.
+For a quick installation on a computer, you can use the "installflea.ps1" script located in the "install" folder. Simply copy "flea.exe", "CameraLib.dll", "HideProcessHook.dll", and "installflea.ps1" to a USB pendrive, connect it to the computer where you want to install the software, and run the script as an administrator. The Flea will be installed automatically, and a new autorun task and firewall rule will be created for you.
+You can modify the script further to achieve the desired functionality.
+Please note that this script only works on Windows and in a PowerShell environment.
+You may encounter a network access permission message, which you should confirm.
 
-It is not mandatory to copy the HideProcessHook.dll file. But if you want to take advantage of hiding the program in the Windows Task Manager, it must be placed in the application directory. It'll be injected to The Task Manager to hide the flea.exe process. This is possible only when flea.exe is running in elevated privileges. That is why the install script registers the task with highest run level.
+Copying the "HideProcessHook.dll" file is not mandatory. However, if you want to take advantage of hiding the program in the Windows Task Manager, it must be placed in the application directory. It will be injected into the Task Manager to hide the "flea.exe" process. This can only be done when "flea.exe" is running with elevated privileges. That is why the install script registers the task with the highest run level.
 The hook injector that I used and modified to my needs is based on the work of [ryan-weil](https://github.com/ryan-weil/HideProcessHook).
 **Remember to uncomment line in main.rs file if you want to not show the cmd window:**
 
