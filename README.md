@@ -267,7 +267,7 @@ Decryption:
 
 ## Antivirus
 
-I was able to test it on McAfee only and it blocked installation using install.ps1 script saying it is a virus (which is not completely true but I'm not going to dwell on this too much). I had to remove run the flea.exe from the script. That seems to work.
+I encountered an issue while testing the software on McAfee. It blocked the installation using the install.ps1 script, falsely identifying it as a virus. To resolve this, I had to remove the execution of flea.exe from the script. A similar issue occurred with Microsoft Defender.
 
 ## Camera capture
 
@@ -282,6 +282,11 @@ Windows version is implemented by using *lockscreen* command.
 ## Similar Software
 
 Please look at the [Rozbie](https://github.com/rozensoftware/rozbie) which has less features but it's more simpler and provides an access to the target computer too.
+
+## FAQ
+
+Q: Why does the Flea Monitor show a connection error even when the flea is running?
+A: Everything is fine, except that the Flea Monitor requires configuration on the first start. Go to Settings and enter a valid IP address that the flea is listening to. Restart the application.
 
 ## License
 
